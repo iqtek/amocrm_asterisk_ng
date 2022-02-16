@@ -25,7 +25,7 @@ crm:
   settings:
     kernel:
       call_logging:
-        webhook_url: https://webhook.mycompany.ru
+        base_url: https://webhook.mycompany.ru
         source: asterisk_telephony
         source_uid: asterisk_telephony
         service_code: amo_asterisk

@@ -44,8 +44,8 @@ class CdrDetectionEventHandler(IEventHandler):
         return True
 
     def __make_link(self, unique_id: str):
-        webhook_url = self.__config.webhook_url.rstrip('/')
-        return f"{webhook_url}/amocrm/cdr/{unique_id}.mp3"
+        base_url = self.__config.base_url.rstrip('/')
+        return f"{base_url}/amocrm/cdr/{unique_id}.mp3"
 
     def __get_call_status(self, disposition: CdrDetectionEvent.Status) -> int:
 

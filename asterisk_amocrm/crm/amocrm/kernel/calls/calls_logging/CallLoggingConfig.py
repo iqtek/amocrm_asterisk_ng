@@ -7,7 +7,7 @@ __all__ = [
 
 
 class CallLoggingConfig(BaseModel):
-    webhook_url: AnyUrl
+    base_url: AnyUrl
     source: str
     source_uid: str
     service_code: str

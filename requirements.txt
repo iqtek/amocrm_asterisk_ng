@@ -5,6 +5,7 @@ aiologger==0.6.1
 aiomysql==0.0.22
 aioredis==2.0.0
 aiosignal==1.2.0
+amo-crm-api-client @ git+https://github.com/iqtek/amocrm_api_client.git@42e20e34810299ea6b66c6f653243db8571ee353
 anyio==3.5.0
 asgiref==3.5.0
 async-timeout==4.0.1
