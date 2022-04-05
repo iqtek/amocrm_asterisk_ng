@@ -1,6 +1,4 @@
-from pydantic import (
-    BaseModel,
-)
+from .IFunction import IFunction
 
 
 __all__ = [
@@ -8,5 +6,9 @@ __all__ = [
 ]
 
 
-class ICommand(BaseModel):
-    pass
+class ICommand(IFunction[None]):
+
+    __slots__ = ()
+
+    async def __call__(self, *args, **kwargs) -> None:
+        raise NotImplementedError()

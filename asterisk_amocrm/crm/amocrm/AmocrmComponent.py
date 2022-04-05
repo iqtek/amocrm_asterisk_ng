@@ -1,6 +1,4 @@
-from asterisk_amocrm.infrastructure import (
-    IComponent,
-)
+from asterisk_amocrm.infrastructure import InitializableComponent
 
 
 __all__ = [
@@ -8,12 +6,17 @@ __all__ = [
 ]
 
 
-class AmocrmComponent(IComponent):
+class AmocrmComponent(InitializableComponent):
+
+    __slots__ = (
+        "__amocrm_kernel_component",
+        "__widget_component",
+    )
 
     def __init__(
         self,
-        widget_component: IComponent,
-        amocrm_kernel_component: IComponent,
+        widget_component: InitializableComponent,
+        amocrm_kernel_component: InitializableComponent,
     ) -> None:
         self.__amocrm_kernel_component = amocrm_kernel_component
         self.__widget_component = widget_component

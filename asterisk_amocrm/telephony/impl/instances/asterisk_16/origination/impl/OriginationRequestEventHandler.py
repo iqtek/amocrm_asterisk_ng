@@ -1,6 +1,6 @@
 from asterisk_amocrm.domains import OriginationRequestEvent
 from asterisk_amocrm.infrastructure import IDispatcher, IEventHandler
-from ..core import OriginationCallCommand
+from ..core import IOriginationCallCommand
 
 
 __all__ = [
@@ -10,9 +10,15 @@ __all__ = [
 
 class OriginationRequestEventHandler(IEventHandler):
 
-    def __init__(self, dispatcher: IDispatcher) -> None:
-        self.__dispatcher = dispatcher
+    __slots__ = (
+        "__origination_call_command"
+    )
+
+    def __init__(
+        self,
+        origination_call_command: IOriginationCallCommand
+    ) -> None:
+        self.__origination_call_command = origination_call_command
 
     async def __call__(self, event: OriginationRequestEvent) -> None:
-        command = OriginationCallCommand(**event.dict())
-        await self.__dispatcher.on_command(command)
+        await self.__origination_call_command(**event.dict())

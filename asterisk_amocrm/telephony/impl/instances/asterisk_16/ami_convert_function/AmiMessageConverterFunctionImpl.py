@@ -1,9 +1,7 @@
 from panoramisk.message import Message
 
-from .....core import (
-    Event,
-    IAmiMessageConvertFunction,
-)
+from .....core import Event
+from .....core import IAmiMessageConvertFunction
 
 
 __all__ = [
@@ -12,6 +10,8 @@ __all__ = [
 
 
 class AmiMessageConvertFunctionImpl(IAmiMessageConvertFunction):
+
+    __slots__ = ()
 
     def __call__(self, message: Message) -> Event:
         params = dict(message.items())

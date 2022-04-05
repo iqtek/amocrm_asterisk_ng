@@ -1,1 +1,1 @@
-from .GetUserIdByPhoneQH import GetUserIdByPhoneQH
+from .GetUserIdByPhoneQuery import GetUserIdByPhoneQuery

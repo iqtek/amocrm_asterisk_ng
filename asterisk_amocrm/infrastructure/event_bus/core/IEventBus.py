@@ -11,14 +11,17 @@ __all__ = [
 
 class IEventBus:
 
+    __slots__ = ()
+
     async def attach_event_handler(
         self,
         event_handler: IEventHandler
     ) -> None:
         """
         Attach an event handler.
+
         The event type is described in the handler annotation.
-        :raise AttributeError: If if handler missing event annotation.
+        :raise AttributeError: If handler missing event annotation.
         :raise HandlerAlreadyAttachedException: If handler already attached.
         """
         raise NotImplementedError()
@@ -29,13 +32,12 @@ class IEventBus:
     ) -> None:
         """
         Detach an event handler.
-        :raise AttributeError: If if handler missing event annotation.
+
+        :raise AttributeError: If handler missing event annotation.
         :raise HandlerAlreadyAttachedException: If handler is not attached.
         """
         raise NotImplementedError()
 
-    async def on_event(self, event: IEvent) -> None:
-        """
-        Ordered to call all handlers for the event.
-        """
+    async def publish(self, event: IEvent) -> None:
+        """Ordered to call all handlers for the event."""
         raise NotImplementedError()

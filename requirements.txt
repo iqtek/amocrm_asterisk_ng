@@ -1,3 +1,4 @@
+aioamqp==0.14.0
 aiofile==3.7.4
 aiofiles==0.8.0
 aiohttp==3.8.1
@@ -5,7 +6,7 @@ aiologger==0.6.1
 aiomysql==0.0.22
 aioredis==2.0.0
 aiosignal==1.2.0
-amo-crm-api-client @ git+https://github.com/iqtek/amocrm_api_client.git@42e20e34810299ea6b66c6f653243db8571ee353
+amo-crm-api-client @ git+https://github.com/iqtek/amocrm_api_client.git@8375b59ed378926e74e68a3b006b84c918547ac8
 anyio==3.5.0
 asgiref==3.5.0
 async-timeout==4.0.1
@@ -22,10 +23,14 @@ h11==0.13.0
 idna==3.3
 iniconfig==1.1.1
 mccabe==0.6.1
+mirakuru==2.4.2
 multidict==5.2.0
 packaging==21.3
+pamqp==2.3.0
 panoramisk==1.4
 pluggy==1.0.0
+port-for==0.6.2
+psutil==5.9.0
 py==1.11.0
 pyaml==21.10.1
 pycodestyle==2.8.0
@@ -37,11 +42,13 @@ PyMySQL==0.9.3
 pyparsing==3.0.7
 pytest==6.2.5
 pytest-asyncio==0.17.2
+pytest-rabbitmq==2.2.1
 PyYAML==6.0
+rabbitpy==2.0.1
 sniffio==1.2.0
 starlette==0.17.1
 toml==0.10.2
-typing_extensions==4.0.1
+typing-extensions==4.0.1
 ujson==4.3.0
 uvicorn==0.17.0.post1
 yarl==1.7.2

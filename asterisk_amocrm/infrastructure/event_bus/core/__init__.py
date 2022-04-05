@@ -1,4 +1,5 @@
+from .exceptions import *
 from .IEvent import IEvent
 from .IEventBus import IEventBus
 from .IEventHandler import IEventHandler
-from .exceptions import *
+from .InitializableEventBus import InitializableEventBus

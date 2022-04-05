@@ -1,1 +1,1 @@
-from .GetCdrByUniqueIdQH import GetCdrByUniqueIdQH
+from .GetCdrByUniqueIdQuery import GetCdrByUniqueIdQuery

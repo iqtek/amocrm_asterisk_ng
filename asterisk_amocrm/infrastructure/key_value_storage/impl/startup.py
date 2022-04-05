@@ -1,16 +1,14 @@
-from typing import (
-    Optional,
-    Mapping,
-    Any,
-)
+from typing import Any
+from typing import Mapping
 
-from asterisk_amocrm.infrastructure.logger import ILogger
-from pydantic import ValidationError
-from .FactoryStoreImpl import FactoryStoreImpl
-from .KeyValueStorageConfigModel import KeyValueStorageConfigModel
-from .KeyValueStorageSettingsModel import KeyValueStorageSettingsModel
-from .instances import RedisKeyValueStorageFactory
+from asterisk_amocrm.infrastructure import ioc
+from asterisk_amocrm.infrastructure import SelectorImpl
+from asterisk_amocrm.infrastructure import ISelector
+from asterisk_amocrm.infrastructure import ILogger
+from asterisk_amocrm.infrastructure import SelectedComponentConfig
+
 from ..core import IKeyValueStorageFactory
+from .instances import RedisKeyValueStorageFactory
 
 
 __all__ = [
@@ -19,36 +17,24 @@ __all__ = [
 
 
 def storage_startup(
-    logger: ILogger,
-    settings: Optional[Mapping[str, Any]] = None,
-    config: Optional[KeyValueStorageConfigModel] = None,
-) -> IKeyValueStorageFactory:
-    if not config:
-        try:
-            config = KeyValueStorageConfigModel(**settings)
-        except (ValidationError, TypeError):
-            pass
-    settings = settings or {}
-    settings = KeyValueStorageSettingsModel(**settings)
+    settings: Mapping[str, Any],
+) -> None:
+    startup_config = SelectedComponentConfig(**settings)
 
-    if config:
-        storage_config = config.storage_config
-        selected_type = config.type
-    else:
-        selected_type = settings.type
-        storage_config = None
+    logger = ioc.get_instance(ILogger)
 
-    factory_store = FactoryStoreImpl()
-
-    factory_store.register_factory(
+    selector: ISelector = SelectorImpl()
+    selector.add_item(
         RedisKeyValueStorageFactory(
-            settings=settings.storage_settings,
-            config=storage_config,
+            settings=startup_config.settings,
             logger=logger,
         )
     )
-    storage_factory = factory_store.get_instance(
-        type=selected_type,
+    factory = selector.get_item(
+        unique_tag=startup_config.type,
     )
 
-    return storage_factory
+    ioc.set_instance(
+        key=IKeyValueStorageFactory,
+        instance=factory,
+    )

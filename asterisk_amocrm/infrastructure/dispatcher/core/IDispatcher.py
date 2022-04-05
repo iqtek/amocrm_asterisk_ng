@@ -1,12 +1,9 @@
-from typing import (
-    TypeVar,
-    Type,
-    Any,
-)
-from .IQuery import IQuery
+from typing import Type
+from typing import TypeVar
+
 from .ICommand import ICommand
-from .IQueryHandler import IQueryHandler
-from .ICommandHandler import ICommandHandler
+from .IFunction import IFunction
+from .IQuery import IQuery
 
 
 __all__ = [
@@ -14,30 +11,22 @@ __all__ = [
 ]
 
 
+F = TypeVar('F', bound=IFunction)
+
+
 class IDispatcher:
 
-    async def attach_query_handler(
+    __slots__ = ()
+
+    def add_function(
         self,
-        interface_type: Type,
-        query_handler: IQueryHandler
+        function_type: Type[F],
+        function: F,
     ) -> None:
         raise NotImplementedError()
 
-    async def attach_command_handler(
-        self,
-        interface_type: Type,
-        command_handler: ICommandHandler
-    ) -> None:
+    def delete_function(self, function_type: Type[F]) -> None:
         raise NotImplementedError()
 
-    async def detach_query_handler(self, handler_type: Type[IQueryHandler]) -> None:
-        raise NotImplementedError()
-
-    async def detach_command_handler(self, handler_type: Type[ICommandHandler]) -> None:
-        raise NotImplementedError()
-
-    async def on_query(self, query: IQuery) -> Any:
-        raise NotImplementedError()
-
-    async def on_command(self, command: ICommand) -> None:
+    def get_function(self, function_type: Type[F]) -> F:
         raise NotImplementedError()

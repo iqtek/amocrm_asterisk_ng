@@ -1,9 +1,13 @@
-from asterisk_amocrm.domains import IGetCdrByUniqueIdQH
-from asterisk_amocrm.infrastructure import IComponent, IDispatcher, ILogger
+import os
+
+from asterisk_amocrm.domains import IGetCdrByUniqueIdQuery
+from asterisk_amocrm.infrastructure import IDispatcher
+from asterisk_amocrm.infrastructure import ILogger
+from asterisk_amocrm.infrastructure import InitializableComponent
+
 from .CdrProviderConfig import CdrProviderConfig
 from .mysql import MySqlConnectionFactoryImpl
-from .query_handlers import GetCdrByUniqueIdQH
-from asterisk_amocrm.domains import IGetCdrByUniqueIdQH
+from .query_handlers import GetCdrByUniqueIdQuery
 
 
 __all__ = [
@@ -11,7 +15,14 @@ __all__ = [
 ]
 
 
-class CdrProviderComponent(IComponent):
+class CdrProviderComponent(InitializableComponent):
+
+    __slots__ = (
+        "__config",
+        "__mysql_connection_factory",
+        "__dispatcher",
+        "__logger",
+    )
 
     def __init__(
         self,
@@ -26,10 +37,9 @@ class CdrProviderComponent(IComponent):
         self.__logger = logger
 
     async def initialize(self) -> None:
-
-        await self.__dispatcher.attach_query_handler(
-            IGetCdrByUniqueIdQH,
-            GetCdrByUniqueIdQH(
+        self.__dispatcher.add_function(
+            function_type=IGetCdrByUniqueIdQuery,
+            function=GetCdrByUniqueIdQuery(
                 config=self.__config,
                 mysql_connection_factory=self.__mysql_connection_factory,
                 logger=self.__logger,
@@ -38,6 +48,6 @@ class CdrProviderComponent(IComponent):
 
     async def deinitialize(self) -> None:
 
-        await self.__dispatcher.detach_query_handler(
-            GetCdrByUniqueIdQH,
+        self.__dispatcher.delete_function(
+            function_type=IGetCdrByUniqueIdQuery,
         )

@@ -3,10 +3,9 @@ from time import time
 from asterisk_amocrm.domains import CdrDetectionEvent
 from asterisk_amocrm.infrastructure import (IEventBus, ILogger)
 from ..ami_store import IAmiStore
-from ......core.ami_manager import (
-    Event,
-    IAmiEventHandler,
-)
+from ......core.ami_manager import Event
+from ......core.ami_manager import IAmiEventHandler
+
 
 __all__ = [
     "CdrEventHandler",
@@ -14,6 +13,12 @@ __all__ = [
 
 
 class CdrEventHandler(IAmiEventHandler):
+
+    __slots__ = (
+        "__event_bus",
+        "__ami_store",
+        "__logger",
+    )
 
     __DATETIME_MASK = "%Y-%m-%d %H:%M:%S"
 
@@ -73,7 +78,7 @@ class CdrEventHandler(IAmiEventHandler):
             channel=destination_channel,
         )
 
-        # Симметричный CDR.
+        # Reject symmetrical CDR.
         if destination_channel_linked_id != channel_unique_id:
             self.__logger.debug(
                 "CdrEventHandler: "
@@ -103,16 +108,21 @@ class CdrEventHandler(IAmiEventHandler):
 
         disposition = self.__get_disposition(str_disposition)
 
+        answer_timestamp = None
+
+        if answer_time is not None:
+            answer_timestamp = answer_time.timestamp()
+
         cdr_event = CdrDetectionEvent(
             created_at=time(),
             caller_phone_number=caller_phone_number,
             called_phone_number=called_phone_number,
             duration=duration,
             disposition=disposition,
-            start_time=start_time,
-            end_time=end_time,
+            start_timestamp=start_time.timestamp(),
+            end_timestamp=end_time.timestamp(),
             unique_id=unique_id,
-            answer_time=answer_time,
+            answer_timestamp=answer_timestamp,
         )
 
-        await self.__event_bus.on_event(cdr_event)
+        await self.__event_bus.publish(cdr_event)

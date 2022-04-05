@@ -1,4 +1,6 @@
-from asterisk_amocrm.infrastructure import IKeyValueStorage, ILogger
+from asterisk_amocrm.infrastructure import IKeyValueStorage
+from asterisk_amocrm.infrastructure import ILogger
+
 from ..core import IAmiStore
 
 

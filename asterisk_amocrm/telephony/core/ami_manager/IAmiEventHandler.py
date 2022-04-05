@@ -8,6 +8,8 @@ __all__ = [
 
 class IAmiEventHandler:
 
+    __slots__ = ()
+
     @classmethod
     def event_pattern(cls) -> str:
         raise NotImplementedError()

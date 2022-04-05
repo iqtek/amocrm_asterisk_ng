@@ -1,7 +1,7 @@
 from typing import Optional
-from datetime import datetime
+
 from enum import IntEnum
-from asterisk_amocrm.infrastructure.event_bus import IEvent
+from asterisk_amocrm.infrastructure.event_bus import BaseEvent
 
 
 __all__ = [
@@ -9,7 +9,7 @@ __all__ = [
 ]
 
 
-class CdrDetectionEvent(IEvent):
+class CdrDetectionEvent(BaseEvent):
 
     class Status(IntEnum):
         CANCEL: int = 1
@@ -24,7 +24,7 @@ class CdrDetectionEvent(IEvent):
     called_phone_number: str
     duration: int
     disposition: Status
-    start_time: datetime
-    end_time: datetime
+    start_timestamp: float
+    end_timestamp: float
     unique_id: str
-    answer_time: Optional[datetime] = None
+    answer_timestamp: Optional[float] = None

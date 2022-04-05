@@ -1,2 +1,2 @@
-from .AddContextVarFunction import AddContextVarFunction
-from .trace_id import *
+from .startup import context_vars_startup
+

@@ -1,11 +1,10 @@
 from asyncio import AbstractEventLoop
 
-from asterisk_amocrm.infrastructure import (
-    IComponent,
-    IEventBus,
-    IKeyValueStorage,
-    ILogger,
-)
+from asterisk_amocrm.infrastructure import InitializableComponent
+from asterisk_amocrm.infrastructure import IEventBus
+from asterisk_amocrm.infrastructure import IKeyValueStorage
+from asterisk_amocrm.infrastructure import ILogger
+
 from .ami_store import AmiStoreImpl
 from .AmiComponent import AmiComponent
 from .....core import IAmiManager
@@ -32,7 +31,7 @@ class AmiComponentFactory:
         self.__event_loop = event_loop
         self.__logger = logger
 
-    def get_instance(self) -> IComponent:
+    def get_instance(self) -> InitializableComponent:
 
         ami_store = AmiStoreImpl(
             storage=self.__storage,

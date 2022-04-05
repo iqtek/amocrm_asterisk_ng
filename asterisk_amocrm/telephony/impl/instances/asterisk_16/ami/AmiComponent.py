@@ -1,10 +1,9 @@
 import asyncio
 
-from asterisk_amocrm.infrastructure import (
-    IComponent,
-    IEventBus,
-    ILogger,
-)
+from asterisk_amocrm.infrastructure import InitializableComponent
+from asterisk_amocrm.infrastructure import IEventBus
+from asterisk_amocrm.infrastructure import ILogger
+
 from .ami_handlers import (
     CdrEventHandler,
     DialBeginEventHandler,
@@ -22,7 +21,7 @@ __all__ = [
 ]
 
 
-class AmiComponent(IComponent):
+class AmiComponent(InitializableComponent):
 
     def __init__(
         self,
@@ -37,9 +36,6 @@ class AmiComponent(IComponent):
         self.__logger = logger
 
     async def initialize(self) -> None:
-        self.__ami_manager.connect()
-        await asyncio.sleep(1)
-
         self.__ami_manager.attach_event_handler(
             NewChannelEventHandler(
                 ami_store=self.__ami_store,
@@ -80,4 +76,21 @@ class AmiComponent(IComponent):
         )
 
     async def deinitialize(self) -> None:
-        self.__ami_manager.disconnect()
+        self.__ami_manager.detach_event_handler(
+            NewChannelEventHandler
+        )
+        self.__ami_manager.detach_event_handler(
+            HangupEventHandler
+        )
+        self.__ami_manager.detach_event_handler(
+            DialBeginEventHandler
+        )
+        self.__ami_manager.detach_event_handler(
+            NewCallerIdEventHandler
+        )
+        self.__ami_manager.detach_event_handler(
+            NewStateEventHandler
+        )
+        self.__ami_manager.detach_event_handler(
+            CdrEventHandler,
+        )

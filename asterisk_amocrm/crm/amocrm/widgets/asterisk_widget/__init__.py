@@ -1,1 +1,1 @@
-from .impl import AsteriskWidgetComponentFactory
+from .AsteriskWidgetComponentFactory import AsteriskWidgetComponentFactory

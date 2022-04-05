@@ -1,15 +1,18 @@
 from asyncio import AbstractEventLoop
-from typing import Any, Mapping
-from asterisk_amocrm.infrastructure import (
-    FactoryStoreImpl,
-    IComponent,
-    IDispatcher,
-    IEventBus,
-    IFactory,
-    IFactoryStore,
-    IKeyValueStorage,
-    ILogger,
-)
+from typing import Any
+from typing import Mapping
+
+from asterisk_amocrm.infrastructure import ioc
+from asterisk_amocrm.infrastructure import ISelector
+from asterisk_amocrm.infrastructure import ISelectableFactory
+from asterisk_amocrm.infrastructure import SelectorImpl
+from asterisk_amocrm.infrastructure import InitializableComponent
+from asterisk_amocrm.infrastructure import IDispatcher
+from asterisk_amocrm.infrastructure import InitializableEventBus
+from asterisk_amocrm.infrastructure import IKeyValueStorageFactory
+from asterisk_amocrm.infrastructure import ILogger
+from asterisk_amocrm.infrastructure import SelectedComponentConfig
+from asterisk_amocrm.infrastructure import ISetContextVarsFunction
 
 from .instances import Asterisk16ComponentFactory
 
@@ -21,31 +24,33 @@ __all__ = [
 
 def telephony_startup(
     settings: Mapping[str, Any],
-    dispatcher: IDispatcher,
-    event_bus: IEventBus,
-    storage: IKeyValueStorage,
-    event_loop: AbstractEventLoop,
-    logger: ILogger,
-) -> IComponent:
+) -> InitializableComponent:
 
-    telephony_type = settings["type"]
-    telephony_settings = settings["settings"]
+    startup_config = SelectedComponentConfig(**settings)
 
-    factory_store: IFactoryStore[IComponent] = FactoryStoreImpl()
+    dispatcher = ioc.get_instance(IDispatcher)
+    event_bus = ioc.get_instance(InitializableEventBus)
+    storage_factory = ioc.get_instance(IKeyValueStorageFactory)
+    event_loop = ioc.get_instance(AbstractEventLoop)
+    set_context_vars_function = ioc.get_instance(ISetContextVarsFunction)
+    logger = ioc.get_instance(ILogger)
 
-    asterisk_16_factory: IFactory[IComponent] = Asterisk16ComponentFactory(
+    selector: ISelector[ISelectableFactory[InitializableComponent]] = SelectorImpl()
+
+    asterisk_16_factory = Asterisk16ComponentFactory(
         dispatcher=dispatcher,
-        storage=storage,
         event_bus=event_bus,
+        storage_factory=storage_factory,
         event_loop=event_loop,
+        set_context_vars_function=set_context_vars_function,
         logger=logger,
     )
 
-    factory_store.register_factory(asterisk_16_factory)
+    selector.add_item(asterisk_16_factory)
 
-    telephony_component = factory_store.get_instance(
-        type=telephony_type,
-        settings=telephony_settings,
+    factory = selector.get_item(unique_tag=startup_config.type)
+    telephony_component = factory.get_instance(
+        settings=startup_config.settings,
     )
 
     return telephony_component

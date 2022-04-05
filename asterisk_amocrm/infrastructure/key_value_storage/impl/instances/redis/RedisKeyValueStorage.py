@@ -1,16 +1,10 @@
-from typing import (
-    Optional,
-    ClassVar,
-)
-from asterisk_amocrm.infrastructure.logger import (
-    ILogger,
-)
-from aioredis import (
-    Redis
-)
-from ....core import (
-    IKeyValueStorageComponent,
-)
+from typing import Optional
+from typing import ClassVar
+
+from aioredis import Redis
+
+from asterisk_amocrm.infrastructure import ILogger
+from ....core import InitializableKeyValueStorage
 
 
 __all__ = [
@@ -18,7 +12,7 @@ __all__ = [
 ]
 
 
-class RedisKeyValueStorage(IKeyValueStorageComponent):
+class RedisKeyValueStorage(InitializableKeyValueStorage):
 
     __slots__ = (
         "__connection",

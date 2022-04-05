@@ -2,10 +2,8 @@ import asyncio
 
 from asterisk_amocrm.infrastructure import ILogger
 from ..ami_store import IAmiStore
-from ......core.ami_manager import (
-    Event,
-    IAmiEventHandler,
-)
+from ......core.ami_manager import Event
+from ......core.ami_manager import IAmiEventHandler
 
 
 __all__ = [
@@ -16,6 +14,11 @@ __all__ = [
 class HangupEventHandler(IAmiEventHandler):
 
     __DELETE_DELAY: float = 10.0
+
+    __slots__ = (
+        "__ami_store",
+        "__logger",
+    )
 
     def __init__(
         self,

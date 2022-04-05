@@ -1,6 +1,12 @@
-from typing import Any, Mapping
+from typing import Any
+from typing import Mapping
+from typing import Optional
 
-from asterisk_amocrm.infrastructure import IComponent, IDispatcher, IEventBus
+from asterisk_amocrm.infrastructure import InitializableComponent
+from asterisk_amocrm.infrastructure import IFactory
+from asterisk_amocrm.infrastructure import IDispatcher
+from asterisk_amocrm.infrastructure import IEventBus
+
 from .OriginationComponent import OriginationComponent
 from .OriginationConfig import OriginationConfig
 from ......core import IAmiManager
@@ -11,7 +17,13 @@ __all__ = [
 ]
 
 
-class OriginationComponentFactory:
+class OriginationComponentFactory(IFactory[InitializableComponent]):
+
+    __slots__ = (
+        "__ami_manager",
+        "__event_bus",
+        "__dispatcher",
+    )
 
     def __init__(
         self,
@@ -23,7 +35,12 @@ class OriginationComponentFactory:
         self.__event_bus = event_bus
         self.__dispatcher = dispatcher
 
-    def get_instance(self, settings: Mapping[str, Any]) -> IComponent:
+    def get_instance(
+        self,
+        settings: Optional[Mapping[str, Any]] = None,
+    ) -> InitializableComponent:
+
+        settings = settings or {}
 
         config = OriginationConfig(**settings)
 

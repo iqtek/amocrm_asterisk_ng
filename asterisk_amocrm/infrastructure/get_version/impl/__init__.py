@@ -1,0 +1,3 @@
+from .GetCurrentAppVersionFunction import GetCurrentAppVersionFunction
+from .startup import get_current_version_func_startup
+from .startup import get_current_version_func

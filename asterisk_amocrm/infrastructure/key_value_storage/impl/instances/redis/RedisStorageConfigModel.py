@@ -1,11 +1,8 @@
-from typing import (
-    Optional,
-)
-from pydantic import (
-    IPvAnyAddress,
-    BaseModel,
-    Field,
-)
+from typing import Optional
+
+from pydantic import IPvAnyAddress
+from pydantic import BaseModel
+from pydantic import Field
 
 
 __all__ = [

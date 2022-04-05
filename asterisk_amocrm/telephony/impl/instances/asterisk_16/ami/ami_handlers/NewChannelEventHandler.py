@@ -1,9 +1,7 @@
 from asterisk_amocrm.infrastructure import ILogger
 from ..ami_store import IAmiStore
-from ......core.ami_manager import (
-    Event,
-    IAmiEventHandler,
-)
+from ......core.ami_manager import Event
+from ......core.ami_manager import IAmiEventHandler
 
 
 __all__ = [
@@ -12,6 +10,11 @@ __all__ = [
 
 
 class NewChannelEventHandler(IAmiEventHandler):
+
+    __slots__ = (
+        "__ami_store",
+        "__logger",
+    )
 
     def __init__(
         self,
@@ -63,6 +66,7 @@ class NewChannelEventHandler(IAmiEventHandler):
                     channel=channel,
                     phone=phone_number,
                 )
+
             self.__logger.debug(
                 "NewChannelEventHandler: "
                 "Phone is forced to update: "

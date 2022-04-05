@@ -1,1 +1,0 @@
-from .IComponent import IComponent

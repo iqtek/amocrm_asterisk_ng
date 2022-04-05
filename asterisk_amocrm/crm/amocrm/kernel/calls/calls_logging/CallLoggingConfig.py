@@ -1,4 +1,5 @@
-from pydantic import BaseModel, AnyUrl
+from pydantic import BaseModel
+from pydantic import AnyUrl
 
 
 __all__ = [
@@ -7,6 +8,7 @@ __all__ = [
 
 
 class CallLoggingConfig(BaseModel):
+    tmp_directory: str
     base_url: AnyUrl
     source: str
     source_uid: str

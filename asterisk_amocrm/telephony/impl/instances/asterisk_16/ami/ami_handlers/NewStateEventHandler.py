@@ -1,10 +1,10 @@
 from asterisk_amocrm.domains import RingingEvent
-from asterisk_amocrm.infrastructure import IEventBus, ILogger
+from asterisk_amocrm.infrastructure import IEventBus
+from asterisk_amocrm.infrastructure import ILogger
+
 from ..ami_store import IAmiStore
-from ......core.ami_manager import (
-    Event,
-    IAmiEventHandler,
-)
+from ......core.ami_manager import Event
+from ......core.ami_manager import IAmiEventHandler
 
 
 __all__ = [
@@ -13,6 +13,12 @@ __all__ = [
 
 
 class NewStateEventHandler(IAmiEventHandler):
+
+    __slots__ = (
+        "__event_bus",
+        "__ami_store",
+        "__logger",
+    )
 
     def __init__(
         self,
@@ -56,4 +62,4 @@ class NewStateEventHandler(IAmiEventHandler):
             called_phone_number=called_phone_number,
         )
 
-        await self.__event_bus.on_event(ringing_event)
+        await self.__event_bus.publish(ringing_event)

@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from typing import TypeVar
+
+from .IFunction import IFunction
 
 
 __all__ = [
@@ -6,5 +8,12 @@ __all__ = [
 ]
 
 
-class IQuery(BaseModel):
-    pass
+T = TypeVar('T')
+
+
+class IQuery(IFunction[T]):
+
+    __slots__ = ()
+
+    async def __call__(self, *args, **kwargs) -> T:
+        raise NotImplementedError()

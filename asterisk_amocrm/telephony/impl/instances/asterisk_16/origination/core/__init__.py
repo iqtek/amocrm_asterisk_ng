@@ -1,2 +1,1 @@
-from .IOriginationCallCH import IOriginationCallCH
-from .OriginationCallCommand import OriginationCallCommand
+from .IOriginationCallCommand import IOriginationCallCommand

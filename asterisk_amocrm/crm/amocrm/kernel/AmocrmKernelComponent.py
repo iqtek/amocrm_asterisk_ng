@@ -1,13 +1,11 @@
-from asterisk_amocrm.infrastructure import (
-    IComponent,
-    IDispatcher,
-)
-from .query_handlers import (
-    IGetUserIdByPhoneQH,
-    GetUserIdByPhoneQH,
-)
 from amo_crm_api_client import AmoCrmApiClient
-from ..core import GetUserIdByPhoneQuery
+
+from asterisk_amocrm.infrastructure import InitializableComponent
+from asterisk_amocrm.infrastructure import IDispatcher
+
+from ..core import IGetUserIdByPhoneQuery
+from ..core import IGetUserEmailByPhoneQuery
+from .query_handlers import GetUserIdByPhoneQuery
 
 
 __all__ = [
@@ -15,28 +13,41 @@ __all__ = [
 ]
 
 
-class AmocrmKernelComponent(IComponent):
+class AmocrmKernelComponent(InitializableComponent):
+
+    __slots__ = (
+        "__dispatcher",
+        "__amo_client",
+        "__raise_card_component",
+        "__call_manager_component",
+        "__get_user_id_by_phone_query",
+        "__get_user_email_by_phone_query",
+    )
 
     def __init__(
         self,
-        dispatcher: IDispatcher,
         amo_client: AmoCrmApiClient,
-        raise_card_component: IComponent,
-        call_manager_component: IComponent,
+        dispatcher: IDispatcher,
+        raise_card_component: InitializableComponent,
+        call_manager_component: InitializableComponent,
+        get_user_id_by_phone_query: IGetUserIdByPhoneQuery,
+        get_user_email_by_phone_query: IGetUserEmailByPhoneQuery,
     ) -> None:
-        self.__dispatcher = dispatcher
         self.__amo_client = amo_client
+        self.__dispatcher = dispatcher
         self.__raise_card_component = raise_card_component
         self.__call_manager_component = call_manager_component
+        self.__get_user_id_by_phone_query = get_user_id_by_phone_query
+        self.__get_user_email_by_phone_query = get_user_email_by_phone_query
 
     async def initialize(self) -> None:
         await self.__amo_client.initialize()
 
-        await self.__dispatcher.attach_query_handler(
-            IGetUserIdByPhoneQH,
-            GetUserIdByPhoneQH(
+        self.__dispatcher.add_function(
+            function_type=IGetUserIdByPhoneQuery,
+            function=GetUserIdByPhoneQuery(
                 amo_client=self.__amo_client,
-                dispatcher=self.__dispatcher,
+                get_user_email_by_phone_query=self.__get_user_email_by_phone_query,
             )
         )
 
@@ -47,7 +58,7 @@ class AmocrmKernelComponent(IComponent):
         await self.__call_manager_component.deinitialize()
         await self.__raise_card_component.deinitialize()
 
-        await self.__dispatcher.detach_query_handler(
-            GetUserIdByPhoneQH,
+        self.__dispatcher.delete_function(
+            IGetUserIdByPhoneQuery,
         )
         await self.__amo_client.deinitialize()

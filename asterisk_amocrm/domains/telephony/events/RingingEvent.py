@@ -1,4 +1,4 @@
-from asterisk_amocrm.infrastructure.event_bus import IEvent
+from asterisk_amocrm.infrastructure.event_bus import BaseEvent
 
 
 __all__ = [
@@ -6,7 +6,7 @@ __all__ = [
 ]
 
 
-class RingingEvent(IEvent):
+class RingingEvent(BaseEvent):
 
     caller_phone_number: str
     called_phone_number: str

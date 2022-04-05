@@ -1,10 +1,13 @@
 from asyncio import AbstractEventLoop
-from typing import Any, Mapping
+from typing import Any
+from typing import Mapping
+from typing import Optional
 
-import aiomysql
+from asterisk_amocrm.infrastructure import IFactory
+from aiomysql import connect
 from aiomysql.connection import Connection
 
-from .MySqlConfigModel import MySqlConfigModel
+from .MySqlConfigModel import MySqlConfig
 
 
 __all__ = [
@@ -12,7 +15,7 @@ __all__ = [
 ]
 
 
-class MySqlConnectionFactoryImpl:
+class MySqlConnectionFactoryImpl(IFactory[Connection]):
 
     def __init__(
         self,
@@ -20,9 +23,16 @@ class MySqlConnectionFactoryImpl:
     ) -> None:
         self.__event_loop = event_loop
 
-    async def get_instance(self, settings: Mapping[str, Any]) -> Connection:
-        config = MySqlConfigModel(**settings)
-        connection = await aiomysql.connect(
+    async def get_instance(
+        self,
+        settings: Optional[Mapping[str, Any]] = None,
+    ) -> Connection:
+
+        settings = settings or {}
+
+        config = MySqlConfig(**settings)
+
+        connection = await connect(
             host=str(config.host),
             port=config.port,
             user=config.user,

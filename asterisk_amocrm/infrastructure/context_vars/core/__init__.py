@@ -1,2 +1,4 @@
-from .IAddContextVarFunction import IAddContextVarFunction
+from .IMakeContextSnapshotFunction import ContextSnapshot
+from .IMakeContextSnapshotFunction import IMakeContextSnapshotFunction
+from .ISetContextVarsFunction import ISetContextVarsFunction
 from .IValueFactory import IValueFactory

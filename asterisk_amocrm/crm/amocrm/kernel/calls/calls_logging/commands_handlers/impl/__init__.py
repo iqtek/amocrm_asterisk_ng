@@ -1,2 +1,2 @@
-from .AddCallToAnalyticsCH import AddCallToAnalyticsCH
-from .AddCallToUnsortedCH import AddCallToUnsortedCH
+from .AddCallToAnalyticsCommand import AddCallToAnalyticsCommand
+from .AddCallToUnsortedCommand import AddCallToUnsortedCommand

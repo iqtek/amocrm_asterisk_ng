@@ -1,1 +1,1 @@
-from .IGetCdrByUniqueIdQH import IGetCdrByUniqueIdQH
+from .IGetCdrByUniqueIdQuery import IGetCdrByUniqueIdQuery

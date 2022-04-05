@@ -1,8 +1,8 @@
+from typing import Type
+
 from .IAmiEventHandler import IAmiEventHandler
-from .packets import (
-    Action,
-    Response,
-)
+from .packets import Action
+from .packets import Response
 
 
 __all__ = [
@@ -11,6 +11,8 @@ __all__ = [
 
 
 class IAmiManager:
+
+    __slots__ = ()
 
     def connect(self) -> None:
         raise NotImplementedError()
@@ -22,4 +24,7 @@ class IAmiManager:
         raise NotImplementedError()
 
     def attach_event_handler(self, event_handler: IAmiEventHandler) -> None:
+        raise NotImplementedError()
+
+    def detach_event_handler(self, handler_type: Type[IAmiEventHandler]) -> None:
         raise NotImplementedError()

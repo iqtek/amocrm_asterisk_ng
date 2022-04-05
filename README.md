@@ -77,6 +77,10 @@ screen python startup.py
 
 3. Поле **postprocessing_delay** указывает через сколько секунд после фактического завершения звонка он будет залогирован. Это требуется для того, чтобы у оператора было время заполнить карточку клиента или создать соответствующий контакт.
 
+4. Укажите **tmp_directory**  в  этой **tmp_media_root** будет происходить конвертирование файлов записей в другой формат. Дело в том, что amoCRM требует файлы формата *mp3*, в то время как *Asterisk* в основном хранит записи в формате *wav*.
+
+5. Укажите **storage_prefix** для телефонии и amoCRM. **Storage_prefix** требуется для разрешения коллизии имен ключей в *Redis*. Данные поля не обязательны для заполнения.
+
 ### Настройка интеграции
 Создайте **внешнюю** интеграцию в аккаунте amoCRM. Подробнее ["создание внешней интеграции"]("https://www.amocrm.ru/developers/content/oauth/step-by-step"). Вам требуется только ее зарегистрировать, *access* и *refresh* токены будут созданы автоматически и сохранены в *Redis*.
 
@@ -87,13 +91,15 @@ screen python startup.py
 crm:
   type: amocrm
   settings:
+    storage_prefix: crm
     kernel:
       call_logging:
-        base_url: https://webhook.mycompany.ru
+        tmp_directory: "./convert_dir"
+        base_url: https://webhook.mycompany.ru/
         source: asterisk_telephony
         source_uid: asterisk_telephony
         service_code: amo_asterisk
-        pipeline_id: 4279057
+        pipeline_id: 4672053
         postprocessing_delay: 10
 
       integration:
@@ -120,14 +126,15 @@ crm:
 1. Укажите данные для авторизации через *AMI*.
 2. Укажите данные для доступа к базе данных, в которой *Asterisk* хранит информацию о *CDR*.
 
-3. Поля **media_root** и **tmp_media_root** записываются в виде формат-строки, так как файлы *CDR* находятся в файловой системе по пути, зависящем от даты и времени создания данного *CDR*. В директории **tmp_media_root** будет происходить конвертирование файлов записей в другой формат. Дело в том, что amoCRM требует файлы формата *mp3*, в то время как *Asterisk* в основном хранит записи в формате *wav*.
+3. Поле **media_root** записываются в виде формат-строки, так как файлы *CDR* находятся в файловой системе по пути, зависящем от даты и времени создания данного *CDR*. 
 
 ```yaml
 telephony:
   type: asterisk_16
   settings:
+    storage_prefix: telephony
     ami:
-      host: 172.27.12.30
+      host: 127.0.0.1
       port: 5038
       user: user
       secret: secret
@@ -138,10 +145,59 @@ telephony:
         user: user
         password: password
         database: asteriskcdrdb
-      media_root: "/mnt/records/%Y/%m/%d/"
-      tmp_media_root: "/mnt/records/%Y/%m/%d/"
-      wav_extension: wav
+      media_root: "/var/spool/asterisk/monitor/%Y/%m/%d/"
     dial:
       context: from-internal
       timeout: 30000
+```
+## Настройка инфраструктуры
+
+### Настройка сервера
+1. Укажите *host* для интеграции.
+2. Укажите *port* на котором будет работать интеграция. Обратите внимание, что порт должен совпадать с тем, который указан в "Путь к скрипту" в настройках виджета.
+```yaml
+integration:
+  host: 0.0.0.0
+  port: 8000
+```
+
+### Настройка шины сообщений
+Шина сообщений требуется для отказоустойчивой работы интеграции. Например, если amoCRM будет недоступна в течении некоторого времени, то звонки все равно будут залогированы, когда amoCRM восстановится.
+
+```yaml
+message_bus:
+    type: rabbitmq
+    settings:
+      rabbitmq:
+        host: "127.0.0.1"
+        port: 5672
+        login: guest
+        password: guest
+        virtualhost: '/'
+        ssl: false
+        login_method: PLAIN
+      exchange_name: asterisk_amocrm_ng_exchange
+      exchange_type: direct
+      queue_name: asterisk_amocrm_ng
+      routing_key: asterisk_amocrm_ng
+```
+### Настройка шины событий
+Шины событий работет на основе шины сообщений. Требуется указать количество потребителей сообщений (workers). Чем больше потребителей, тем быстрее будет работать интеграция.
+```yaml
+event_bus:
+  type: extended
+  settings:
+    workers: 1
+```
+
+### Настройка хранилища
+Хранилище на базе Redis требуется для работы части интеграции, работающей с телефонией. В хранилище будет хратится служебная информация, а также  *access* и *refresh* токены.
+
+```yaml
+storage:
+  type: redis
+    settings:
+    host: 127.0.0.1
+    port: 6379
+    database: 1
 ```

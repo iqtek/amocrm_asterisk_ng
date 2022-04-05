@@ -1,8 +1,9 @@
 telephony:
   type: asterisk_16
   settings:
+    storage_prefix: telephony
     ami:
-      host: 172.27.12.30
+      host: 127.0.0.1
       port: 5038
       user: user
       secret: secret
@@ -13,9 +14,7 @@ telephony:
         user: user
         password: password
         database: asteriskcdrdb
-      media_root: "/mnt/records/%Y/%m/%d/"
-      tmp_media_root: "/mnt/records/%Y/%m/%d/"
-      wav_extension: wav
+      media_root: "/var/spool/asterisk/monitor/%Y/%m/%d/"
     dial:
       context: from-internal
       timeout: 30000
@@ -23,13 +22,15 @@ telephony:
 crm:
   type: amocrm
   settings:
+    storage_prefix: crm
     kernel:
       call_logging:
-        base_url: https://webhook.mycompany.ru
+        tmp_directory: "./convert_dir"
+        base_url: https://webhook.mycompany.ru/
         source: asterisk_telephony
         source_uid: asterisk_telephony
         service_code: amo_asterisk
-        pipeline_id: 4279057
+        pipeline_id: 4672053
         postprocessing_delay: 10
 
       integration:
@@ -50,12 +51,33 @@ crm:
           333: other_mail@email.ru
 
 
-
 infrastructure:
 
   integration:
     host: 0.0.0.0
     port: 80
+
+  message_bus:
+    type: rabbitmq
+    settings:
+      rabbitmq:
+        host: "127.0.0.1"
+        port: 5672
+        login: guest
+        password: guest
+        virtualhost: '/'
+        ssl: false
+        login_method: PLAIN
+      exchange_name: asterisk_amocrm_ng_exchange
+      exchange_type: direct
+      queue_name: asterisk_amocrm_ng
+      routing_key: asterisk_amocrm_ng
+
+
+    event_bus:
+      type: extended
+      settings:
+        workers: 1
 
   storage:
     type: redis

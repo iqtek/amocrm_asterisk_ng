@@ -1,10 +1,6 @@
 import aioredis
-from aioredis import (
-    Redis,
-)
-from .RedisStorageConfigModel import (
-    RedisStorageConfigModel,
-)
+from aioredis import Redis
+from .RedisStorageConfigModel import RedisStorageConfigModel
 
 
 __all__ = [
@@ -13,6 +9,10 @@ __all__ = [
 
 
 class RedisConnectionFactoryImpl:
+
+    __slots__ = (
+        "__config",
+    )
 
     def __init__(self, config: RedisStorageConfigModel) -> None:
         self.__config = config

@@ -1,14 +1,16 @@
 from asyncio import AbstractEventLoop
-from typing import Any, Mapping
+from typing import Any
+from typing import Mapping
+from typing import Optional
 
-from asterisk_amocrm.infrastructure import (
-    IComponent,
-    IDispatcher,
-    IEventBus,
-    IFactory,
-    IKeyValueStorage,
-    ILogger,
-)
+from asterisk_amocrm.infrastructure import IDispatcher
+from asterisk_amocrm.infrastructure import IEventBus
+from asterisk_amocrm.infrastructure import IKeyValueStorageFactory
+from asterisk_amocrm.infrastructure import ILogger
+from asterisk_amocrm.infrastructure import InitializableComponent
+from asterisk_amocrm.infrastructure import ISelectableFactory
+from asterisk_amocrm.infrastructure import ISetContextVarsFunction
+
 from .ami import AmiComponentFactory
 from .ami_convert_function import AmiMessageConvertFunctionImpl
 from .Asterisk16Component import Asterisk16Component
@@ -23,36 +25,52 @@ __all__ = [
 ]
 
 
-class Asterisk16ComponentFactory(IFactory):
+class Asterisk16ComponentFactory(ISelectableFactory[InitializableComponent]):
+
+    __slots__ = (
+        "__dispatcher",
+        "__event_bus",
+        "__storage_factory",
+        "__event_loop",
+        "__set_context_vars_function",
+        "__logger",
+    )
 
     def __init__(
         self,
         dispatcher: IDispatcher,
         event_bus: IEventBus,
-        storage: IKeyValueStorage,
+        storage_factory: IKeyValueStorageFactory,
         event_loop: AbstractEventLoop,
+        set_context_vars_function: ISetContextVarsFunction,
         logger: ILogger,
     ) -> None:
         self.__dispatcher = dispatcher
         self.__event_bus = event_bus
-        self.__storage = storage
+        self.__storage_factory = storage_factory
         self.__event_loop = event_loop
+        self.__set_context_vars_function = set_context_vars_function
         self.__logger = logger
 
-    @classmethod
-    def type(cls):
+    def unique_tag(self) -> str:
         return "asterisk_16"
 
     def get_instance(
         self,
-        settings: Mapping[str, Any]
-    ) -> IComponent:
+        settings: Optional[Mapping[str, Any]] = None,
+    ) -> InitializableComponent:
+
         config = Asterisk16Config(**settings)
+
+        storage = self.__storage_factory.get_instance(
+            prefix=config.storage_prefix,
+        )
 
         ami_message_convert_function = AmiMessageConvertFunctionImpl()
 
         ami_manager_factory = AmiManagerFactory(
             event_loop=self.__event_loop,
+            set_context_vars_function=self.__set_context_vars_function,
             ami_message_convert_function=ami_message_convert_function,
             logger=self.__logger
         )
@@ -63,7 +81,7 @@ class Asterisk16ComponentFactory(IFactory):
 
         ami_component_factory = AmiComponentFactory(
             ami_manager=ami_manager,
-            storage=self.__storage,
+            storage=storage,
             event_bus=self.__event_bus,
             event_loop=self.__event_loop,
             logger=self.__logger,
@@ -86,9 +104,9 @@ class Asterisk16ComponentFactory(IFactory):
             config.dial
         )
         telephony_component = Asterisk16Component(
+            ami_manager=ami_manager,
             ami_component=ami_component,
             cdr_component=cdr_component,
             origination_component=origination_component,
-            logger=self.__logger,
         )
         return telephony_component

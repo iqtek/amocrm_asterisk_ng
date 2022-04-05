@@ -1,13 +1,18 @@
-from asterisk_amocrm.infrastructure.logger import ILogger
-from .DispatcherImpl import DispatcherImpl
+from asterisk_amocrm.infrastructure import ioc
+from .get_dispatcher import get_dispatcher
 from ..core import IDispatcher
+
 
 __all__ = [
     "dispatcher_startup",
 ]
 
 
-def dispatcher_startup(logger: ILogger) -> IDispatcher:
-    dispatcher = DispatcherImpl(logger=logger)
-    return dispatcher
+def dispatcher_startup() -> None:
 
+    dispatcher = get_dispatcher()
+
+    ioc.set_instance(
+        key=IDispatcher,
+        instance=dispatcher,
+    )

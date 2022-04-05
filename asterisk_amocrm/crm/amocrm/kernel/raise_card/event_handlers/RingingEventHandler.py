@@ -1,11 +1,10 @@
 from asterisk_amocrm.domains import RingingEvent
-from asterisk_amocrm.infrastructure import (
-    ILogger,
-    IDispatcher,
-    IEventHandler,
-)
-from ..commands import RaiseCardCommand
-from ....core import GetUserIdByPhoneQuery
+from asterisk_amocrm.infrastructure import IDispatcher
+from asterisk_amocrm.infrastructure import IEventHandler
+from asterisk_amocrm.infrastructure import ILogger
+
+from ..commands import IRaiseCardCommand
+from ....core import IGetUserIdByPhoneQuery
 
 
 __all__ = [
@@ -15,23 +14,30 @@ __all__ = [
 
 class RingingEventHandler(IEventHandler):
 
+    __slots__ = (
+        "__get_user_id_by_phone_query",
+        "__raise_card_command",
+        "__logger",
+    )
+
     def __init__(
         self,
-        dispatcher: IDispatcher,
+        get_user_id_by_phone_query: IGetUserIdByPhoneQuery,
+        raise_card_command: IRaiseCardCommand,
         logger: ILogger,
     ) -> None:
+        self.__get_user_id_by_phone_query = get_user_id_by_phone_query
+        self.__raise_card_command = raise_card_command
         self.__logger = logger
-        self.__dispatcher = dispatcher
 
     async def __call__(self, event: RingingEvent) -> None:
 
-        query_called_id = GetUserIdByPhoneQuery(
-            phone_number=event.called_phone_number,
-        )
         try:
-            user_id = await self.__dispatcher.on_query(query_called_id)
+            user_id = await self.__get_user_id_by_phone_query(
+                phone_number=event.called_phone_number,
+            )
         except KeyError:
-            self.__logger.debug(
+            self.__logger.info(
                 "Ringing detected: "
                 f"{event.caller_phone_number} -> "
                 f"{event.called_phone_number}. "
@@ -39,8 +45,7 @@ class RingingEventHandler(IEventHandler):
             )
             return
 
-        raise_card_command = RaiseCardCommand(
+        await self.__raise_card_command(
             phone_number=event.caller_phone_number,
-            users=[user_id]
+            users=(user_id,)
         )
-        await self.__dispatcher.on_command(raise_card_command)

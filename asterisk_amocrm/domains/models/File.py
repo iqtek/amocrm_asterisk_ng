@@ -29,8 +29,8 @@ class File:
         return self.__name
 
     @property
-    def type(self) -> str:
-        return self.__type.value
+    def type(self) -> Filetype:
+        return self.__type
 
     @property
     def content(self) -> bytes:

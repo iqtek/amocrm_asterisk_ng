@@ -1,2 +1,0 @@
-from .GetUserIdByPhoneQuery import GetUserIdByPhoneQuery
-from .GetUserEmailByPhoneQuery import GetUserEmailByPhoneQuery

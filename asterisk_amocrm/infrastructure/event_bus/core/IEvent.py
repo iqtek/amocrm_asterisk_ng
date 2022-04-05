@@ -1,12 +1,9 @@
-from pydantic import BaseModel
-
-
 __all__ = [
     "IEvent",
 ]
 
 
-class IEvent(BaseModel):
+class IEvent:
 
-    class Config:
-        allow_mutation = False
+    def __init__(self, *args, **kwargs) -> None:
+        raise NotImplementedError()

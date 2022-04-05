@@ -1,5 +1,6 @@
 from typing import Optional
-from .IKeyValueStorageComponent import IKeyValueStorageComponent
+
+from .InitializableKeyValueStorage import InitializableKeyValueStorage
 
 
 __all__ = [
@@ -9,19 +10,16 @@ __all__ = [
 
 class IKeyValueStorageFactory:
 
-    @classmethod
-    def type(cls) -> str:
-        """
-        Returns the string identifier of the storage type.
-        :return: String identifier of the storage type.
-        """
-        raise NotImplementedError()
+    __slots__ = ()
 
-    def get_instance(self, prefix: Optional[str] = None) -> IKeyValueStorageComponent:
+    def get_instance(
+        self,
+        prefix: Optional[str] = None
+    ) -> InitializableKeyValueStorage:
         """
         Returns an instance IKeyValueStorageComponent.
+
         :param prefix : The string prefix is added to the
-        beginning of the key to avoid naming conflicts.
-        :return: Instance IKeyValueStorageComponent.
+            beginning of the key to avoid naming conflicts.
         """
         raise NotImplementedError()

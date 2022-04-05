@@ -1,48 +1,52 @@
 from asyncio import AbstractEventLoop
-from typing import (
-    Mapping,
-    Any,
-)
+from typing import Any
+from typing import Mapping
+from typing import Optional
 
 from panoramisk import Manager
 
+from asterisk_amocrm.infrastructure import IFactory
 from asterisk_amocrm.infrastructure import ILogger
-from .AmiManagerConfigModel import AmiManagerConfigModel
+from asterisk_amocrm.infrastructure import ISetContextVarsFunction
+
+from .AmiManagerConfig import AmiManagerConfig
 from .AmiManagerImpl import AmiManagerImpl
-from ...core import (
-    IAmiMessageConvertFunction,
-    IAmiManagerFactory,
-    IAmiManager,
-)
-from asterisk_amocrm.infrastructure import (
-    trace_id,
-    TraceIdValueFactory,
-    AddContextVarFunction,
-)
+from ...core import IAmiManager
+from ...core import IAmiMessageConvertFunction
 
 __all__ = [
     "AmiManagerFactory",
 ]
 
 
-class AmiManagerFactory(IAmiManagerFactory):
+class AmiManagerFactory(IFactory[IAmiManager]):
+
+    __slots__ = (
+        "__event_loop",
+        "__ami_message_convert_function",
+        "__set_context_vars_function",
+        "__logger",
+    )
 
     def __init__(
         self,
         event_loop: AbstractEventLoop,
         ami_message_convert_function: IAmiMessageConvertFunction,
+        set_context_vars_function: ISetContextVarsFunction,
         logger: ILogger,
     ) -> None:
         self.__event_loop = event_loop
         self.__ami_message_convert_function = ami_message_convert_function
+        self.__set_context_vars_function = set_context_vars_function
         self.__logger = logger
 
     def get_instance(
         self,
-        settings: Mapping[str, Any]
+        settings: Optional[Mapping[str, Any]] = None,
     ) -> IAmiManager:
+        settings = settings or {}
 
-        config = AmiManagerConfigModel.parse_obj(settings)
+        config = AmiManagerConfig(**settings)
 
         panoramisk_manager = Manager(
             host=config.host,
@@ -52,16 +56,10 @@ class AmiManagerFactory(IAmiManagerFactory):
             loop=self.__event_loop,
         )
 
-        value_factory = TraceIdValueFactory()
-        add_context_var_function = AddContextVarFunction(
-            context_var=trace_id,
-            value_factory=value_factory,
-        )
-
         ami_manager = AmiManagerImpl(
             manager=panoramisk_manager,
             ami_message_convert_function=self.__ami_message_convert_function,
-            add_context_var_function=add_context_var_function,
+            set_context_vars_function=self.__set_context_vars_function,
             logger=self.__logger,
         )
 

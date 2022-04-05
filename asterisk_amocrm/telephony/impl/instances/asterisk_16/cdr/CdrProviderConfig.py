@@ -1,4 +1,6 @@
-from typing import Mapping, Any
+from typing import Mapping
+from typing import Any
+
 from pydantic import BaseModel
 
 
@@ -11,5 +13,3 @@ class CdrProviderConfig(BaseModel):
 
     mysql: Mapping[str, Any]
     media_root: str
-    tmp_media_root: str
-    wav_extension: str = "wav"

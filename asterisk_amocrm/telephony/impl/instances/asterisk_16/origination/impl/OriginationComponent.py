@@ -1,8 +1,11 @@
-from asterisk_amocrm.infrastructure import IComponent, IDispatcher, IEventBus
-from .OriginationCallCH import OriginationCallCH
+from asterisk_amocrm.infrastructure import IDispatcher
+from asterisk_amocrm.infrastructure import IEventBus
+from asterisk_amocrm.infrastructure import InitializableComponent
+
+from .OriginationCallCommand import OriginationCallCommand
 from .OriginationConfig import OriginationConfig
 from .OriginationRequestEventHandler import OriginationRequestEventHandler
-from ..core import IOriginationCallCH
+from ..core import IOriginationCallCommand
 from ......core import IAmiManager
 
 
@@ -11,7 +14,14 @@ __all__ = [
 ]
 
 
-class OriginationComponent(IComponent):
+class OriginationComponent(InitializableComponent):
+
+    __slots__ = (
+        "__config",
+        "__ami_manager",
+        "__event_bus",
+        "__dispatcher",
+    )
 
     def __init__(
         self,
@@ -27,24 +37,26 @@ class OriginationComponent(IComponent):
 
     async def initialize(self) -> None:
 
-        await self.__dispatcher.attach_command_handler(
-            IOriginationCallCH,
-            OriginationCallCH(
+        self.__dispatcher.add_function(
+            function_type=IOriginationCallCommand,
+            function=OriginationCallCommand(
                 config=self.__config,
                 ami_manager=self.__ami_manager,
             ),
         )
 
+        origination_call_command = self.__dispatcher.get_function(IOriginationCallCommand)
+
         await self.__event_bus.attach_event_handler(
             OriginationRequestEventHandler(
-                dispatcher=self.__dispatcher,
+                origination_call_command=origination_call_command,
             )
         )
 
     async def deinitialize(self) -> None:
 
-        await self.__dispatcher.detach_command_handler(
-            OriginationCallCH
+        self.__dispatcher.delete_function(
+            function_type=IOriginationCallCommand,
         )
 
         await self.__event_bus.detach_event_handler(
