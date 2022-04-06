@@ -9,7 +9,7 @@ telephony:
       secret: secret
     cdr:
       mysql:
-        host: 172.27.12.30
+        host: 127.0.0.1
         port: 3306
         user: user
         password: password
@@ -55,13 +55,13 @@ infrastructure:
 
   integration:
     host: 0.0.0.0
-    port: 80
+    port: 8000
 
   message_bus:
     type: rabbitmq
     settings:
       rabbitmq:
-        host: "127.0.0.1"
+        host: 127.0.0.1
         port: 5672
         login: guest
         password: guest
@@ -74,10 +74,10 @@ infrastructure:
       routing_key: asterisk_amocrm_ng
 
 
-    event_bus:
-      type: extended
-      settings:
-        workers: 1
+  event_bus:
+    type: extended
+    settings:
+      workers: 1
 
   storage:
     type: redis
@@ -107,7 +107,7 @@ infrastructure:
         formatter: standard
         class: logging.handlers.WatchedFileHandler
         filename: "./error.log"
-    loggers:
+    logger:
       root:
         level: "DEBUG"
         handlers:
