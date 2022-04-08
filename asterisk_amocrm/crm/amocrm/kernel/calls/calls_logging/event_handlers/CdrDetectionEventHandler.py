@@ -1,7 +1,7 @@
 import asyncio
 import time
 from typing import Literal
-
+import re
 from asterisk_amocrm.domains import CdrDetectionEvent
 from asterisk_amocrm.infrastructure import IDispatcher
 from asterisk_amocrm.infrastructure import IEventHandler
@@ -55,13 +55,21 @@ class CdrDetectionEventHandler(IEventHandler):
         self.__logger = logger
 
     async def __is_internal(self, phone_number: str) -> bool:
+        result = False
         try:
             await self.__get_user_id_by_phone_query(
                 phone_number=phone_number
             )
+            result = True
         except KeyError:
-            return False
-        return True
+            pass
+
+        pattern = re.compile(self.__config.internal_number_regex)
+        match_result = re.match(pattern, phone_number)
+        if match_result is not None:
+            result = True
+
+        return result
 
     def __make_link(self, unique_id: str):
         base_url = self.__config.base_url.rstrip('/')
@@ -134,6 +142,7 @@ class CdrDetectionEventHandler(IEventHandler):
         )
 
         responsible_user_id = await self.__get_user_id_by_phone_query(phone_number=internal_phone_number)
+
         if direction == "outbound" and event.disposition != CdrDetectionEvent.Status.ANSWER:
             # Outgoing unanswered calls are not logged.
             self.__logger.debug(

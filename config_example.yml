@@ -25,6 +25,7 @@ crm:
     storage_prefix: crm
     kernel:
       call_logging:
+        internal_number_regex: "\d\d\d"
         tmp_directory: "./convert_dir"
         base_url: https://webhook.mycompany.ru/
         source: asterisk_telephony
