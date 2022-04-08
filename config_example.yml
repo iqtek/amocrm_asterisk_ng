@@ -87,7 +87,7 @@ infrastructure:
       port: 6379
       database: 1
 
-  logging:
+  logger:
     version: 1
     formatters:
       standard:
