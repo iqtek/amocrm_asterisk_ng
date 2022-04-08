@@ -55,21 +55,22 @@ class CdrDetectionEventHandler(IEventHandler):
         self.__logger = logger
 
     async def __is_internal(self, phone_number: str) -> bool:
-        result = False
         try:
             await self.__get_user_id_by_phone_query(
                 phone_number=phone_number
             )
-            result = True
+            return True
         except KeyError:
             pass
 
+        if self.__config.internal_number_regex is None:
+            return False
         pattern = re.compile(self.__config.internal_number_regex)
         match_result = re.match(pattern, phone_number)
         if match_result is not None:
-            result = True
+            return True
 
-        return result
+        return False
 
     def __make_link(self, unique_id: str):
         base_url = self.__config.base_url.rstrip('/')

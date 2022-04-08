@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 from pydantic import AnyUrl
 
@@ -8,7 +10,7 @@ __all__ = [
 
 
 class CallLoggingConfig(BaseModel):
-    internal_number_regex: str
+    internal_number_regex: Optional[str] = None
     tmp_directory: str
     base_url: AnyUrl
     source: str
