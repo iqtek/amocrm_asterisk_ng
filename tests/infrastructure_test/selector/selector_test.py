@@ -1,6 +1,6 @@
 import pytest
 
-from asterisk_amocrm.infrastructure.selector import (
+from amocrm_asterisk_ng.infrastructure.selector import (
     ISelectable,
     ISelector,
     SelectorImpl,

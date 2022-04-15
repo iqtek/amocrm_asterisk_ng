@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from asterisk_amocrm.infrastructure.event_bus import (
+from amocrm_asterisk_ng.infrastructure.event_bus import (
     HandlerAlreadyAttachedException,
     HandlerNotAttachedFoundException,
     IEvent,

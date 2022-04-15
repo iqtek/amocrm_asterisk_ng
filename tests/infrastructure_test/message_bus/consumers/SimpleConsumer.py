@@ -1,6 +1,6 @@
-from asterisk_amocrm.infrastructure.message_bus import IConsumer
-from asterisk_amocrm.infrastructure.message_bus import Message
-from asterisk_amocrm.infrastructure.message_bus import Properties
+from amocrm_asterisk_ng.infrastructure.message_bus import IConsumer
+from amocrm_asterisk_ng.infrastructure.message_bus import Message
+from amocrm_asterisk_ng.infrastructure.message_bus import Properties
 
 
 __all__ = [

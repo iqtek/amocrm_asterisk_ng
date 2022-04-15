@@ -1,0 +1,5 @@
+from .IGetPhoneByUserIdQuery import IGetPhoneByUserIdQuery
+from .IGetUserEmailByPhoneQuery import IGetUserEmailByPhoneQuery
+from .IGetUserIdByPhoneQuery import IGetUserIdByPhoneQuery
+from .IGetUsersEmailAddresses import IGetUsersEmailAddresses
+from .IGetUsersPhoneNumbersQuery import IGetUsersPhoneNumbersQuery

@@ -1,0 +1,2 @@
+from .IGetCallDirectionFunction import IGetCallDirectionFunction
+from .IsInternalNumberFunction import IsInternalNumberFunction

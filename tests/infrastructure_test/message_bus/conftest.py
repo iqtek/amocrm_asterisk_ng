@@ -2,8 +2,8 @@ import asyncio
 
 import pytest
 
-from asterisk_amocrm.infrastructure.message_bus import get_message_bus
-from asterisk_amocrm.infrastructure.message_bus import InitializableMessageBus
+from amocrm_asterisk_ng.infrastructure.message_bus import get_message_bus
+from amocrm_asterisk_ng.infrastructure.message_bus import InitializableMessageBus
 
 
 memory_message_bus_settings = {"type": "memory"}

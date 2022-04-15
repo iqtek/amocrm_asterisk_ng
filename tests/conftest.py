@@ -3,20 +3,20 @@ from typing import Optional
 
 import pytest
 
-from asterisk_amocrm.infrastructure import ContextSnapshot
-from asterisk_amocrm.infrastructure.message_bus import get_message_bus
-from asterisk_amocrm.infrastructure.message_bus import InitializableMessageBus
+from amocrm_asterisk_ng.infrastructure import ContextSnapshot
+from amocrm_asterisk_ng.infrastructure.message_bus import get_message_bus
+from amocrm_asterisk_ng.infrastructure.message_bus import InitializableMessageBus
 
-from asterisk_amocrm.infrastructure.get_version import (
+from amocrm_asterisk_ng.infrastructure.get_version import (
     IGetCurrentAppVersionFunction,
     GetCurrentAppVersionFunction,
     Version,
 )
-from asterisk_amocrm.infrastructure.context_vars import ISetContextVarsFunction
-from asterisk_amocrm.infrastructure.context_vars import IMakeContextSnapshotFunction
-from asterisk_amocrm.infrastructure.context_vars import ContextSnapshot
+from amocrm_asterisk_ng.infrastructure.context_vars import ISetContextVarsFunction
+from amocrm_asterisk_ng.infrastructure.context_vars import IMakeContextSnapshotFunction
+from amocrm_asterisk_ng.infrastructure.context_vars import ContextSnapshot
 
-from asterisk_amocrm.infrastructure.logger import ILogger, get_logger
+from amocrm_asterisk_ng.infrastructure.logger import ILogger, get_logger
 
 
 @pytest.fixture()

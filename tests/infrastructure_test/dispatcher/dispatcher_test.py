@@ -1,8 +1,8 @@
 import pytest
 
-from asterisk_amocrm.infrastructure.dispatcher import get_dispatcher
-from asterisk_amocrm.infrastructure.dispatcher import IDispatcher
-from asterisk_amocrm.infrastructure.dispatcher import IQuery
+from amocrm_asterisk_ng.infrastructure.dispatcher import get_dispatcher
+from amocrm_asterisk_ng.infrastructure.dispatcher import IDispatcher
+from amocrm_asterisk_ng.infrastructure.dispatcher import IQuery
 
 
 @pytest.fixture()

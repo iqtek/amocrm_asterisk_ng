@@ -1,7 +1,7 @@
 import pytest
 
-from asterisk_amocrm.infrastructure.event_bus.impl.instances.extended.core import IRegisteringFactory
-from asterisk_amocrm.infrastructure.event_bus.impl.instances.extended.impl.event_serialization.RegisteringFactory import RegisteringFactory
+from amocrm_asterisk_ng.infrastructure.event_bus.impl.instances.extended.core import IRegisteringFactory
+from amocrm_asterisk_ng.infrastructure.event_bus.impl.instances.extended.impl.event_serialization.RegisteringFactory import RegisteringFactory
 
 
 class Foo:

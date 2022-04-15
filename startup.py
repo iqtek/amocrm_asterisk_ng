@@ -1,6 +1,6 @@
 import yaml
 
-from asterisk_amocrm.main import main
+from amocrm_asterisk_ng.main import main
 
 
 if __name__ == "__main__":

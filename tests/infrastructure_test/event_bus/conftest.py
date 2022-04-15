@@ -2,8 +2,8 @@ import asyncio
 
 import pytest
 
-from asterisk_amocrm.infrastructure.event_bus import get_event_bus
-from asterisk_amocrm.infrastructure.event_bus import IEventBus
+from amocrm_asterisk_ng.infrastructure.event_bus import get_event_bus
+from amocrm_asterisk_ng.infrastructure.event_bus import IEventBus
 
 
 extended_event_bus_settings = {

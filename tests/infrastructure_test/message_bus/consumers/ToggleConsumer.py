@@ -1,8 +1,8 @@
 from typing import Any
 from typing import MutableMapping
 
-from asterisk_amocrm.infrastructure.message_bus import Message
-from asterisk_amocrm.infrastructure.message_bus import Properties
+from amocrm_asterisk_ng.infrastructure.message_bus import Message
+from amocrm_asterisk_ng.infrastructure.message_bus import Properties
 
 from .SimpleConsumer import SimpleConsumer
 

@@ -1,11 +1,11 @@
 import pytest
 
-from asterisk_amocrm.infrastructure.get_version import (
+from amocrm_asterisk_ng.infrastructure.get_version import (
     IGetCurrentAppVersionFunction,
     GetCurrentAppVersionFunction,
     Version,
 )
-from asterisk_amocrm.infrastructure import ILogger, get_logger
+from amocrm_asterisk_ng.infrastructure import ILogger, get_logger
 
 
 @pytest.fixture()

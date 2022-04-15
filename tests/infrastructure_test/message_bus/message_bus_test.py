@@ -3,9 +3,9 @@ import asyncio
 import pytest
 import random
 
-from asterisk_amocrm.infrastructure import Message
-from asterisk_amocrm.infrastructure.message_bus import Properties
-from asterisk_amocrm.infrastructure.message_bus import IConsumer
+from amocrm_asterisk_ng.infrastructure import Message
+from amocrm_asterisk_ng.infrastructure.message_bus import Properties
+from amocrm_asterisk_ng.infrastructure.message_bus import IConsumer
 
 from .consumers import SimpleConsumer
 from .consumers import ToggleConsumer
