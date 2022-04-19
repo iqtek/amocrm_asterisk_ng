@@ -1,13 +1,13 @@
 import os
 
-from amocrm_asterisk_ng.domain import IGetCdrByUniqueIdQuery
+from amocrm_asterisk_ng.domain import IGetRecordFileUniqueIdQuery
 from amocrm_asterisk_ng.infrastructure import IDispatcher
 from amocrm_asterisk_ng.infrastructure import ILogger
 from amocrm_asterisk_ng.infrastructure import InitializableComponent
 
 from .CdrProviderConfig import CdrProviderConfig
 from .mysql import MySqlConnectionFactoryImpl
-from .query_handlers import GetCdrByUniqueIdQuery
+from .query_handlers import GetRecordFileUniqueIdQuery
 
 
 __all__ = [
@@ -38,8 +38,8 @@ class CdrProviderComponent(InitializableComponent):
 
     async def initialize(self) -> None:
         self.__dispatcher.add_function(
-            function_type=IGetCdrByUniqueIdQuery,
-            function=GetCdrByUniqueIdQuery(
+            function_type=IGetRecordFileUniqueIdQuery,
+            function=GetRecordFileUniqueIdQuery(
                 config=self.__config,
                 mysql_connection_factory=self.__mysql_connection_factory,
                 logger=self.__logger,
@@ -47,7 +47,6 @@ class CdrProviderComponent(InitializableComponent):
         )
 
     async def deinitialize(self) -> None:
-
         self.__dispatcher.delete_function(
-            function_type=IGetCdrByUniqueIdQuery,
+            function_type=IGetRecordFileUniqueIdQuery,
         )

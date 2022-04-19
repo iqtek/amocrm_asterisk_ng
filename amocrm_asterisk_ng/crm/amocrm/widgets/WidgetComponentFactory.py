@@ -49,7 +49,6 @@ class WidgetComponentFactory(IFactory[InitializableComponent]):
 
         asterisk_widget_factory = AsteriskWidgetComponentFactory(
             app=self.__app,
-            event_bus=self.__event_bus,
             dispatcher=self.__dispatcher,
             set_context_vars_function=self.__set_context_vars_function,
             logger=self.__logger,

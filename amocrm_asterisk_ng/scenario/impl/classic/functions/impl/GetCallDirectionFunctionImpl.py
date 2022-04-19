@@ -3,6 +3,7 @@ from typing import Literal
 from ..core import IGetCallDirectionFunction
 from ..core import IsInternalNumberFunction
 
+
 __all__ = [
     "GetCallDirectionFunctionImpl",
 ]

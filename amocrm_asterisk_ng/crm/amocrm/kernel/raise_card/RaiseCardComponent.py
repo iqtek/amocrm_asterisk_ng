@@ -7,8 +7,8 @@ from amocrm_asterisk_ng.infrastructure import InitializableComponent
 
 from ...core import IGetUserIdByPhoneQuery
 
-from .commands import IRaiseCardCommand
-from .commands import RaiseCardCommand
+from amocrm_asterisk_ng.domain import IRaiseCardCommand
+from .RaiseCardCommand import RaiseCardCommand
 
 from .event_handlers import RingingEventHandler
 
@@ -31,7 +31,6 @@ class RaiseCardComponent(InitializableComponent):
     def __init__(
         self,
         amo_client: AmoCrmApiClient,
-        event_bus: IEventBus,
         dispatcher: IDispatcher,
         get_user_id_by_phone_query: IGetUserIdByPhoneQuery,
         logger: ILogger,
@@ -52,21 +51,7 @@ class RaiseCardComponent(InitializableComponent):
             )
         )
 
-        raise_card_command = self.__dispatcher.get_function(IRaiseCardCommand)
-        await self.__event_bus.attach_event_handler(
-            RingingEventHandler(
-                get_user_id_by_phone_query=self.__get_user_id_by_phone_query,
-                raise_card_command=raise_card_command,
-                logger=self.__logger,
-            )
-        )
-
     async def deinitialize(self) -> None:
-
-        await self.__event_bus.detach_event_handler(
-            RingingEventHandler,
-        )
-
         self.__dispatcher.delete_function(
             IRaiseCardCommand,
         )

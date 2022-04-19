@@ -1,2 +1,2 @@
-from .RingingEvent import RingingEvent
 from .CallCompletedEvent import CallCompletedEvent
+from .RingingEvent import RingingEvent

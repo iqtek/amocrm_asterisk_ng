@@ -1,6 +1,7 @@
 import re
 
-from amocrm_asterisk_ng.domain import ICrm
+from amocrm_asterisk_ng.domain import IsUserPhoneNumerQuery
+
 from ..core import IsInternalNumberFunction
 
 
@@ -12,17 +13,17 @@ __all__ = [
 class IsInternalNumberFunctionImpl(IsInternalNumberFunction):
 
     __slots__ = (
-        "__crm",
+        "__is_user_phone_number",
         "__internal_number_pattern",
     )
 
-    def __init__(self, crm: ICrm, internal_number_pattern: str) -> None:
-        self.__crm = crm
+    def __init__(self, is_user_phone_number: IsUserPhoneNumerQuery, internal_number_pattern: str) -> None:
+        self.__is_user_phone_number = is_user_phone_number
         self.__internal_number_pattern = internal_number_pattern
 
     async def __call__(self, phone_number: str) -> bool:
 
-        is_user_phone_number = await self.__crm.is_user_phone_number(phone_number)
+        is_user_phone_number = await self.__is_user_phone_number(phone_number)
 
         pattern = re.compile(self.__internal_number_pattern)
         result = re.match(pattern, internal_number_pattern)

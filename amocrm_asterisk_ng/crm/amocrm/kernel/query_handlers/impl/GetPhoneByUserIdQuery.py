@@ -3,7 +3,7 @@ from typing import MutableMapping
 from amo_crm_api_client import AmoCrmApiClient
 
 from ....core import IGetPhoneByUserIdQuery
-from ....core import IGetUsersEmailAddresses
+from ....core import IGetUsersEmailAddressesQuery
 
 
 __all__ = [

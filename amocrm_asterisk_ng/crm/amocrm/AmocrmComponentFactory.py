@@ -9,7 +9,7 @@ from amocrm_asterisk_ng.infrastructure import (
     ISetContextVarsFunction,
 )
 from fastapi import FastAPI
-from .kernel import AmocrmKernelComponentFactory
+# from .kernel import AmocrmKernelComponentFactory
 from .widgets import WidgetComponentFactory
 from .AmocrmComponent import AmocrmComponent
 from .AmocrmComponentConfig import AmocrmComponentConfig
@@ -70,19 +70,19 @@ class AmocrmComponentFactory(ISelectableFactory):
             settings=config.widget,
         )
 
-        amocrm_kernel_factory = AmocrmKernelComponentFactory(
-            app=self.__app,
-            event_bus=self.__event_bus,
-            dispatcher=self.__dispatcher,
-            storage=storage,
-            logger=self.__logger,
-        )
-        amocrm_kernel_component = amocrm_kernel_factory.get_instance(
-            settings=config.kernel,
-        )
+        # amocrm_kernel_factory = AmocrmKernelComponentFactory(
+        #     app=self.__app,
+        #     event_bus=self.__event_bus,
+        #     dispatcher=self.__dispatcher,
+        #     storage=storage,
+        #     logger=self.__logger,
+        # )
+        # amocrm_kernel_component = amocrm_kernel_factory.get_instance(
+        #     settings=config.kernel,
+        # )
 
         amocrm_component = AmocrmComponent(
-            amocrm_kernel_component=amocrm_kernel_component,
+            amocrm_kernel_component=widget_component,
             widget_component=widget_component,
         )
 

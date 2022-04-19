@@ -16,6 +16,7 @@ class Asterisk16Component(InitializableComponent):
         "__ami_component",
         "__cdr_component",
         "__origination_component",
+        "__storage",
     )
 
     def __init__(
@@ -24,20 +25,27 @@ class Asterisk16Component(InitializableComponent):
         ami_component: InitializableComponent,
         cdr_component: InitializableComponent,
         origination_component: InitializableComponent,
+        storage: InitializableComponent,
     ) -> None:
         self.__ami_manager = ami_manager
         self.__ami_component = ami_component
         self.__cdr_component = cdr_component
         self.__origination_component = origination_component
+        self.__storage = storage
 
     async def initialize(self):
+        await self.__storage.initialize()
         await self.__ami_manager.connect()
+
         await self.__ami_component.initialize()
         await self.__cdr_component.initialize()
+
         await self.__origination_component.initialize()
 
     async def deinitialize(self):
-        self.__ami_manager.disconnect()
         await self.__ami_component.deinitialize()
         await self.__cdr_component.deinitialize()
+
         await self.__origination_component.deinitialize()
+        self.__ami_manager.disconnect()
+        await self.__storage.deinitialize()

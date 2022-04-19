@@ -1,3 +1,4 @@
+from typing import Any
 from typing import MutableMapping
 from typing import Type
 from typing import TypeVar
@@ -16,11 +17,19 @@ T = TypeVar('T')
 class IocImpl(Ioc):
 
     __slots__ = (
+        "__dictionary",
         "__instances",
     )
 
     def __init__(self) -> None:
+        self.__dictionary: MutableMapping[str, Any] ={}
         self.__instances: MutableMapping[Type[T], T] = {}
+
+    def set(self, key: str, value: Any) -> None:
+        self.__dictionary[key] = value
+
+    def get(self, key: str) -> Any:
+        return self.__dictionary[key]
 
     def get_instance(self, key: Type[T]) -> T:
         try:

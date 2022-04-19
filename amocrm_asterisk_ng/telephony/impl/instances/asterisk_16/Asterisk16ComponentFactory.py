@@ -11,7 +11,7 @@ from amocrm_asterisk_ng.infrastructure import InitializableComponent
 from amocrm_asterisk_ng.infrastructure import ISelectableFactory
 from amocrm_asterisk_ng.infrastructure import ISetContextVarsFunction
 
-from .ami import AmiComponentFactory
+from .ami_handlers import AmiComponentFactory
 from .ami_convert_function import AmiMessageConvertFunctionImpl
 from .Asterisk16Component import Asterisk16Component
 from .Asterisk16Config import Asterisk16Config
@@ -108,5 +108,6 @@ class Asterisk16ComponentFactory(ISelectableFactory[InitializableComponent]):
             ami_component=ami_component,
             cdr_component=cdr_component,
             origination_component=origination_component,
+            storage=storage,
         )
         return telephony_component

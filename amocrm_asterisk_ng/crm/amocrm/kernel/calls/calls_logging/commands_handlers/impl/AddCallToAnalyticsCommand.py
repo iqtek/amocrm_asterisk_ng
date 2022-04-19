@@ -5,7 +5,7 @@ from amo_crm_api_client import AmoCrmApiClient
 from amo_crm_api_client.exceptions import AmocrmClientException
 
 from amocrm_asterisk_ng.infrastructure import ILogger
-from ..core import IAddCallToAnalyticsCommand
+from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
 
 
 __all__ = [
@@ -30,24 +30,19 @@ class AddCallToAnalyticsCommand(IAddCallToAnalyticsCommand):
 
     async def __call__(
         self,
-        phone: str,
+        unique_id: str,
+        phone_number: str,
         direction: Literal["inbound", "outbound"],
         duration: int,
         source: str,
         created_at: int,
         responsible_user_id: int,
-        call_status: Optional[int] = None,
-        call_result: Optional[str] = None,
-        created_by: Optional[int] = None,
-        updated_at: Optional[int] = None,
-        updated_by: Optional[int] = None,
-        uniq: Optional[str] = None,
-        link: Optional[str] = None,
+        call_status: int,
     ) -> None:
 
         await self.__amo_client.calls.add(
-            uniq=uniq,
-            phone=phone,
+            uniq=unique_id,
+            phone=phone_number,
             direction=direction,
             duration=duration,
             source=source,
@@ -55,8 +50,5 @@ class AddCallToAnalyticsCommand(IAddCallToAnalyticsCommand):
             created_at=created_at,
             responsible_user_id=responsible_user_id,
             call_result=call_result,
-            created_by=created_by,
-            updated_at=updated_at,
-            updated_by=updated_by,
             link=link,
         )

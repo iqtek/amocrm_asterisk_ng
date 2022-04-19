@@ -1,12 +1,11 @@
 from amocrm_asterisk_ng.infrastructure import IQuery
 
-
 __all__ = [
-    "IsInternalNumberFunction",
+    "IsUserPhoneNumerQuery",
 ]
 
 
-class IsInternalNumberFunction(IQuery[bool]):
+class IsUserPhoneNumerQuery(IQuery[bool]):
 
     __slots__ = ()
 

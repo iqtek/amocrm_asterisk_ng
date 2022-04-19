@@ -1,0 +1,3 @@
+from .GetCallDirectionFunctionImpl import GetCallDirectionFunctionImpl
+from .IsInternalNumberFunctionImpl import IsInternalNumberFunctionImpl
+from .OriginationRequestCommandImpl import OriginationRequestCommandImpl

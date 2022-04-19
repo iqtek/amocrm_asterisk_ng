@@ -68,10 +68,6 @@ class ExtendedEventBus(AbstractEventBus, InitializableEventBus):
         )
 
     async def publish(self, event: IEvent) -> None:
-        from amocrm_asterisk_ng.domain import OriginationRequestEvent
-        expire = None
-        if type(event) == OriginationRequestEvent:
-            expire = 2
         context_snapshot = self.__make_context_vars_snapshot()
         headers = {
             "context_snapshot": context_snapshot,

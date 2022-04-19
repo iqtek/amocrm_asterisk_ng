@@ -6,7 +6,7 @@ from amocrm_asterisk_ng.infrastructure import IDispatcher
 from ..core import IGetUserIdByPhoneQuery
 from ..core import IGetUserEmailByPhoneQuery
 from ..core import IGetPhoneByUserIdQuery
-from ..core import IGetUsersEmailAddresses
+from ..core import IGetUsersEmailAddressesQuery
 from .query_handlers import GetUserIdByPhoneQuery
 from .query_handlers import GetPhoneByUserIdQuery
 

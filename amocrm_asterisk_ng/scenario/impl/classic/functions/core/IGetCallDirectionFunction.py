@@ -1,12 +1,14 @@
 from typing import Literal
 
+from amocrm_asterisk_ng.infrastructure import IQuery
+
 
 __all__ = [
     "IGetCallDirectionFunction",
 ]
 
 
-class IGetCallDirectionFunction:
+class IGetCallDirectionFunction(IQuery[Literal["inbound", "outbound"]]):
 
     __slots__ = ()
 

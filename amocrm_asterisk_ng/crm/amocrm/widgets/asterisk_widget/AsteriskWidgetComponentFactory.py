@@ -1,20 +1,19 @@
-from typing import Mapping
 from typing import Any
+from typing import Mapping
 from typing import Optional
 
 from fastapi import FastAPI
-from amocrm_asterisk_ng.infrastructure import ISelectableFactory
-from amocrm_asterisk_ng.infrastructure import ioc
-from amocrm_asterisk_ng.infrastructure import ISetContextVarsFunction
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
+
+from amocrm_asterisk_ng.domain import IOriginationRequestCommand
 from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import IEventBus
 from amocrm_asterisk_ng.infrastructure import ILogger
+from amocrm_asterisk_ng.infrastructure import InitializableComponent
+from amocrm_asterisk_ng.infrastructure import ISelectableFactory
+from amocrm_asterisk_ng.infrastructure import ISetContextVarsFunction
 
 from .AsteriskWidgetComponent import AsteriskWidgetComponent
 from .AsteriskWidgetConfig import AsteriskWidgetConfig
-from .views import WidgetView
-from amocrm_asterisk_ng.infrastructure import ISetContextVarsFunction
+from .WidgetView import WidgetView
 
 
 __all__ = [
@@ -27,7 +26,6 @@ class AsteriskWidgetComponentFactory(ISelectableFactory[InitializableComponent])
     __slots__ = (
         "__app",
         "__dispatcher",
-        "__event_bus",
         "__set_context_vars_function",
         "__logger",
     )
@@ -35,14 +33,12 @@ class AsteriskWidgetComponentFactory(ISelectableFactory[InitializableComponent])
     def __init__(
         self,
         app: FastAPI,
-        event_bus: IEventBus,
         dispatcher: IDispatcher,
         set_context_vars_function: ISetContextVarsFunction,
         logger: ILogger,
     ) -> None:
         self.__app = app
         self.__dispatcher = dispatcher
-        self.__event_bus = event_bus
         self.__set_context_vars_function = set_context_vars_function
         self.__logger = logger
 
@@ -58,7 +54,7 @@ class AsteriskWidgetComponentFactory(ISelectableFactory[InitializableComponent])
 
         widget_view = WidgetView(
             config=config,
-            event_bus=self.__event_bus,
+            origination_request_command=self.__dispatcher.get_function(IOriginationRequestCommand),
             set_context_vars_function=self.__set_context_vars_function,
             logger=self.__logger,
         )
@@ -68,6 +64,5 @@ class AsteriskWidgetComponentFactory(ISelectableFactory[InitializableComponent])
             app=self.__app,
             dispatcher=self.__dispatcher,
             widget_view=widget_view,
-            logger=self.__logger,
         )
         return component

@@ -1,1 +1,1 @@
-from .GetCdrByUniqueIdQuery import GetCdrByUniqueIdQuery
+from .GetRecordFileUniqueIdQuery import GetRecordFileUniqueIdQuery

@@ -1,27 +1,8 @@
-crm:
-  type: amocrm
-  settings:
-    kernel:
-      call_logging:
-        tmp_directory: "/home/rigel/files"
-        base_url: https://webhook.iqtek.ru/
-        source: asterisk_telephony
-        source_uid: asterisk_telephony
-        service_code: amo_asterisk
-        pipeline_id: 4672057
-        postprocessing_delay: 1
+call_logging:
+  source: asterisk_telephony
+  source_uid: asterisk_telephony
+  service_code: amo_asterisk
+  pipeline_name: Воронка
+  postprocessing_delay: 1
 
-      integration:
-        integration_id: cf086dcc-6d5a-4c8a-9c73-0aefa84b657c
-        secret_key: 5ZXXHxgto6XDZYJ2taxsmS2F3vCiCSaf0eXHjFtojsUyUkrN6kuJCLjeR7oU5b3V
-        auth_code: def50200d24405b81ce80ceac34acacbe20f20a97f4747396d1ebe74bb87762810d54f8aca382742251d54e74bebb4d43eba352ed256ee92fb3191093148e6a072deb51cdc7c894ec3b29c910e1e9afdd351beff2f07f50531bb92c3371232872d204f46f0366f2154c54f64face8d2945179c5b314fb1f824864750dcaa2f0a0f9fa5c64caf00f3261e4343c9ea9602b25a5f0cba30f17c481f7d53ac99d7d9a6dd8b3bdf3b934d0d0475cd152c0849218424f45a76e8491fbe54f5fb5f8c488abec25e02f56341cc707c876e8fe1fb5d457c457a6516a3790f76e835bd9614d2b901fdbc18ab199a4e88c93b056644182a10babe9c9f4b6366f5d2c7c1b4a36895e5617eb3512d75584d25e2276aab8e8171395c6de2acff363403e502dbb91dfe329f8cae5b8699f198319f30552aa50e5ed3216073b5b6f28b7d0d8c3442b1e088f9d652b33a059e14ce3bea6ec3c8cd8a9f7847bfe979818423c31587adc81f6f7740e3faa70951b970b688a4dc67d46487c7e64e310ca8064d54e1859d3635a55ec3ae56bee36b5194c67cef7043745f38c53633bffb3aeb05b51c149ac4b1b982d44dba6879f431b45aa7d53e289fd92783728713ff3ca900
-        redirect_uri: https://iqtek.ru/
-        base_url: https://iqtekdev.amocrm.ru/
-
-    widget:
-      type: asterisk_widget
-      settings:
-        login: iqtek-develop
-        password: 12345678
-        users:
-          112: alexander.filippov@iqtek.ru
+internal_number_pattern: "\\d\\d\\d"

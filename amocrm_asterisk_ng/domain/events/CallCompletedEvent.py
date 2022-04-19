@@ -1,7 +1,8 @@
 from typing import Optional
 
 from amocrm_asterisk_ng.infrastructure.event_bus import BaseEvent
-from ..CallStatus import CallStatus
+
+from ..models import CallStatus
 
 
 __all__ = [

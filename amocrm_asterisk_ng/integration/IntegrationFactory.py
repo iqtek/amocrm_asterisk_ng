@@ -8,6 +8,8 @@ from pydantic import ValidationError
 
 from amocrm_asterisk_ng.telephony import telephony_startup
 from amocrm_asterisk_ng.crm import crm_startup
+from amocrm_asterisk_ng.scenario import scenario_startup
+from amocrm_asterisk_ng.scenario import IScenario
 from amocrm_asterisk_ng.infrastructure import ioc
 from amocrm_asterisk_ng.infrastructure import ILogger
 from amocrm_asterisk_ng.infrastructure import context_vars_startup
@@ -64,6 +66,7 @@ class IntegrationFactory:
             key=FastAPI,
             instance=self.__app,
         )
+
         ioc.set_instance(
             key=AbstractEventLoop,
             instance=event_loop,
@@ -91,22 +94,30 @@ class IntegrationFactory:
             settings=config.infrastructure.event_bus,
         )
 
+        scenario_startup(scenario_name=config.scenario)
         crm_component = crm_startup(settings=config.crm)
 
         telephony_component = telephony_startup(settings=config.telephony)
-
-        components: Collection[InitializableComponent] = [
-            ioc.get_instance(InitializableMessageBus),
-            ioc.get_instance(InitializableEventBus),
-            crm_component,
-            telephony_component,
-        ]
+        #
+        # components: Collection[InitializableComponent] = [
+        #     ioc.get_instance(InitializableMessageBus),
+        #     ioc.get_instance(InitializableEventBus),
+        #     crm_component,
+        #     telephony_component,
+        # ]
+        #
 
         logger = ioc.get_instance(ILogger)
+        scenario = ioc.get_instance(IScenario)
 
-        # integration = Integration(
-        #     listening_components=[],
-        #     control_components=
-        #     logger=logger,
-        # )
+        message_bus = ioc.get_instance(InitializableMessageBus)
+        event_bus = ioc.get_instance(InitializableEventBus)
+
+        integration = Integration(
+            scenario=scenario,
+            listening_components=[],
+            control_components=[telephony_component, crm_component],
+            infrastructure_components=[message_bus, event_bus],
+            logger=logger,
+        )
         return integration
