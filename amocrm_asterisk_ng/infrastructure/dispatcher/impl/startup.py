@@ -1,4 +1,4 @@
-from amocrm_asterisk_ng.infrastructure import ioc
+from ...ioc_container import ioc
 from .get_dispatcher import get_dispatcher
 from ..core import IDispatcher
 

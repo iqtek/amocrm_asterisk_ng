@@ -13,14 +13,11 @@ from amocrm_asterisk_ng.scenario import IScenario
 from amocrm_asterisk_ng.infrastructure import ioc
 from amocrm_asterisk_ng.infrastructure import ILogger
 from amocrm_asterisk_ng.infrastructure import InitializableComponent
-from amocrm_asterisk_ng.infrastructure import InitializableMessageBus
 from amocrm_asterisk_ng.infrastructure import InitializableEventBus
 from amocrm_asterisk_ng.infrastructure import logger_startup
 from amocrm_asterisk_ng.infrastructure import storage_startup
 from amocrm_asterisk_ng.infrastructure import dispatcher_startup
 from amocrm_asterisk_ng.infrastructure import event_bus_startup
-from amocrm_asterisk_ng.infrastructure import message_bus_startup
-from amocrm_asterisk_ng.infrastructure import get_current_version_func_startup
 from amocrm_asterisk_ng.infrastructure import Version
 
 from .Integration import Integration
@@ -75,8 +72,6 @@ class IntegrationFactory:
             instance=event_loop,
         )
 
-        get_current_version_func_startup()
-
         logger_startup(
             settings=config.infrastructure.logger,
         )
@@ -87,13 +82,7 @@ class IntegrationFactory:
 
         dispatcher_startup()
 
-        message_bus_startup(
-            settings=config.infrastructure.message_bus,
-        )
-
-        event_bus_startup(
-            settings=config.infrastructure.event_bus,
-        )
+        event_bus_startup(settings={"type": "memory"})
 
         scenario_startup(
             scenario_name=config.scenario,
@@ -106,7 +95,6 @@ class IntegrationFactory:
         logger = ioc.get_instance(ILogger)
         scenario = ioc.get_instance(IScenario)
 
-        message_bus = ioc.get_instance(InitializableMessageBus)
         event_bus = ioc.get_instance(InitializableEventBus)
         control_components = ioc.get("control_components") + [crm_component]
         listening_components = ioc.get("listening_components")
@@ -115,7 +103,7 @@ class IntegrationFactory:
             scenario=scenario,
             listening_components=listening_components,
             control_components=control_components,
-            infrastructure_components=[message_bus, event_bus],
+            infrastructure_components=[event_bus],
             logger=logger,
         )
         return integration

@@ -4,6 +4,7 @@ from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
 from amocrm_asterisk_ng.domain import IOriginationCallCommand
 from amocrm_asterisk_ng.domain import IOriginationRequestCommand
 from amocrm_asterisk_ng.domain import IsUserPhoneNumerQuery
+from amocrm_asterisk_ng.domain import IRaiseCardCommand
 from amocrm_asterisk_ng.infrastructure import IDispatcher
 from amocrm_asterisk_ng.infrastructure import IEventBus
 from amocrm_asterisk_ng.infrastructure import ILogger
@@ -85,6 +86,7 @@ class ClassicScenario(IScenario):
             RingingEventHandler(
                 get_user_id_by_phone_query=self.__dispatcher.get_function(IGetUserIdByPhoneQuery),
                 is_internal_number_function=self.__dispatcher.get_function(IsInternalNumberFunction),
+                raise_card_command=self.__dispatcher.get_function(IRaiseCardCommand),
             )
         )
 

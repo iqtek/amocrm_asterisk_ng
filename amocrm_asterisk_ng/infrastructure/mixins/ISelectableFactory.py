@@ -4,7 +4,8 @@ from typing import Mapping
 from typing import TypeVar
 
 
-from amocrm_asterisk_ng.infrastructure import IFactory, ISelectable
+from .IFactory import IFactory
+from ..utils import ISelectable
 
 
 __all__ = [

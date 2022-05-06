@@ -23,5 +23,3 @@ def get_logger(
 
     logger = getLogger("root")
     return logger
-
-

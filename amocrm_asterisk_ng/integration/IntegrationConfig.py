@@ -18,8 +18,6 @@ class ServerConfig(BaseModel):
 
 class InfrastructureConfig(BaseModel):
     integration: ServerConfig
-    message_bus: Mapping[str, Any]
-    event_bus: Mapping[str, Any]
     storage: Mapping[str, Any]
     logger: Mapping[str, Any]
 

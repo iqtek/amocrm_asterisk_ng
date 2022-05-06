@@ -1,2 +1,0 @@
-from .Version import Version
-from .IGetCurrentAppVersionFunction import IGetCurrentAppVersionFunction

@@ -56,28 +56,6 @@ infrastructure:
     host: 0.0.0.0
     port: 8000
 
-  message_bus:
-    type: rabbitmq
-    settings:
-      rabbitmq:
-        host: 127.0.0.1
-        port: 5672
-        login: guest
-        password: guest
-        virtualhost: '/'
-        ssl: false
-        login_method: PLAIN
-      exchange_name: asterisk_amocrm_ng_exchange
-      exchange_type: direct
-      queue_name: asterisk_amocrm_ng
-      routing_key: asterisk_amocrm_ng
-
-
-  event_bus:
-    type: extended
-    settings:
-      workers: 1
-
   storage:
     type: redis
     settings:

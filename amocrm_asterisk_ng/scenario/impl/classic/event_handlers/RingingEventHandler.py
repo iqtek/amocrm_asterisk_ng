@@ -1,5 +1,6 @@
 from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
 from amocrm_asterisk_ng.domain import RingingEvent
+from amocrm_asterisk_ng.domain import IRaiseCardCommand
 from amocrm_asterisk_ng.infrastructure import IEventHandler
 
 from ..functions import IsInternalNumberFunction
@@ -15,15 +16,18 @@ class RingingEventHandler(IEventHandler):
     __slots__ = (
         "__get_user_id_by_phone_query",
         "__is_internal_number_function",
+        "__raise_card_command",
     )
 
     def __init__(
         self,
         get_user_id_by_phone_query: IGetUserIdByPhoneQuery,
-        is_internal_number_function: IsInternalNumberFunction
+        is_internal_number_function: IsInternalNumberFunction,
+        raise_card_command: IRaiseCardCommand,
     ) -> None:
         self.__get_user_id_by_phone_query = get_user_id_by_phone_query
         self.__is_internal_number_function = is_internal_number_function
+        self.__raise_card_command = raise_card_command
 
     async def __call__(self, event: RingingEvent) -> None:
 
@@ -31,7 +35,7 @@ class RingingEventHandler(IEventHandler):
             phone_number=event.called_phone_number,
         )
 
-        if not await self.__is_internal_number_function(event.called_phone_number):
+        if not await self.__is_internal_number_function(event.caller_phone_number):
             await self.__raise_card_command(
                 phone_number=event.caller_phone_number,
                 users=(user_id,)
