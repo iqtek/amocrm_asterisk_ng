@@ -27,7 +27,6 @@ class AmocrmComponentFactory(ISelectableFactory):
         "__app",
         "__dispatcher",
         "__event_bus",
-        "__storage_factory",
         "__logger",
     )
 
@@ -36,13 +35,11 @@ class AmocrmComponentFactory(ISelectableFactory):
         app: FastAPI,
         event_bus: IEventBus,
         dispatcher: IDispatcher,
-        storage_factory: IKeyValueStorageFactory,
         logger: ILogger,
     ) -> None:
         self.__app = app
         self.__dispatcher = dispatcher
         self.__event_bus = event_bus
-        self.__storage_factory = storage_factory
         self.__logger = logger
 
     def unique_tag(self) -> str:
@@ -53,9 +50,7 @@ class AmocrmComponentFactory(ISelectableFactory):
         settings: Optional[Mapping[str, Any]] = None
     ) -> InitializableComponent:
         config = AmocrmComponentConfig(**settings)
-        storage = self.__storage_factory.get_instance(
-            prefix=config.storage_prefix,
-        )
+
         widget_component_factory = WidgetComponentFactory(
             app=self.__app,
             event_bus=self.__event_bus,
@@ -71,7 +66,6 @@ class AmocrmComponentFactory(ISelectableFactory):
             app=self.__app,
             event_bus=self.__event_bus,
             dispatcher=self.__dispatcher,
-            storage=storage,
             logger=self.__logger,
         )
 
