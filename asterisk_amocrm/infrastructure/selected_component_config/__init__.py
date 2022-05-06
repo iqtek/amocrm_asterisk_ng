@@ -1,1 +1,0 @@
-from .SelectedComponentConfig import SelectedComponentConfig

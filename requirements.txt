@@ -6,7 +6,7 @@ aiologger==0.6.1
 aiomysql==0.0.22
 aioredis==2.0.0
 aiosignal==1.2.0
-amo-crm-api-client @ git+https://github.com/iqtek/amocrm_api_client.git@8375b59ed378926e74e68a3b006b84c918547ac8
+amocrm-api-client @ git+https://github.com/iqtek/amocrm_api_client.git@450a2436fb5376b79836cb3734a249af59f37b6c
 anyio==3.5.0
 asgiref==3.5.0
 async-timeout==4.0.1
@@ -35,6 +35,7 @@ py==1.11.0
 pyaml==21.10.1
 pycodestyle==2.8.0
 pydantic==1.8.2
+pydantic-collections==0.2.0
 pydub==0.25.1
 pyflakes==2.4.0
 PyJWT==2.3.0
