@@ -63,11 +63,6 @@ class AbstractEventBus(IEventBus, ABC):
         except HandlerNotAttachedFoundException:
             event_type = self._get_event_type(event_handler)
             self.__handlers[event_type].add(event_handler)
-            self.__logger.debug(
-                "EventBus: "
-                f"attach handler: '{event_handler}' "
-                f"for event: '{event_type}'."
-            )
         else:
             raise HandlerAlreadyAttachedException(type(event_handler))
 
@@ -76,11 +71,6 @@ class AbstractEventBus(IEventBus, ABC):
         handler = self.__get_handler(event_handler)
         handlers = self.__handlers[event_type]
         handlers.remove(handler)
-        self.__logger.debug(
-            "EventBus: "
-            f"detach handler: '{event_handler}' from "
-            f"event: '{event_type}'."
-        )
 
     async def _publish(self, event: IEvent) -> None:
         try:

@@ -1,1 +1,2 @@
-from .impl import *
+from .GetUserIdByPhoneQuery import GetUserIdByPhoneQuery
+from .GetPhoneByUserIdQuery import GetPhoneByUserIdQuery

@@ -7,4 +7,5 @@ __all__ = [
 
 
 class CallRecordsConfig(BaseModel):
-    tmp_directory: str
+    enable_conversion: bool = True
+    tmp_directory: str = "./convert_dir"

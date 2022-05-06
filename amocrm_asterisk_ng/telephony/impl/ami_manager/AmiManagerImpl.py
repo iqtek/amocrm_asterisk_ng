@@ -1,10 +1,10 @@
-import asyncio
+from asyncio import sleep
 from typing import Type
+
 from panoramisk import Manager
 from panoramisk.message import Message
 
 from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure.context_vars import ISetContextVarsFunction
 
 from ...core import Action
 from ...core import IAmiEventHandler
@@ -23,7 +23,6 @@ class AmiManagerImpl(IAmiManager):
     __slots__ = (
         "__manager",
         "__ami_message_convert_function",
-        "__set_context_vars_function",
         "__handlers",
         "__logger",
     )
@@ -32,19 +31,17 @@ class AmiManagerImpl(IAmiManager):
         self,
         manager: Manager,
         ami_message_convert_function: IAmiMessageConvertFunction,
-        set_context_vars_function: ISetContextVarsFunction,
         logger: ILogger,
     ) -> None:
         self.__manager = manager
         self.__ami_message_convert_function = ami_message_convert_function
-        self.__set_context_vars_function = set_context_vars_function
         self.__handlers: MutableMapping = {}
         self.__logger = logger
 
     async def connect(self) -> None:
         self.__manager.connect()
         for _ in range(10):
-            await asyncio.sleep(1)
+            await sleep(1)
             try:
                 self.__manager.ping()
                 return
@@ -85,16 +82,16 @@ class AmiManagerImpl(IAmiManager):
             nonlocal event_handler
             if type(event_handler) not in self.__handlers.keys():
                 return
-            self.__set_context_vars_function()
             try:
                 event = self.__ami_message_convert_function(message)
             except Exception as e:
                 self.__logger.error(
-                    f"AmiManager: error validation of message: {message}. {e}"
+                    f"AmiManager: error validation of message: {message}."
                 )
+                self.__logger.exception(e)
                 return
             self.__logger.debug(
-                f"AmiManager: catch event {event} ."
+                f"AmiManager: catch event {event}."
             )
             try:
                 await event_handler(event)
@@ -103,5 +100,5 @@ class AmiManagerImpl(IAmiManager):
                     "AmiManager: "
                     f"error calling event handler: '{event_handler}'. {e}"
                 )
-
+                self.__logger.exception(e)
         self.__manager.register_event(event_handler.event_pattern(), wrapper)

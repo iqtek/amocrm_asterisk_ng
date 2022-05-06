@@ -25,8 +25,8 @@ class InfrastructureConfig(BaseModel):
 
 
 class IntegrationConfig(BaseModel):
-    scenario: str
-
+    scenario: str = "classic"
+    scenario_configs_dir = "configs"
     crm: Mapping[str, Any]
     telephony: Mapping[str, Any]
 

@@ -7,7 +7,6 @@ from fastapi import Response
 
 from amocrm_asterisk_ng.domain import IOriginationRequestCommand
 from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure.context_vars import ISetContextVarsFunction
 
 from .AsteriskWidgetConfig import AsteriskWidgetConfig
 
@@ -21,7 +20,6 @@ class WidgetView:
 
     __slots__ = (
         "__config",
-        "__set_context_vars_function",
         "__origination_request_command",
         "__logger",
     )
@@ -30,10 +28,8 @@ class WidgetView:
         self,
         config: AsteriskWidgetConfig,
         origination_request_command: IOriginationRequestCommand,
-        set_context_vars_function: ISetContextVarsFunction,
         logger: ILogger
     ) -> None:
-        self.__set_context_vars_function = set_context_vars_function
         self.__origination_request_command = origination_request_command
         self.__config = config
         self.__logger = logger
@@ -51,9 +47,6 @@ class WidgetView:
         return response
 
     async def handle(self, request: Request) -> Response:
-
-        self.__set_context_vars_function()
-
         request_params = request.query_params
         try:
             login = request_params["_login"]

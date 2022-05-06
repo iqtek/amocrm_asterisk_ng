@@ -1,3 +1,6 @@
+scenario: classic
+scenario_configs_dir: ./configs
+
 telephony:
   type: asterisk_16
   settings:
@@ -25,14 +28,9 @@ crm:
     storage_prefix: crm
     kernel:
       call_logging:
-        internal_number_regex: "regex"
-        tmp_directory: "./convert_dir"
-        base_url: https://webhook.mycompany.ru/
-        source: asterisk_telephony
-        source_uid: asterisk_telephony
-        service_code: amo_asterisk
-        pipeline_id: 4672053
-        postprocessing_delay: 10
+        enable_conversion: true
+        tmp_directory: "./files"
+        base_url: https://webhook.iqtek.ru/
 
       integration:
         integration_id: xxxxxxxx-xxxx-xxxx-xxx-xxxxxxxxxxxx

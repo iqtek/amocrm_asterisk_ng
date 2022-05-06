@@ -2,8 +2,9 @@ from typing import Any
 from typing import Mapping
 from typing import Optional
 
-from amo_crm_api_client import AmoCrmApiClientConfig
-from amo_crm_api_client import create_amo_crm_api_client
+from amocrm_api_client import AmoCrmApiClientConfig
+from amocrm_api_client import create_amocrm_api_client
+from amocrm_api_client.token_provider import StandardTokenProviderFactory
 from fastapi import FastAPI
 
 from amocrm_asterisk_ng.infrastructure import IDispatcher
@@ -17,10 +18,6 @@ from .AmocrmKernelComponent import AmocrmKernelComponent
 from .AmocrmKernelComponentConfig import AmocrmKernelComponentConfig
 from .calls import CallManagerComponent
 from .raise_card import RaiseCardComponent
-from .redirect_to_responsible import RedirectToResponsibleComponent
-
-from ..core import IGetUserEmailByPhoneQuery
-from ..core import IGetUserIdByPhoneQuery
 
 
 __all__ = [
@@ -60,19 +57,11 @@ class AmocrmKernelComponentFactory(IFactory[InitializableComponent]):
         settings = settings or {}
         component_config = AmocrmKernelComponentConfig(**settings)
 
-        amo_client_config = AmoCrmApiClientConfig(**component_config.integration)
-
-        amo_client = create_amo_crm_api_client(
-            config=amo_client_config,
-            key_value_storage=self.__storage,
-        )
-
-        get_user_id_by_phone_query = self.__dispatcher.get_function(IGetUserIdByPhoneQuery)
-
-        redirect_to_responsible_component = RedirectToResponsibleComponent(
-            app=self.__app,
-            amo_client=amo_client,
-            dispatcher=self.__dispatcher,
+        token_provider_factory = StandardTokenProviderFactory()
+        token_provider = token_provider_factory.get_instance(settings=component_config.integration)
+        amo_client = create_amocrm_api_client(
+            config=AmoCrmApiClientConfig(base_url=component_config.integration["base_url"]),
+            token_provider=token_provider,
         )
 
         call_manager_component = CallManagerComponent(
@@ -80,29 +69,20 @@ class AmocrmKernelComponentFactory(IFactory[InitializableComponent]):
             app=self.__app,
             amo_client=amo_client,
             dispatcher=self.__dispatcher,
-            get_user_id_by_phone_query=get_user_id_by_phone_query,
-            event_bus=self.__event_bus,
             logger=self.__logger,
         )
 
         raise_card_component = RaiseCardComponent(
             amo_client=amo_client,
             dispatcher=self.__dispatcher,
-            event_bus=self.__event_bus,
-            get_user_id_by_phone_query=get_user_id_by_phone_query,
             logger=self.__logger,
         )
-
-        get_user_email_by_phone_query = self.__dispatcher.get_function(IGetUserEmailByPhoneQuery)
 
         amocrm_kernel_component = AmocrmKernelComponent(
             dispatcher=self.__dispatcher,
             amo_client=amo_client,
             raise_card_component=raise_card_component,
             call_manager_component=call_manager_component,
-            redirect_to_responsible_component=redirect_to_responsible_component,
-            get_user_id_by_phone_query=get_user_id_by_phone_query,
-            get_user_email_by_phone_query=get_user_email_by_phone_query,
         )
 
         return amocrm_kernel_component

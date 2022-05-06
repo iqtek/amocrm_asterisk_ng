@@ -1,17 +1,14 @@
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
 from amocrm_asterisk_ng.domain import IAddCallToUnsortedCommand
 from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
-from amocrm_asterisk_ng.domain import IsUserPhoneNumerQuery
-from amocrm_asterisk_ng.domain import IOriginationRequestCommand
 from amocrm_asterisk_ng.domain import IOriginationCallCommand
+from amocrm_asterisk_ng.domain import IOriginationRequestCommand
+from amocrm_asterisk_ng.domain import IsUserPhoneNumerQuery
 from amocrm_asterisk_ng.infrastructure import IDispatcher
 from amocrm_asterisk_ng.infrastructure import IEventBus
-
-from ...core import IScenario
-
+from amocrm_asterisk_ng.infrastructure import ILogger
 
 from .ClassicScenarioConfig import ClassicScenarioConfig
-
 from .event_handlers import CallCompletedEventHandler
 from .event_handlers import RingingEventHandler
 
@@ -20,6 +17,8 @@ from .functions import IGetCallDirectionFunction
 from .functions import IsInternalNumberFunction
 from .functions import IsInternalNumberFunctionImpl
 from .functions import OriginationRequestCommandImpl
+
+from ...core import IScenario
 
 
 __all__ = [
@@ -33,6 +32,7 @@ class ClassicScenario(IScenario):
         "__config",
         "__event_bus",
         "__dispatcher",
+        "__logger",
     )
 
     def __init__(
@@ -40,10 +40,12 @@ class ClassicScenario(IScenario):
         config: ClassicScenarioConfig,
         event_bus: IEventBus,
         dispatcher: IDispatcher,
+        logger: ILogger,
     ) -> None:
         self.__config = config
         self.__event_bus = event_bus
         self.__dispatcher = dispatcher
+        self.__logger = logger
 
     async def upload(self) -> None:
 
@@ -71,6 +73,7 @@ class ClassicScenario(IScenario):
 
         await self.__event_bus.attach_event_handler(
             CallCompletedEventHandler(
+                config=self.__config.call_logging,
                 add_call_to_analytics_command=self.__dispatcher.get_function(IAddCallToAnalyticsCommand),
                 add_call_to_unsorted_command=self.__dispatcher.get_function(IAddCallToUnsortedCommand),
                 get_user_id_by_phone_query=self.__dispatcher.get_function(IGetUserIdByPhoneQuery),
@@ -86,23 +89,9 @@ class ClassicScenario(IScenario):
         )
 
     async def unload(self) -> None:
+        await self.__event_bus.detach_event_handler(RingingEventHandler)
+        await self.__event_bus.detach_event_handler(CallCompletedEventHandler)
 
-        await self.__event_bus.detach_event_handler(
-            RingingEventHandler,
-        )
-
-        await self.__event_bus.detach_event_handler(
-            CallCompletedEventHandler,
-        )
-
-        self.__dispatcher.delete_function(
-            IGetCallDirectionFunction,
-        )
-
-        self.__dispatcher.delete_function(
-            IsInternalNumberFunction,
-        )
-
-        self.__dispatcher.delete_function(
-            IOriginationRequestCommand,
-        )
+        self.__dispatcher.delete_function(IGetCallDirectionFunction)
+        self.__dispatcher.delete_function(IsInternalNumberFunction)
+        self.__dispatcher.delete_function(IOriginationRequestCommand)

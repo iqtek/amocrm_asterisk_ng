@@ -12,7 +12,6 @@ from amocrm_asterisk_ng.scenario import scenario_startup
 from amocrm_asterisk_ng.scenario import IScenario
 from amocrm_asterisk_ng.infrastructure import ioc
 from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import context_vars_startup
 from amocrm_asterisk_ng.infrastructure import InitializableComponent
 from amocrm_asterisk_ng.infrastructure import InitializableMessageBus
 from amocrm_asterisk_ng.infrastructure import InitializableEventBus
@@ -62,6 +61,10 @@ class IntegrationFactory:
                 f"configuration file correctly. {e}"
             )
 
+        ioc.set("listening_components", [])
+        ioc.set("control_components", [])
+        ioc.set("infrastructure_components", [])
+
         ioc.set_instance(
             key=FastAPI,
             instance=self.__app,
@@ -78,8 +81,6 @@ class IntegrationFactory:
             settings=config.infrastructure.logger,
         )
 
-        context_vars_startup()
-
         storage_startup(
             settings=config.infrastructure.storage,
         )
@@ -94,29 +95,26 @@ class IntegrationFactory:
             settings=config.infrastructure.event_bus,
         )
 
-        scenario_startup(scenario_name=config.scenario)
+        scenario_startup(
+            scenario_name=config.scenario,
+            scenario_configs_dir=config.scenario_configs_dir
+        )
         crm_component = crm_startup(settings=config.crm)
 
-        telephony_component = telephony_startup(settings=config.telephony)
-        #
-        # components: Collection[InitializableComponent] = [
-        #     ioc.get_instance(InitializableMessageBus),
-        #     ioc.get_instance(InitializableEventBus),
-        #     crm_component,
-        #     telephony_component,
-        # ]
-        #
+        telephony_startup(settings=config.telephony)
 
         logger = ioc.get_instance(ILogger)
         scenario = ioc.get_instance(IScenario)
 
         message_bus = ioc.get_instance(InitializableMessageBus)
         event_bus = ioc.get_instance(InitializableEventBus)
+        control_components = ioc.get("control_components") + [crm_component]
+        listening_components = ioc.get("listening_components")
 
         integration = Integration(
             scenario=scenario,
-            listening_components=[],
-            control_components=[telephony_component, crm_component],
+            listening_components=listening_components,
+            control_components=control_components,
             infrastructure_components=[message_bus, event_bus],
             logger=logger,
         )

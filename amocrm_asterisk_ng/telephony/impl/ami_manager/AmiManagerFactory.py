@@ -7,12 +7,12 @@ from panoramisk import Manager
 
 from amocrm_asterisk_ng.infrastructure import IFactory
 from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import ISetContextVarsFunction
 
 from .AmiManagerConfig import AmiManagerConfig
 from .AmiManagerImpl import AmiManagerImpl
 from ...core import IAmiManager
 from ...core import IAmiMessageConvertFunction
+
 
 __all__ = [
     "AmiManagerFactory",
@@ -24,7 +24,6 @@ class AmiManagerFactory(IFactory[IAmiManager]):
     __slots__ = (
         "__event_loop",
         "__ami_message_convert_function",
-        "__set_context_vars_function",
         "__logger",
     )
 
@@ -32,12 +31,10 @@ class AmiManagerFactory(IFactory[IAmiManager]):
         self,
         event_loop: AbstractEventLoop,
         ami_message_convert_function: IAmiMessageConvertFunction,
-        set_context_vars_function: ISetContextVarsFunction,
         logger: ILogger,
     ) -> None:
         self.__event_loop = event_loop
         self.__ami_message_convert_function = ami_message_convert_function
-        self.__set_context_vars_function = set_context_vars_function
         self.__logger = logger
 
     def get_instance(
@@ -59,7 +56,6 @@ class AmiManagerFactory(IFactory[IAmiManager]):
         ami_manager = AmiManagerImpl(
             manager=panoramisk_manager,
             ami_message_convert_function=self.__ami_message_convert_function,
-            set_context_vars_function=self.__set_context_vars_function,
             logger=self.__logger,
         )
 

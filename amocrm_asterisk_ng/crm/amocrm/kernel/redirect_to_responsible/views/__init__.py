@@ -1,1 +1,0 @@
-from .RedirectToResponsibleView import RedirectToResponsibleView

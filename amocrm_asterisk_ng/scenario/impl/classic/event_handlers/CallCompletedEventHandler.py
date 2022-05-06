@@ -1,5 +1,5 @@
 from time import time
-
+import asyncio
 from amocrm_asterisk_ng.domain import CallCompletedEvent
 from amocrm_asterisk_ng.domain import CallStatus
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
@@ -8,6 +8,7 @@ from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
 from amocrm_asterisk_ng.infrastructure import IEventHandler
 
 from ..functions import IGetCallDirectionFunction
+from ..ClassicScenarioConfig import CallCompletedEventHandlerConfig
 
 
 __all__ = [
@@ -18,6 +19,7 @@ __all__ = [
 class CallCompletedEventHandler(IEventHandler):
 
     __slots__ = (
+        "__config",
         "__add_call_to_analytics_command",
         "__add_call_to_unsorted_command",
         "__get_user_id_by_phone_query",
@@ -26,11 +28,13 @@ class CallCompletedEventHandler(IEventHandler):
 
     def __init__(
         self,
+        config: CallCompletedEventHandlerConfig,
         add_call_to_analytics_command: IAddCallToAnalyticsCommand,
         add_call_to_unsorted_command: IAddCallToUnsortedCommand,
         get_user_id_by_phone_query: IGetUserIdByPhoneQuery,
         get_call_direction_function: IGetCallDirectionFunction
     ) -> None:
+        self.__config = config
         self.__add_call_to_analytics_command = add_call_to_analytics_command
         self.__add_call_to_unsorted_command = add_call_to_unsorted_command
         self.__get_user_id_by_phone_query = get_user_id_by_phone_query
@@ -48,7 +52,7 @@ class CallCompletedEventHandler(IEventHandler):
         }
 
         try:
-            return self.__CALL_STATUSES[call_status]
+            return __CALL_STATUSES[call_status]
         except ValueError:
             raise ValueError(f"Invalid event call_status {disposition}.")
 
@@ -56,7 +60,7 @@ class CallCompletedEventHandler(IEventHandler):
 
         time_now = int(time())
 
-        direction = self.__get_call_direction_function(
+        direction = await self.__get_call_direction_function(
             caller_phone_number=event.caller_phone_number,
             called_phone_number=event.called_phone_number,
         )
@@ -86,9 +90,10 @@ class CallCompletedEventHandler(IEventHandler):
                 created_at=time_now,
                 responsible_user_id=responsible_user_id,
                 call_status=self.__get_call_status(event.disposition),
+                call_result="",
             )
             return
-        except Exception:
+        except Exception as e:
             pass
 
         await self.__add_call_to_unsorted_command(

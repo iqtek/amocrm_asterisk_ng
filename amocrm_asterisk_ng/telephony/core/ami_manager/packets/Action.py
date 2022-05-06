@@ -5,6 +5,7 @@ from uuid import uuid4
 
 from .Packet import Packet
 
+
 __all__ = [
     "Action"
 ]

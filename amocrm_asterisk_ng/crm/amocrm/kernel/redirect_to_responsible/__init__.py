@@ -1,1 +1,1 @@
-from .RedirectToResponsibleComponent import RedirectToResponsibleComponent
+from .GetResponsibleUserByPhoneQuery import GetResponsibleUserByPhoneQuery

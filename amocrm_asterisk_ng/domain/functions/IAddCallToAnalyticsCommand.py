@@ -24,5 +24,6 @@ class IAddCallToAnalyticsCommand(ICommand):
         created_at: int,
         responsible_user_id: int,
         call_status: int,
+        call_result: str,
     ) -> None:
         raise NotImplementedError()

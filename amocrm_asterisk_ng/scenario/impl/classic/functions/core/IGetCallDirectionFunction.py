@@ -12,7 +12,7 @@ class IGetCallDirectionFunction(IQuery[Literal["inbound", "outbound"]]):
 
     __slots__ = ()
 
-    def __call__(
+    async def __call__(
         self,
         caller_phone_number: str,
         called_phone_number: str,

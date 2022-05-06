@@ -6,8 +6,6 @@ from amocrm_asterisk_ng.infrastructure import InitializableMessageBus
 from amocrm_asterisk_ng.infrastructure import ISelectableFactory
 from amocrm_asterisk_ng.infrastructure import ISelector
 from amocrm_asterisk_ng.infrastructure import SelectedComponentConfig
-from amocrm_asterisk_ng.infrastructure import ISetContextVarsFunction
-from amocrm_asterisk_ng.infrastructure import IMakeContextSnapshotFunction
 from amocrm_asterisk_ng.infrastructure import SelectorImpl
 from amocrm_asterisk_ng.infrastructure import ILogger
 
@@ -29,8 +27,6 @@ def get_event_bus(
     message_bus: InitializableMessageBus,
     event_loop: AbstractEventLoop,
     logger: ILogger,
-    set_context_vars_function: ISetContextVarsFunction,
-    make_context_vars_snapshot: IMakeContextSnapshotFunction,
 ) -> InitializableEventBus:
 
     selector: ISelector[ISelectableFactory[InitializableEventBus]] = SelectorImpl()
@@ -47,8 +43,6 @@ def get_event_bus(
             message_bus=message_bus,
             event_loop=event_loop,
             logger=logger,
-            set_context_vars_function=set_context_vars_function,
-            make_context_vars_snapshot=make_context_vars_snapshot,
         )
     )
 

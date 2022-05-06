@@ -1,2 +1,1 @@
 from .OriginationComponentFactory import OriginationComponentFactory
-

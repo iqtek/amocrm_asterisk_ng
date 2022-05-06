@@ -5,6 +5,7 @@ from pydub import AudioSegment
 
 from amocrm_asterisk_ng.domain import File
 from amocrm_asterisk_ng.domain import Filetype
+
 from ..core import IFileConverter
 from ...CallRecordsConfig import CallRecordsConfig
 
@@ -43,11 +44,14 @@ class PydubFileConverter(IFileConverter):
             return file
 
         if not os.path.exists(self.__config.tmp_directory):
-            raise Exception(
-                "WavToMp3FileConverter: "
-                f"Directory: {self.__config.tmp_directory} "
-                f"is missing."
-            )
+            try:
+                os.mkdir(self.__config.tmp_directory)
+            except Exception as exc:
+                raise Exception(
+                    "PydubFileConverter: "
+                    f"directory: {self.__config.tmp_directory} "
+                    f"is missing."
+                )
 
         filepath = os.path.join(
             self.__config.tmp_directory,

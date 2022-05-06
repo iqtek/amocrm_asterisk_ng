@@ -9,5 +9,5 @@ from .selected_component_config import *
 from .message_bus import *
 from .dispatcher import *
 from .key_value_storage import *
-from .context_vars import *
+from .context import *
 from .event_bus import *

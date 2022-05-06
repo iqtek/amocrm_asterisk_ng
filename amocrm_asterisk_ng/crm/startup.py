@@ -8,11 +8,11 @@ from amocrm_asterisk_ng.infrastructure import IKeyValueStorageFactory
 from amocrm_asterisk_ng.infrastructure import ILogger
 from amocrm_asterisk_ng.infrastructure import InitializableComponent
 from amocrm_asterisk_ng.infrastructure import InitializableEventBus
-from amocrm_asterisk_ng.infrastructure import ISetContextVarsFunction
 from amocrm_asterisk_ng.infrastructure import ioc
 from amocrm_asterisk_ng.infrastructure import ISelector
 from amocrm_asterisk_ng.infrastructure import SelectedComponentConfig
 from amocrm_asterisk_ng.infrastructure import SelectorImpl
+
 from .amocrm import AmocrmComponentFactory
 
 
@@ -30,7 +30,6 @@ def crm_startup(
     dispatcher = ioc.get_instance(IDispatcher)
     storage_factory = ioc.get_instance(IKeyValueStorageFactory)
     logger = ioc.get_instance(ILogger)
-    set_context_vars_function = ioc.get_instance(ISetContextVarsFunction)
 
     startup_config = SelectedComponentConfig(**settings)
 
@@ -41,7 +40,6 @@ def crm_startup(
         dispatcher=dispatcher,
         event_bus=event_bus,
         storage_factory=storage_factory,
-        set_context_vars_function=set_context_vars_function,
         logger=logger,
     )
 

@@ -1,6 +1,7 @@
 from amocrm_asterisk_ng.domain import IOriginationRequestCommand
 from amocrm_asterisk_ng.domain import IOriginationCallCommand
 
+
 __all__ = [
     "OriginationRequestCommandImpl",
 ]

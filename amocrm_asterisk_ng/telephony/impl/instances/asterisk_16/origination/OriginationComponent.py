@@ -1,6 +1,5 @@
 from amocrm_asterisk_ng.domain import IOriginationCallCommand
 from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import IEventBus
 from amocrm_asterisk_ng.infrastructure import InitializableComponent
 
 from .OriginationCallCommand import OriginationCallCommand
@@ -26,12 +25,10 @@ class OriginationComponent(InitializableComponent):
         self,
         config: OriginationConfig,
         ami_manager: IAmiManager,
-        event_bus: IEventBus,
         dispatcher: IDispatcher,
     ) -> None:
         self.__config = config
         self.__ami_manager = ami_manager
-        self.__event_bus = event_bus
         self.__dispatcher = dispatcher
 
     async def initialize(self) -> None:

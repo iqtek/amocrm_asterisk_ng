@@ -6,7 +6,6 @@ from fastapi import FastAPI
 
 from amocrm_asterisk_ng.infrastructure import SelectorImpl
 from amocrm_asterisk_ng.infrastructure import SelectedComponentConfig
-from amocrm_asterisk_ng.infrastructure import ISetContextVarsFunction
 from amocrm_asterisk_ng.infrastructure import InitializableComponent
 from amocrm_asterisk_ng.infrastructure import IEventBus
 from amocrm_asterisk_ng.infrastructure import IFactory
@@ -23,18 +22,23 @@ __all__ = [
 
 class WidgetComponentFactory(IFactory[InitializableComponent]):
 
+    __slots__ = (
+        "__app",
+        "__dispatcher",
+        "__event_bus",
+        "__logger",
+    )
+
     def __init__(
         self,
         app: FastAPI,
         event_bus: IEventBus,
         dispatcher: IDispatcher,
-        set_context_vars_function: ISetContextVarsFunction,
         logger: ILogger,
     ) -> None:
         self.__app = app
         self.__dispatcher = dispatcher
         self.__event_bus = event_bus
-        self.__set_context_vars_function = set_context_vars_function
         self.__logger = logger
 
     def get_instance(
@@ -50,7 +54,6 @@ class WidgetComponentFactory(IFactory[InitializableComponent]):
         asterisk_widget_factory = AsteriskWidgetComponentFactory(
             app=self.__app,
             dispatcher=self.__dispatcher,
-            set_context_vars_function=self.__set_context_vars_function,
             logger=self.__logger,
         )
 

@@ -4,9 +4,10 @@ from typing import Mapping
 from fastapi import FastAPI
 from uvicorn import run
 
-from .integration import ServerConfig
 from .integration import IntegrationFactory
 from .integration import IntegrationLauncher
+from .integration import ServerConfig
+
 from .version import APP_VERSION
 
 

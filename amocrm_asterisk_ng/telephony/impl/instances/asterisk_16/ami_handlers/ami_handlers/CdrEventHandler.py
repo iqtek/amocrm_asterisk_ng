@@ -64,7 +64,6 @@ class CdrEventHandler(IAmiEventHandler):
 
     async def __call__(self, event: Event) -> None:
 
-
         channel = event["Channel"]
         destination_channel = event["DestinationChannel"]
         unique_id = event["Uniqueid"]

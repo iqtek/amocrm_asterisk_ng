@@ -1,5 +1,6 @@
 from typing import MutableMapping
 from typing import Type
+from inspect import iscoroutinefunction
 from typing import TypeVar
 from ..core import IDispatcher
 from ..core import IFunction
@@ -47,9 +48,25 @@ class DispatcherImpl(IDispatcher):
 
         functions = self.__functions
 
-        class FunctionProxy(function_type):
+        if iscoroutinefunction(function_type):
+            class AsynchronousFunctionProxy(function_type):
 
-            async def __call__(self, *args, **kwargs):
+                async def __call__(self, *args, **kwargs):
+                    nonlocal functions
+                    try:
+                        function = functions[function_type]
+                    except KeyError:
+                        raise KeyError(
+                            "Unable to get a non-existent function:"
+                            f" '{function_type}'."
+                        )
+                    return await function(*args, **kwargs)
+
+            return AsynchronousFunctionProxy()
+
+        class SynchronousFunctionProxy(function_type):
+
+            def __call__(self, *args, **kwargs):
                 nonlocal functions
                 try:
                     function = functions[function_type]
@@ -58,6 +75,6 @@ class DispatcherImpl(IDispatcher):
                         "Unable to get a non-existent function:"
                         f" '{function_type}'."
                     )
-                return await function(*args, **kwargs)
+                return function(*args, **kwargs)
 
-        return FunctionProxy()
+        return SynchronousFunctionProxy()

@@ -1,1 +1,1 @@
-from .Asterisk16ComponentFactory import Asterisk16ComponentFactory
+from .startup import asterisk16_startup

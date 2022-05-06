@@ -1,0 +1,1 @@
+from .RedirectToResponsibleComponent import RedirectToResponsibleComponent

@@ -3,9 +3,11 @@ from fastapi import FastAPI
 from amocrm_asterisk_ng.infrastructure import IDispatcher
 from amocrm_asterisk_ng.infrastructure import InitializableComponent
 
+from amocrm_asterisk_ng.domain import IsUserPhoneNumerQuery
 from ...core import IGetUsersEmailAddressesQuery
 from .AsteriskWidgetConfig import AsteriskWidgetConfig
 from .GetUsersEmailAddressesQuery import GetUsersEmailAddressesQuery
+from .IsUserPhoneNumerQueryImpl import IsUserPhoneNumerQueryImpl
 from .WidgetView import WidgetView
 
 
@@ -49,11 +51,17 @@ class AsteriskWidgetComponent(InitializableComponent):
                 users=self.__config.users,
             )
         )
+        self.__dispatcher.add_function(
+            function_type=IsUserPhoneNumerQuery,
+            function=IsUserPhoneNumerQueryImpl(
+                users=self.__config.users,
+            )
+        )
 
     async def deinitialize(self) -> None:
-
-        self.__app.routes.remove(widget_view)
-
+        self.__dispatcher.delete_function(
+            function_type=IsUserPhoneNumerQuery,
+        )
         self.__dispatcher.delete_function(
             function_type=IGetUsersEmailAddressesQuery,
         )

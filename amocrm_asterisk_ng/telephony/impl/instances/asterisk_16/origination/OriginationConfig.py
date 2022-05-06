@@ -7,5 +7,5 @@ __all__ = [
 
 
 class OriginationConfig(BaseModel):
-    context: str
+    context: str = "from-internal"
     timeout: int = 30000

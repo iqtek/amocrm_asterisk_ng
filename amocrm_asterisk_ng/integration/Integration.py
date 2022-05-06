@@ -1,8 +1,8 @@
 from typing import Collection
 from typing import Sequence
 
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
 from amocrm_asterisk_ng.infrastructure import ILogger
+from amocrm_asterisk_ng.infrastructure import InitializableComponent
 from amocrm_asterisk_ng.scenario import IScenario
 
 
@@ -47,6 +47,9 @@ class Integration:
                 f"Error of initialization: {component_name}. {e}"
             )
             raise Exception("Error of initialization.") from e
+        self.__logger.info(
+            f"Component: `{component_name}` initialized."
+        )
 
     async def __deinitialize_component(
         self,
@@ -60,6 +63,10 @@ class Integration:
                 f"Error of deinitialization: {component_name}. {e}"
             )
             raise Exception("Error of initialization.") from e
+
+        self.__logger.info(
+            f"Component: `{component_name}` deinitialized."
+        )
 
     async def handle_startup(self) -> None:
         self.__logger.info("Integration initialization started.")
@@ -82,7 +89,7 @@ class Integration:
         for component in self.__listening_components:
             await self.__deinitialize_component(component)
 
-        for component in reversed(__infrastructure_components):
+        for component in reversed(self.__infrastructure_components):
             await self.__deinitialize_component(component)
 
         for component in self.__control_components:

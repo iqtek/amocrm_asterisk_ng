@@ -31,7 +31,7 @@ class RingingEventHandler(IEventHandler):
             phone_number=event.called_phone_number,
         )
 
-        if not await self.__is_internal_number_function(caller_phone_number):
+        if not await self.__is_internal_number_function(event.called_phone_number):
             await self.__raise_card_command(
                 phone_number=event.caller_phone_number,
                 users=(user_id,)

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 __all__ = [
     "ClassicScenarioConfig",
     "CallCompletedEventHandlerConfig",
@@ -9,6 +10,7 @@ __all__ = [
 class CallCompletedEventHandlerConfig(BaseModel):
     postprocessing_delay: int
     source: str
+    source_name: str
     source_uid: str
     service_code: str
     pipeline_name: str

@@ -1,7 +1,7 @@
 from typing import Collection
 
-from amo_crm_api_client import AmoCrmApiClient
-from amo_crm_api_client.exceptions import AmocrmClientException
+from amocrm_api_client import AmoCrmApiClient
+from amocrm_api_client.exceptions import AmocrmClientException
 
 from amocrm_asterisk_ng.domain import IRaiseCardCommand
 from amocrm_asterisk_ng.infrastructure import ILogger

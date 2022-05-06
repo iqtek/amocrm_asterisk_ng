@@ -1,5 +1,6 @@
 from amocrm_asterisk_ng.infrastructure import IQuery
 
+
 __all__ = [
     "IsUserPhoneNumerQuery",
 ]

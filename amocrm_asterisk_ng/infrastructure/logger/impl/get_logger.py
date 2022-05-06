@@ -18,8 +18,8 @@ def get_logger(
     settings: Dict[str, Any],
 ) -> ILogger:
 
-    # if len(settings.keys()) != 0:
-    #     config.dictConfig(settings)
+    if len(settings.keys()) != 0:
+        config.dictConfig(settings)
 
     logger = getLogger("root")
     return logger

@@ -1,7 +1,6 @@
 from typing import Type
 
 from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import IMakeContextSnapshotFunction
 from amocrm_asterisk_ng.infrastructure import IMessageBus
 from amocrm_asterisk_ng.infrastructure import Properties
 from .consumer import ConsumerFactory
@@ -26,7 +25,6 @@ class ExtendedEventBus(AbstractEventBus, InitializableEventBus):
         "__event_to_bytes_serializer",
         "__event_factory",
         "__message_bus",
-        "__make_context_vars_snapshot",
         "__consumer_factory",
         "__logger",
     )
@@ -38,7 +36,6 @@ class ExtendedEventBus(AbstractEventBus, InitializableEventBus):
         consumer_factory: ConsumerFactory,
         event_factory: IRegisteringFactory[IEvent],
         event_to_bytes_serializer: ISerializer[IEvent, bytes],
-        make_context_vars_snapshot: IMakeContextSnapshotFunction,
         logger: ILogger,
     ) -> None:
         super().__init__(logger=logger)
@@ -47,7 +44,6 @@ class ExtendedEventBus(AbstractEventBus, InitializableEventBus):
         self.__consumer_factory = consumer_factory
         self.__event_factory = event_factory
         self.__event_to_bytes_serializer = event_to_bytes_serializer
-        self.__make_context_vars_snapshot = make_context_vars_snapshot
         self.__logger = logger
 
     async def attach_event_handler(self, event_handler: IEventHandler) -> None:
@@ -68,12 +64,6 @@ class ExtendedEventBus(AbstractEventBus, InitializableEventBus):
         )
 
     async def publish(self, event: IEvent) -> None:
-        context_snapshot = self.__make_context_vars_snapshot()
-        headers = {
-            "context_snapshot": context_snapshot,
-            "attempts": self.__config.attempts_left,
-        }
-
         try:
             message = self.__event_to_bytes_serializer.serialize(event)
         except Exception as e:
@@ -85,7 +75,7 @@ class ExtendedEventBus(AbstractEventBus, InitializableEventBus):
             raise e
         await self.__message_bus.publish(
             message=message,
-            properties=Properties(headers=headers, expiration=expire)
+            properties=Properties()
         )
 
     async def initialize(self) -> None:
