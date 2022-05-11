@@ -28,12 +28,12 @@ class RedirectToResponsibleView:
             status_code=200,
         )
 
-    async def handle(self, responsible_user: Optional[str] = None) -> PlainTextResponse:
-        if responsible_user is None:
+    async def handle(self, phone: Optional[str] = None) -> PlainTextResponse:
+        if phone is None:
             return self.__make__response()
         try:
             responsible_user_phone_number = await self.__get_responsible_user_by_phone_query(
-                phone_number=responsible_user,
+                phone_number=phone,
             )
         except Exception:
             return self.__make__response()
