@@ -10,7 +10,6 @@ from fastapi import FastAPI
 from amocrm_asterisk_ng.infrastructure import IDispatcher
 from amocrm_asterisk_ng.infrastructure import IEventBus
 from amocrm_asterisk_ng.infrastructure import IFactory
-from amocrm_asterisk_ng.infrastructure import IKeyValueStorage
 from amocrm_asterisk_ng.infrastructure import ILogger
 from amocrm_asterisk_ng.infrastructure import InitializableComponent
 
@@ -31,7 +30,6 @@ class AmocrmKernelComponentFactory(IFactory[InitializableComponent]):
         "__app",
         "__dispatcher",
         "__event_bus",
-        "__storage",
         "__logger",
     )
 
@@ -40,13 +38,11 @@ class AmocrmKernelComponentFactory(IFactory[InitializableComponent]):
         app: FastAPI,
         event_bus: IEventBus,
         dispatcher: IDispatcher,
-        storage: IKeyValueStorage,
         logger: ILogger,
     ) -> None:
         self.__app = app
         self.__dispatcher = dispatcher
         self.__event_bus = event_bus
-        self.__storage = storage
         self.__logger = logger
 
     def get_instance(

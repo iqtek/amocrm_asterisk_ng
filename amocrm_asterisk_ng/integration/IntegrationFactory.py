@@ -1,25 +1,16 @@
 from asyncio import AbstractEventLoop
-from typing import Collection
-from typing import Mapping
 from typing import Any
+from typing import Mapping
 
 from fastapi import FastAPI
 from pydantic import ValidationError
 
-from amocrm_asterisk_ng.telephony import telephony_startup
-from amocrm_asterisk_ng.crm import crm_startup
-from amocrm_asterisk_ng.scenario import scenario_startup
-from amocrm_asterisk_ng.scenario import IScenario
-from amocrm_asterisk_ng.infrastructure import ioc
 from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
 from amocrm_asterisk_ng.infrastructure import InitializableEventBus
-from amocrm_asterisk_ng.infrastructure import logger_startup
-from amocrm_asterisk_ng.infrastructure import storage_startup
-from amocrm_asterisk_ng.infrastructure import dispatcher_startup
-from amocrm_asterisk_ng.infrastructure import event_bus_startup
-from amocrm_asterisk_ng.infrastructure import Version
+from amocrm_asterisk_ng.infrastructure import ioc
+from amocrm_asterisk_ng.scenario import IScenario
 
+from .bootstrap import bootstrap
 from .Integration import Integration
 from .IntegrationConfig import IntegrationConfig
 
@@ -58,6 +49,7 @@ class IntegrationFactory:
                 f"configuration file correctly. {e}"
             )
 
+        ioc.set_instance(IntegrationConfig, config)
         ioc.set("listening_components", [])
         ioc.set("control_components", [])
         ioc.set("infrastructure_components", [])
@@ -72,31 +64,13 @@ class IntegrationFactory:
             instance=event_loop,
         )
 
-        logger_startup(
-            settings=config.infrastructure.logger,
-        )
-
-        storage_startup(
-            settings=config.infrastructure.storage,
-        )
-
-        dispatcher_startup()
-
-        event_bus_startup(settings={"type": "memory"})
-
-        scenario_startup(
-            scenario_name=config.scenario,
-            scenario_configs_dir=config.scenario_configs_dir
-        )
-        crm_component = crm_startup(settings=config.crm)
-
-        telephony_startup(settings=config.telephony)
+        bootstrap()
 
         logger = ioc.get_instance(ILogger)
         scenario = ioc.get_instance(IScenario)
 
         event_bus = ioc.get_instance(InitializableEventBus)
-        control_components = ioc.get("control_components") + [crm_component]
+        control_components = ioc.get("control_components")
         listening_components = ioc.get("listening_components")
 
         integration = Integration(

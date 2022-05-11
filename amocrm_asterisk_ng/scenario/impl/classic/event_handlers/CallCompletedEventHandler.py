@@ -1,5 +1,6 @@
 from time import time
 import asyncio
+
 from amocrm_asterisk_ng.domain import CallCompletedEvent
 from amocrm_asterisk_ng.domain import CallStatus
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand

@@ -4,7 +4,6 @@ from typing import Mapping
 from fastapi import FastAPI
 
 from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import IKeyValueStorageFactory
 from amocrm_asterisk_ng.infrastructure import ILogger
 from amocrm_asterisk_ng.infrastructure import InitializableComponent
 from amocrm_asterisk_ng.infrastructure import InitializableEventBus
@@ -23,12 +22,11 @@ __all__ = [
 
 def crm_startup(
     settings: Mapping[str, Any],
-) -> InitializableComponent:
+) -> None:
 
     app = ioc.get_instance(FastAPI)
     event_bus = ioc.get_instance(InitializableEventBus)
     dispatcher = ioc.get_instance(IDispatcher)
-    storage_factory = ioc.get_instance(IKeyValueStorageFactory)
     logger = ioc.get_instance(ILogger)
 
     startup_config = SelectedComponentConfig(**settings)
@@ -39,7 +37,6 @@ def crm_startup(
         app=app,
         dispatcher=dispatcher,
         event_bus=event_bus,
-        storage_factory=storage_factory,
         logger=logger,
     )
 
@@ -49,4 +46,5 @@ def crm_startup(
     crm_component = factory.get_instance(
         settings=startup_config.settings,
     )
-    return crm_component
+    control_components = ioc.get("control_components")
+    control_components.append(crm_component)
