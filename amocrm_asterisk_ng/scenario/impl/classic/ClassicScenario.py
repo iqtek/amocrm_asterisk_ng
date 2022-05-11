@@ -5,6 +5,7 @@ from amocrm_asterisk_ng.domain import IOriginationCallCommand
 from amocrm_asterisk_ng.domain import IOriginationRequestCommand
 from amocrm_asterisk_ng.domain import IsUserPhoneNumerQuery
 from amocrm_asterisk_ng.domain import IRaiseCardCommand
+
 from amocrm_asterisk_ng.infrastructure import IDispatcher
 from amocrm_asterisk_ng.infrastructure import IEventBus
 from amocrm_asterisk_ng.infrastructure import ILogger

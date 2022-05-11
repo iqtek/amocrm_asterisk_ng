@@ -98,7 +98,6 @@ class AmiManagerImpl(IAmiManager):
             except Exception as e:
                 self.__logger.warning(
                     "AmiManager: "
-                    f"error calling event handler: '{event_handler}'. {e}"
+                    f"error calling event handler: '{event_handler}'. {e!r}"
                 )
-                self.__logger.exception(e)
         self.__manager.register_event(event_handler.event_pattern(), wrapper)
