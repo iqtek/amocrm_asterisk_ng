@@ -52,7 +52,10 @@ class AddCallToUnsortedCommand(IAddCallToUnsortedCommand):
             for pipeline in pipelines:
                 self.__pipelines[pipeline.name] = pipeline.id
 
-        pipeline_id = self.__pipelines[pipeline_name]
+        try:
+            pipeline_id = self.__pipelines[pipeline_name]
+        except KeyError:
+            raise Exception(f"There is no pipeline in the crm: `{pipeline_name}`.")
 
         link = await self.__make_link_function(unique_id)
 
