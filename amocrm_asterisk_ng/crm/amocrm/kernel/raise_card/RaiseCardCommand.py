@@ -4,7 +4,7 @@ from amocrm_api_client import AmoCrmApiClient
 from amocrm_api_client.exceptions import AmocrmClientException
 
 from amocrm_asterisk_ng.domain import IRaiseCardCommand
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 
 
 __all__ = [
@@ -39,14 +39,14 @@ class RaiseCardCommand(IRaiseCardCommand):
                 users=users,
             )
         except AmocrmClientException as e:
-            self.__logger.error(
+            await self.__logger.error(
                 "RaiseCardCommand: error raise card "
                 f"phone_number: '{phone_number}' "
                 f"for users: '{users}'."
             )
             self.__logger.exception(e)
 
-        self.__logger.debug(
+        await self.__logger.debug(
             "RaiseCardCommand: raise card "
             f"phone_number: '{phone_number}' "
             f"for users: '{users}'."

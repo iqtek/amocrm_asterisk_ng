@@ -1,14 +1,15 @@
-from fastapi import FastAPI
+from typing import Optional
 
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
+from fastapi import FastAPI
+from glassio.dispatcher import IDispatcher
+from glassio.initializable_components import AbstractInitializableComponent
 
 from amocrm_asterisk_ng.domain import IsUserPhoneNumerQuery
-from ...core import IGetUsersEmailAddressesQuery
 from .AsteriskWidgetConfig import AsteriskWidgetConfig
 from .GetUsersEmailAddressesQuery import GetUsersEmailAddressesQuery
 from .IsUserPhoneNumerQueryImpl import IsUserPhoneNumerQueryImpl
 from .WidgetView import WidgetView
+from ...core import IGetUsersEmailAddressesQuery
 
 
 __all__ = [
@@ -16,7 +17,7 @@ __all__ = [
 ]
 
 
-class AsteriskWidgetComponent(InitializableComponent):
+class AsteriskWidgetComponent(AbstractInitializableComponent):
 
     __slots__ = (
         "__config",
@@ -32,12 +33,13 @@ class AsteriskWidgetComponent(InitializableComponent):
         dispatcher: IDispatcher,
         widget_view: WidgetView,
     ) -> None:
+        super().__init__()
         self.__config = config
         self.__app = app
         self.__dispatcher = dispatcher
         self.__widget_view = widget_view
 
-    async def initialize(self) -> None:
+    async def _initialize(self) -> None:
 
         self.__app.add_route(
             "/amocrm/calls",
@@ -58,7 +60,7 @@ class AsteriskWidgetComponent(InitializableComponent):
             )
         )
 
-    async def deinitialize(self) -> None:
+    async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
         self.__dispatcher.delete_function(
             function_type=IsUserPhoneNumerQuery,
         )

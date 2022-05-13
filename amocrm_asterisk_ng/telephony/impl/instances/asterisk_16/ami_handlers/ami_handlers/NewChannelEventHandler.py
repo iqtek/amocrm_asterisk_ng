@@ -1,4 +1,4 @@
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 from ..ami_store import IAmiStore
 from ......core.ami_manager import Event
 from ......core.ami_manager import IAmiEventHandler
@@ -50,7 +50,7 @@ class NewChannelEventHandler(IAmiEventHandler):
 
         if phone_number:
             if not self.__is_valid_phone(phone_number):
-                self.__logger.warning(
+                await self.__logger.warning(
                     "NewChannelEventHandler: "
                     "Phone invalid: "
                     f"phone: '{phone_number}' ]."
@@ -67,7 +67,7 @@ class NewChannelEventHandler(IAmiEventHandler):
                     phone=phone_number,
                 )
 
-            self.__logger.debug(
+            await self.__logger.debug(
                 "NewChannelEventHandler: "
                 "Phone is forced to update: "
                 f"[ channel: '{channel}' "

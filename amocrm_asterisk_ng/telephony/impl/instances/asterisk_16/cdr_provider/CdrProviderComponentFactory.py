@@ -3,10 +3,11 @@ from typing import Any
 from typing import Mapping
 from typing import Optional
 
-from amocrm_asterisk_ng.infrastructure import IDispatcher
+from glassio.dispatcher import IDispatcher
 from amocrm_asterisk_ng.infrastructure import IFactory
-from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
+from glassio.logger import ILogger
+from glassio.initializable_components import AbstractInitializableComponent
+from glassio.initializable_components import InitializableComponent
 
 from .CdrProviderComponent import CdrProviderComponent
 from .CdrProviderConfig import CdrProviderConfig

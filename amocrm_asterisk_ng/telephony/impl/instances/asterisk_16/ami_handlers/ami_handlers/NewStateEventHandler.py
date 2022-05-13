@@ -1,6 +1,6 @@
 from amocrm_asterisk_ng.domain import RingingEvent
-from amocrm_asterisk_ng.infrastructure import IEventBus
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.event_bus import IEventBus
+from glassio.logger import ILogger
 
 from ..ami_store import IAmiStore
 from ......core.ami_manager import Event

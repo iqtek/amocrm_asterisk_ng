@@ -1,8 +1,8 @@
 from typing import Collection
 from typing import Sequence
 
-from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
+from glassio.logger import InitializableLogger
+from glassio.initializable_components import InitializableComponent
 from amocrm_asterisk_ng.scenario import IScenario
 
 
@@ -27,7 +27,7 @@ class Integration:
         listening_components: Collection[InitializableComponent],
         control_components: Collection[InitializableComponent],
         infrastructure_components: Sequence[InitializableComponent],
-        logger: ILogger,
+        logger: InitializableLogger,
     ) -> None:
         self.__scenario = scenario
         self.__listening_components = listening_components
@@ -43,11 +43,11 @@ class Integration:
         try:
             await component.initialize()
         except Exception as e:
-            self.__logger.critical(
-                f"Error of initialization: {component_name}. {e}"
+            await self.__logger.critical(
+                f"Error of initialization: `{component_name}`. {e!r}"
             )
             raise Exception("Error of initialization.") from e
-        self.__logger.info(
+        await self.__logger.info(
             f"Component: `{component_name}` initialized."
         )
 
@@ -59,17 +59,18 @@ class Integration:
         try:
             await component.deinitialize()
         except Exception as e:
-            self.__logger.critical(
-                f"Error of deinitialization: {component_name}. {e}"
+            await self.__logger.critical(
+                f"Error of deinitialization: `{component_name}`. {e!r}"
             )
             raise Exception("Error of initialization.") from e
 
-        self.__logger.info(
+        await self.__logger.info(
             f"Component: `{component_name}` deinitialized."
         )
 
     async def handle_startup(self) -> None:
-        self.__logger.info("Integration initialization started.")
+        await self.__logger.initialize()
+        await self.__logger.info("Integration initialization started.")
 
         for component in self.__infrastructure_components:
             await self.__initialize_component(component)
@@ -81,10 +82,10 @@ class Integration:
             await self.__initialize_component(component)
 
         await self.__scenario.upload()
-        self.__logger.info("Integration initialization finished.")
+        await self.__logger.info("Integration initialization finished.")
 
     async def handle_shutdown(self) -> None:
-        self.__logger.info("Integration deinitialization started.")
+        await self.__logger.info("Integration deinitialization started.")
 
         for component in self.__listening_components:
             await self.__deinitialize_component(component)
@@ -97,4 +98,5 @@ class Integration:
 
         await self.__scenario.unload()
 
-        self.__logger.info("Integration deinitialization finished.")
+        await self.__logger.info("Integration deinitialization finished.")
+        await self.__logger.deinitialize()

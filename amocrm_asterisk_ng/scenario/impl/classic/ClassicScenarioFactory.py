@@ -2,10 +2,10 @@ from typing import Any
 from typing import Mapping
 from typing import Optional
 
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import IEventBus
+from glassio.dispatcher import IDispatcher
+from glassio.event_bus import IEventBus
 from amocrm_asterisk_ng.infrastructure import IFactory
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 
 from .ClassicScenario import ClassicScenario
 from .ClassicScenarioConfig import ClassicScenarioConfig

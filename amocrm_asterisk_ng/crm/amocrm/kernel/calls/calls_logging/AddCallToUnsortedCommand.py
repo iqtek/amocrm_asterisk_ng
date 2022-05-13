@@ -5,7 +5,7 @@ from amocrm_api_client.models.unsorted import UnsortedCall
 from amocrm_api_client.models.unsorted import UnsortedCallMetadata
 
 from amocrm_asterisk_ng.domain import IAddCallToUnsortedCommand
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 from .MakeLinkFunction import IMakeLinkFunction
 
 

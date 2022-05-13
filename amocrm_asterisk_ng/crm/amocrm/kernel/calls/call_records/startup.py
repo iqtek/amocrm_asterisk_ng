@@ -4,8 +4,8 @@ from typing import Mapping
 from fastapi import FastAPI
 
 from amocrm_asterisk_ng.domain import IGetRecordFileUniqueIdQuery
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.dispatcher import IDispatcher
+from glassio.logger import ILogger
 
 from .CallRecordsConfig import CallRecordsConfig
 from .file_converters import PydubFileConverter

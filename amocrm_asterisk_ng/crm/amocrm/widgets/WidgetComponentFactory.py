@@ -6,11 +6,11 @@ from fastapi import FastAPI
 
 from amocrm_asterisk_ng.infrastructure import SelectorImpl
 from amocrm_asterisk_ng.infrastructure import SelectedComponentConfig
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
-from amocrm_asterisk_ng.infrastructure import IEventBus
+from glassio.initializable_components import InitializableComponent
+from glassio.event_bus import IEventBus
 from amocrm_asterisk_ng.infrastructure import IFactory
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.dispatcher import IDispatcher
+from glassio.logger import ILogger
 
 from .asterisk_widget import AsteriskWidgetComponentFactory
 

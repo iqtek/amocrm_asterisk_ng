@@ -4,7 +4,7 @@ from typing import Type
 from panoramisk import Manager
 from panoramisk.message import Message
 
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 
 from ...core import Action
 from ...core import IAmiEventHandler
@@ -56,7 +56,7 @@ class AmiManagerImpl(IAmiManager):
         try:
             response = await self.__manager.send_action(dict(action))
         except Exception as e:
-            self.__logger.warning(
+            await self.__logger.warning(
                 f"AmiManager: error sending action: {action}. {e}"
             )
             raise e
@@ -65,7 +65,7 @@ class AmiManagerImpl(IAmiManager):
         status = parameters.pop("Response")
         id = parameters.pop("ActionID", None)
         response = Response(status, parameters, id)
-        self.__logger.debug(
+        await self.__logger.debug(
             f"AmiManager: send action: {action}; response: {response}."
         )
         return response
@@ -85,18 +85,18 @@ class AmiManagerImpl(IAmiManager):
             try:
                 event = self.__ami_message_convert_function(message)
             except Exception as e:
-                self.__logger.error(
+                await self.__logger.error(
                     f"AmiManager: error validation of message: {message}."
                 )
                 self.__logger.exception(e)
                 return
-            self.__logger.debug(
+            await self.__logger.debug(
                 f"AmiManager: catch event {event}."
             )
             try:
                 await event_handler(event)
             except Exception as e:
-                self.__logger.warning(
+                await self.__logger.warning(
                     "AmiManager: "
                     f"error calling event handler: '{event_handler}'. {e!r}"
                 )

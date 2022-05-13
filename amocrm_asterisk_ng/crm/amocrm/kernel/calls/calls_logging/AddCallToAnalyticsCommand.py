@@ -4,7 +4,7 @@ from amocrm_api_client import AmoCrmApiClient
 from amocrm_api_client.models.call import AddCall
 
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 from .MakeLinkFunction import IMakeLinkFunction
 
 

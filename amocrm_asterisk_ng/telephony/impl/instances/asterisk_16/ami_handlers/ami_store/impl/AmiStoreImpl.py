@@ -1,5 +1,5 @@
 from amocrm_asterisk_ng.infrastructure import IKeyValueStorage
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 
 from ..core import IAmiStore
 
@@ -45,7 +45,7 @@ class AmiStoreImpl(IAmiStore):
             expire=self.__CHANNEL_TTL
         )
 
-        self.__logger.debug(
+        await self.__logger.debug(
             "AmiStore: create new channel "
             f"[ channel: '{channel}' "
             f"unique_id: '{unique_id}' "
@@ -59,7 +59,7 @@ class AmiStoreImpl(IAmiStore):
             expire=self.__CHANNEL_TTL
         )
 
-        self.__logger.debug(
+        await self.__logger.debug(
             "AmiStore: save phone "
             f"[ channel: '{channel}' "
             f"phone: '{phone}' ]."
@@ -73,7 +73,7 @@ class AmiStoreImpl(IAmiStore):
             expire=self.__CHANNEL_TTL
         )
 
-        self.__logger.debug(
+        await self.__logger.debug(
             "AmiStore: update phone "
             f"[ channel: '{channel}' "
             f"old_phone: '{old_phone}' "
@@ -117,7 +117,7 @@ class AmiStoreImpl(IAmiStore):
             f"phone-channel-{channel}",
         )
 
-        self.__logger.debug(
+        await self.__logger.debug(
             "AmiStore: delete channel "
             f"[ channel: '{channel}' "
             f"unique_id: '{unique_id}' ]."
@@ -130,7 +130,7 @@ class AmiStoreImpl(IAmiStore):
             expire=self.__DIAL_WAITING_TIME,
         )
 
-        self.__logger.debug(
+        await self.__logger.debug(
             "AmiStore: set dialbegin "
             f"[ unique_id: '{unique_id}' "
             f"dest_unique_id: '{dest_unique_id}' ]."

@@ -6,13 +6,12 @@ from amocrm_api_client import AmoCrmApiClientConfig
 from amocrm_api_client import create_amocrm_api_client
 from amocrm_api_client.token_provider import StandardTokenProviderFactory
 from fastapi import FastAPI
+from glassio.dispatcher import IDispatcher
+from glassio.event_bus import IEventBus
+from glassio.initializable_components import InitializableComponent
+from glassio.logger import ILogger
 
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import IEventBus
 from amocrm_asterisk_ng.infrastructure import IFactory
-from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
-
 from .AmocrmKernelComponent import AmocrmKernelComponent
 from .AmocrmKernelComponentConfig import AmocrmKernelComponentConfig
 from .calls import CallManagerComponent

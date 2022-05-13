@@ -6,7 +6,7 @@ from fastapi import Request
 from fastapi import Response
 
 from amocrm_asterisk_ng.domain import IOriginationRequestCommand
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 
 from .AsteriskWidgetConfig import AsteriskWidgetConfig
 
@@ -56,7 +56,7 @@ class WidgetView:
             return self.__make_response({"status": "invalid data."})
 
         if login != self.__config.login or password != self.__config.password:
-            self.__logger.warning(
+            await self.__logger.warning(
                 "OriginationHandler: "
                 "Attempted request with invalid credentials."
             )

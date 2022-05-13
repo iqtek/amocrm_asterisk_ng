@@ -1,6 +1,6 @@
 from typing import Literal
 
-from amocrm_asterisk_ng.infrastructure import IQuery
+from glassio.dispatcher import IQuery
 
 
 __all__ = [

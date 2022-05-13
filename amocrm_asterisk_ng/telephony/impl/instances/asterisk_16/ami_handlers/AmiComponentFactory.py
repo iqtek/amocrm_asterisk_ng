@@ -1,10 +1,9 @@
 from asyncio import AbstractEventLoop
 
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
-from amocrm_asterisk_ng.infrastructure import IEventBus
+from glassio.event_bus import IEventBus
+from glassio.logger import ILogger
+from glassio.initializable_components import InitializableComponent
 from amocrm_asterisk_ng.infrastructure import IKeyValueStorage
-from amocrm_asterisk_ng.infrastructure import ILogger
-
 from .ami_store import AmiStoreImpl
 from .AmiComponent import AmiComponent
 from .....core import IAmiManager

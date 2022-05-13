@@ -1,5 +1,7 @@
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
-from amocrm_asterisk_ng.infrastructure import ILogger
+from typing import Optional
+
+from glassio.initializable_components import AbstractInitializableComponent
+from glassio.initializable_components import InitializableComponent
 
 from ....core import IAmiManager
 
@@ -9,7 +11,7 @@ __all__ = [
 ]
 
 
-class Asterisk16Component(InitializableComponent):
+class Asterisk16Component(AbstractInitializableComponent):
 
     __slots__ = (
         "__ami_manager",
@@ -26,18 +28,19 @@ class Asterisk16Component(InitializableComponent):
         origination_component: InitializableComponent,
         storage: InitializableComponent,
     ) -> None:
+        super().__init__()
         self.__ami_manager = ami_manager
         self.__cdr_component = cdr_component
         self.__origination_component = origination_component
         self.__storage = storage
 
-    async def initialize(self):
+    async def _initialize(self) -> None:
         await self.__storage.initialize()
         await self.__ami_manager.connect()
         await self.__cdr_component.initialize()
         await self.__origination_component.initialize()
 
-    async def deinitialize(self):
+    async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
         await self.__cdr_component.deinitialize()
         await self.__origination_component.deinitialize()
         self.__ami_manager.disconnect()

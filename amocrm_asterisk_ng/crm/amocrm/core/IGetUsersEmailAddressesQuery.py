@@ -1,4 +1,4 @@
-from amocrm_asterisk_ng.infrastructure import IQuery
+from glassio.dispatcher import IQuery
 from typing import Mapping
 
 

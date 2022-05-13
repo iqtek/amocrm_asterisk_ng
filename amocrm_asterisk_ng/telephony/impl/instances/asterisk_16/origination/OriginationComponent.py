@@ -1,7 +1,7 @@
 from amocrm_asterisk_ng.domain import IOriginationCallCommand
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
-
+from glassio.dispatcher import IDispatcher
+from glassio.initializable_components import AbstractInitializableComponent
+from typing import Optional
 from .OriginationCallCommand import OriginationCallCommand
 from .OriginationConfig import OriginationConfig
 from .....core import IAmiManager
@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-class OriginationComponent(InitializableComponent):
+class OriginationComponent(AbstractInitializableComponent):
 
     __slots__ = (
         "__config",
@@ -27,11 +27,12 @@ class OriginationComponent(InitializableComponent):
         ami_manager: IAmiManager,
         dispatcher: IDispatcher,
     ) -> None:
+        super().__init__()
         self.__config = config
         self.__ami_manager = ami_manager
         self.__dispatcher = dispatcher
 
-    async def initialize(self) -> None:
+    async def _initialize(self) -> None:
 
         self.__dispatcher.add_function(
             function_type=IOriginationCallCommand,
@@ -41,7 +42,7 @@ class OriginationComponent(InitializableComponent):
             ),
         )
 
-    async def deinitialize(self) -> None:
+    async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
 
         self.__dispatcher.delete_function(
             function_type=IOriginationCallCommand,

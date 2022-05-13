@@ -78,13 +78,13 @@ infrastructure:
         level: "DEBUG"
         formatter: standard
         class: logging.handlers.WatchedFileHandler
-        filename: "./full.log"
+        filename: "./logs/full.log"
       file_error:
         level: "ERROR"
         formatter: standard
         class: logging.handlers.WatchedFileHandler
-        filename: "./error.log"
-    logger:
+        filename: "./logs/error.log"
+    loggers:
       root:
         level: "DEBUG"
         handlers:

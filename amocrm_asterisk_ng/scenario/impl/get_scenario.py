@@ -1,8 +1,8 @@
 import yaml
 
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import IEventBus
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.dispatcher import IDispatcher
+from glassio.event_bus import IEventBus
+from glassio.logger import ILogger
 
 from .classic import ClassicScenarioFactory
 from ..core import IScenario

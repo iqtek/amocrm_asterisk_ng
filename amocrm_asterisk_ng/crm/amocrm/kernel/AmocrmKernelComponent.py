@@ -1,7 +1,9 @@
+from typing import Optional
 from amocrm_api_client import AmoCrmApiClient
 
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
-from amocrm_asterisk_ng.infrastructure import IDispatcher
+from glassio.initializable_components import AbstractInitializableComponent
+from glassio.initializable_components import InitializableComponent
+from glassio.dispatcher import IDispatcher
 from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
 from amocrm_asterisk_ng.domain import IGetResponsibleUserByPhoneQuery
 
@@ -17,7 +19,7 @@ __all__ = [
 ]
 
 
-class AmocrmKernelComponent(InitializableComponent):
+class AmocrmKernelComponent(AbstractInitializableComponent):
 
     __slots__ = (
         "__dispatcher",
@@ -33,12 +35,13 @@ class AmocrmKernelComponent(InitializableComponent):
         raise_card_component: InitializableComponent,
         call_manager_component: InitializableComponent,
     ) -> None:
+        super().__init__()
         self.__amo_client = amo_client
         self.__dispatcher = dispatcher
         self.__raise_card_component = raise_card_component
         self.__call_manager_component = call_manager_component
 
-    async def initialize(self) -> None:
+    async def _initialize(self) -> None:
         await self.__amo_client.initialize()
 
         self.__dispatcher.add_function(
@@ -67,7 +70,7 @@ class AmocrmKernelComponent(InitializableComponent):
         await self.__raise_card_component.initialize()
         await self.__call_manager_component.initialize()
 
-    async def deinitialize(self) -> None:
+    async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
         await self.__call_manager_component.deinitialize()
         await self.__raise_card_component.deinitialize()
 
