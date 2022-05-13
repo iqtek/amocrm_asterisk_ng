@@ -1,3 +1,5 @@
+from typing import Optional
+
 from glassio.initializable_components import AbstractInitializableComponent
 from glassio.initializable_components import InitializableComponent
 
@@ -27,6 +29,6 @@ class AmocrmComponent(AbstractInitializableComponent):
         await self.__widget_component.initialize()
         await self.__amocrm_kernel_component.initialize()
 
-    async def _deinitialize(self, e) -> None:
+    async def deinitialize(self, exception: Optional[Exception] = None) -> None:
         await self.__widget_component.deinitialize()
         await self.__amocrm_kernel_component.deinitialize()

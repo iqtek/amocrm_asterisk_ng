@@ -3,10 +3,10 @@ from typing import Any
 from typing import Mapping
 
 from fastapi import FastAPI
+from glassio.logger import InitializableLogger
+
 from pydantic import ValidationError
 
-from glassio.logger import ILogger
-from glassio.event_bus import InitializableEventBus
 from amocrm_asterisk_ng.infrastructure import ioc
 from amocrm_asterisk_ng.scenario import IScenario
 
@@ -54,19 +54,12 @@ class IntegrationFactory:
         ioc.set("control_components", [])
         ioc.set("infrastructure_components", [])
 
-        ioc.set_instance(
-            key=FastAPI,
-            instance=self.__app,
-        )
-
-        ioc.set_instance(
-            key=AbstractEventLoop,
-            instance=event_loop,
-        )
+        ioc.set_instance(FastAPI, self.__app)
+        ioc.set_instance(AbstractEventLoop, event_loop)
 
         bootstrap()
 
-        logger = ioc.get_instance(ILogger)
+        logger = ioc.get_instance(InitializableLogger)
         scenario = ioc.get_instance(IScenario)
 
         control_components = ioc.get("control_components")
