@@ -7,6 +7,10 @@ __all__ = [
 
 
 class RingingEvent(BaseEvent):
+    """
+    Call event.
 
+    Happens when the phone starts ringing. It comes from telephony.
+    """
     caller_phone_number: str
     called_phone_number: str

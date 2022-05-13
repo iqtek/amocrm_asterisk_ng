@@ -2,8 +2,6 @@ from typing import Literal
 
 from glassio.dispatcher import ICommand
 
-from ..models import CallStatus
-
 
 __all__ = [
     "IAddCallToAnalyticsCommand",

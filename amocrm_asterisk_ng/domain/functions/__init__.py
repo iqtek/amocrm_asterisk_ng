@@ -2,7 +2,6 @@ from .IAddCallToAnalyticsCommand import IAddCallToAnalyticsCommand
 from .IAddCallToUnsortedCommand import IAddCallToUnsortedCommand
 from .IGetRecordFileUniqueIdQuery import IGetRecordFileUniqueIdQuery
 from .IGetResponsibleUserByPhoneQuery import IGetResponsibleUserByPhoneQuery
-from .IGetResponsibleUserByPhoneQuery import ResponsibleUserNotFoundException
 from .IGetUserIdByPhoneQuery import IGetUserIdByPhoneQuery
 from .IOriginationCallCommand import IOriginationCallCommand
 from .IOriginationRequestCommand import IOriginationRequestCommand

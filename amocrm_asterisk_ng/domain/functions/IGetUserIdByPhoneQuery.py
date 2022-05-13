@@ -1,7 +1,5 @@
 from glassio.dispatcher import IQuery
 
-from ..models import File
-
 
 __all__ = [
     "IGetUserIdByPhoneQuery",

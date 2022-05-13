@@ -1,4 +1,5 @@
 from typing import Collection
+
 from glassio.dispatcher import ICommand
 
 
