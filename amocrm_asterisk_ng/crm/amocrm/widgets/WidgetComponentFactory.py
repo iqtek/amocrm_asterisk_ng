@@ -8,7 +8,7 @@ from amocrm_asterisk_ng.infrastructure import SelectorImpl
 from amocrm_asterisk_ng.infrastructure import SelectedComponentConfig
 from glassio.initializable_components import InitializableComponent
 from glassio.event_bus import IEventBus
-from amocrm_asterisk_ng.infrastructure import IFactory
+from glassio.mixins import IFactory
 from glassio.dispatcher import IDispatcher
 from glassio.logger import ILogger
 
