@@ -3,7 +3,7 @@ from typing import Mapping
 from typing import Optional
 
 from glassio.dispatcher import IDispatcher
-from amocrm_asterisk_ng.infrastructure import IFactory
+from glassio.mixins import IFactory
 from glassio.initializable_components import InitializableComponent
 
 from .OriginationComponent import OriginationComponent

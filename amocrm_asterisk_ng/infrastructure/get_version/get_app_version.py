@@ -2,6 +2,7 @@ from amocrm_asterisk_ng.version import APP_VERSION
 
 from .Version import Version
 
+
 __all__ = [
     "get_app_version",
 ]

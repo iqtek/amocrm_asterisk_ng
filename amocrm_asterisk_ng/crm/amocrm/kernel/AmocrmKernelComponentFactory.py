@@ -11,7 +11,7 @@ from glassio.event_bus import IEventBus
 from glassio.initializable_components import InitializableComponent
 from glassio.logger import ILogger
 
-from amocrm_asterisk_ng.infrastructure import IFactory
+from glassio.mixins import IFactory
 from .AmocrmKernelComponent import AmocrmKernelComponent
 from .AmocrmKernelComponentConfig import AmocrmKernelComponentConfig
 from .calls import CallManagerComponent

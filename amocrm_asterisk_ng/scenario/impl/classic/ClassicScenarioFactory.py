@@ -4,7 +4,7 @@ from typing import Optional
 
 from glassio.dispatcher import IDispatcher
 from glassio.event_bus import IEventBus
-from amocrm_asterisk_ng.infrastructure import IFactory
+from glassio.mixins import IFactory
 from glassio.logger import ILogger
 
 from .ClassicScenario import ClassicScenario
