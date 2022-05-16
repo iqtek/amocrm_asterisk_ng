@@ -1,6 +1,7 @@
 from datetime import datetime
 from time import time
 
+from glassio.context import get_context
 from amocrm_asterisk_ng.domain import CallCompletedEvent
 from amocrm_asterisk_ng.domain import CallStatus
 from glassio.logger import ILogger
@@ -128,5 +129,4 @@ class CdrEventHandler(IAmiEventHandler):
             end_timestamp=end_time.timestamp(),
             answer_timestamp=answer_timestamp,
         )
-
         await self.__event_bus.publish(cdr_event)
