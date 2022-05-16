@@ -1,6 +1,6 @@
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import InitializableEventBus
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.dispatcher import IDispatcher
+from glassio.event_bus import InitializableEventBus
+from glassio.logger import ILogger
 from amocrm_asterisk_ng.infrastructure import ioc
 
 from .get_scenario import get_scenario

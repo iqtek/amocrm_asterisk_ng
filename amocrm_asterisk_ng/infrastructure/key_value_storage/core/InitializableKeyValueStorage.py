@@ -1,6 +1,6 @@
 from abc import ABC
 
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
+from glassio.initializable_components import InitializableComponent
 
 from .IKeyValueStorage import IKeyValueStorage
 

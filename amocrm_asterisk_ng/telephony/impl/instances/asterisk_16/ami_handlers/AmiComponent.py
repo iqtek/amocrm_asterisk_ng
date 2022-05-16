@@ -1,8 +1,8 @@
-import asyncio
+from typing import Optional
 
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
-from amocrm_asterisk_ng.infrastructure import IEventBus
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.event_bus import IEventBus
+from glassio.initializable_components import AbstractInitializableComponent
+from glassio.logger import ILogger
 
 from .ami_handlers import (
     CdrEventHandler,
@@ -21,7 +21,7 @@ __all__ = [
 ]
 
 
-class AmiComponent(InitializableComponent):
+class AmiComponent(AbstractInitializableComponent):
 
     def __init__(
         self,
@@ -30,12 +30,13 @@ class AmiComponent(InitializableComponent):
         event_bus: IEventBus,
         logger: ILogger,
     ) -> None:
+        super().__init__()
         self.__ami_manager = ami_manager
         self.__ami_store = ami_store
         self.__event_bus = event_bus
         self.__logger = logger
 
-    async def initialize(self) -> None:
+    async def _initialize(self) -> None:
         self.__ami_manager.attach_event_handler(
             NewChannelEventHandler(
                 ami_store=self.__ami_store,
@@ -75,7 +76,7 @@ class AmiComponent(InitializableComponent):
             )
         )
 
-    async def deinitialize(self) -> None:
+    async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
         self.__ami_manager.detach_event_handler(
             NewChannelEventHandler
         )

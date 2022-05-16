@@ -1,10 +1,8 @@
 from abc import ABC
-from typing import Any
-from typing import Mapping
 from typing import TypeVar
 
+from glassio.mixins import IFactory
 
-from .IFactory import IFactory
 from ..utils import ISelectable
 
 

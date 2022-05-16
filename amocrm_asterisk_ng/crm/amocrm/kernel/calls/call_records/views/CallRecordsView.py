@@ -1,13 +1,13 @@
 from fastapi import Response
 from fastapi.responses import JSONResponse
+from glassio.logger import ILogger
 
 from amocrm_asterisk_ng.domain import File
 from amocrm_asterisk_ng.domain import Filetype
 from amocrm_asterisk_ng.domain import IGetRecordFileUniqueIdQuery
-from amocrm_asterisk_ng.infrastructure import ILogger
 
-from ..file_converters import IFileConverter
 from ..CallRecordsConfig import CallRecordsConfig
+from ..file_converters import IFileConverter
 
 
 __all__ = [
@@ -42,19 +42,14 @@ class CallRecordsView:
                 unique_id=unique_id,
             )
         except FileNotFoundError as e:
-            self.__logger.warning(
-                f"CallRecordsView: "
-                f"Attempt to request a non-existent file "
-                f"with unique_id: '{unique_id}'. {e}"
-            )
             return JSONResponse(
                 status_code=404,
-                content={"result": "file not found"},
+                content={"result": "file not found."},
             )
         except Exception as e:
             return JSONResponse(
                 status_code=500,
-                content={"error": e},
+                content={}
             )
 
         if self.__config.enable_conversion:
@@ -63,12 +58,13 @@ class CallRecordsView:
                     file=file,
                     new_filetype=Filetype.MP3,
                 )
-            except Exception as e:
-                self.__logger.warning(
+            except Exception as exc:
+                await self.__logger.warning(
                     "CallRecordsView: "
                     "Error during file conversion "
-                    f"file_name: '{file.name}', "
-                    f"file_type: '{file.type}'. {e}"
+                    f"file_name: `{file.name}` "
+                    f"file_type: `{file.type}`.",
+                    exception=exc,
                 )
                 return JSONResponse(
                     status_code=500,

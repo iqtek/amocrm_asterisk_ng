@@ -1,6 +1,4 @@
-from amocrm_asterisk_ng.infrastructure import IQuery
-
-from ..models import File
+from glassio.dispatcher import IQuery
 
 
 __all__ = [

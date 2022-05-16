@@ -1,6 +1,6 @@
 from typing import Mapping
 
-from ...core import IGetUsersEmailAddressesQuery
+from ....core import IGetUsersEmailAddressesQuery
 
 
 __all__ = [

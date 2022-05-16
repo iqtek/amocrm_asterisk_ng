@@ -1,15 +1,19 @@
+from typing import Optional
+
 from amocrm_api_client import AmoCrmApiClient
+from glassio.dispatcher import IDispatcher
+from glassio.initializable_components import AbstractInitializableComponent
+from glassio.initializable_components import InitializableComponent
 
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
 from amocrm_asterisk_ng.domain import IGetResponsibleUserByPhoneQuery
+from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
 
-from .redirect_to_responsible import GetResponsibleUserByPhoneQuery
 from ..core import IGetPhoneByUserIdQuery
 from ..core import IGetUsersEmailAddressesQuery
-from .query_handlers import GetUserIdByPhoneQuery
+
 from .query_handlers import GetPhoneByUserIdQuery
+from .query_handlers import GetUserIdByPhoneQuery
+from .redirect_to_responsible import GetResponsibleUserByPhoneQuery
 
 
 __all__ = [
@@ -17,7 +21,7 @@ __all__ = [
 ]
 
 
-class AmocrmKernelComponent(InitializableComponent):
+class AmocrmKernelComponent(AbstractInitializableComponent):
 
     __slots__ = (
         "__dispatcher",
@@ -33,12 +37,13 @@ class AmocrmKernelComponent(InitializableComponent):
         raise_card_component: InitializableComponent,
         call_manager_component: InitializableComponent,
     ) -> None:
+        super().__init__()
         self.__amo_client = amo_client
         self.__dispatcher = dispatcher
         self.__raise_card_component = raise_card_component
         self.__call_manager_component = call_manager_component
 
-    async def initialize(self) -> None:
+    async def _initialize(self) -> None:
         await self.__amo_client.initialize()
 
         self.__dispatcher.add_function(
@@ -67,18 +72,12 @@ class AmocrmKernelComponent(InitializableComponent):
         await self.__raise_card_component.initialize()
         await self.__call_manager_component.initialize()
 
-    async def deinitialize(self) -> None:
+    async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
         await self.__call_manager_component.deinitialize()
         await self.__raise_card_component.deinitialize()
 
-        self.__dispatcher.delete_function(
-            function_type=IGetResponsibleUserByPhoneQuery,
-        )
+        self.__dispatcher.delete_function(IGetResponsibleUserByPhoneQuery)
+        self.__dispatcher.delete_function(IGetUserIdByPhoneQuery)
+        self.__dispatcher.delete_function(IGetPhoneByUserIdQuery)
 
-        self.__dispatcher.delete_function(
-            IGetUserIdByPhoneQuery,
-        )
-        self.__dispatcher.delete_function(
-            IGetPhoneByUserIdQuery,
-        )
         await self.__amo_client.deinitialize()

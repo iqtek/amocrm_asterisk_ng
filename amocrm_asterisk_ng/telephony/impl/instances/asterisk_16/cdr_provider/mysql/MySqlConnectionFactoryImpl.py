@@ -6,7 +6,7 @@ from typing import Optional
 from aiomysql import connect
 from aiomysql.connection import Connection
 
-from amocrm_asterisk_ng.infrastructure import IFactory
+from glassio.mixins import IFactory
 
 from .MySqlConfigModel import MySqlConfig
 

@@ -1,7 +1,7 @@
 from typing import Mapping
 from typing import Any
 
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 from amocrm_asterisk_ng.infrastructure import ISelectable
 
 from .RedisConnectionFactory import RedisConnectionFactoryImpl

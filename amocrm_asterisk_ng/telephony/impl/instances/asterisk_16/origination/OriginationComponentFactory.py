@@ -2,9 +2,9 @@ from typing import Any
 from typing import Mapping
 from typing import Optional
 
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import IFactory
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
+from glassio.dispatcher import IDispatcher
+from glassio.mixins import IFactory
+from glassio.initializable_components import InitializableComponent
 
 from .OriginationComponent import OriginationComponent
 from .OriginationConfig import OriginationConfig

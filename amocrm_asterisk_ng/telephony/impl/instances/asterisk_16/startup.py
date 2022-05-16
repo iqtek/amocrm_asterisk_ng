@@ -2,10 +2,10 @@ from asyncio import AbstractEventLoop
 from typing import Any
 from typing import Mapping
 
-from amocrm_asterisk_ng.infrastructure import IDispatcher
+from glassio.dispatcher import IDispatcher
 from amocrm_asterisk_ng.infrastructure import IKeyValueStorageFactory
-from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import InitializableEventBus
+from glassio.logger import ILogger
+from glassio.event_bus import InitializableEventBus
 from amocrm_asterisk_ng.infrastructure import ioc
 
 from .ami_convert_function import AmiMessageConvertFunctionImpl

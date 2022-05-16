@@ -166,34 +166,6 @@ integration:
   port: 8000
 ```
 
-### Настройка шины сообщений
-Шина сообщений требуется для отказоустойчивой работы интеграции. Например, если amoCRM будет недоступна в течении некоторого времени, то звонки все равно будут залогированы, когда amoCRM восстановится.
-
-```yaml
-message_bus:
-    type: rabbitmq
-    settings:
-      rabbitmq:
-        host: "127.0.0.1"
-        port: 5672
-        login: guest
-        password: guest
-        virtualhost: '/'
-        ssl: false
-        login_method: PLAIN
-      exchange_name: asterisk_amocrm_ng_exchange
-      exchange_type: direct
-      queue_name: asterisk_amocrm_ng
-      routing_key: asterisk_amocrm_ng
-```
-### Настройка шины событий
-Шины событий работет на основе шины сообщений. Требуется указать количество потребителей сообщений (workers). Чем больше потребителей, тем быстрее будет работать интеграция.
-```yaml
-event_bus:
-  type: extended
-  settings:
-    workers: 1
-```
 
 ### Настройка хранилища
 Хранилище на базе Redis требуется для работы части интеграции, работающей с телефонией. В хранилище будет хратится служебная информация, а также  *access* и *refresh* токены.

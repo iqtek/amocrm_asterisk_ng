@@ -1,22 +1,20 @@
 from typing import Any
 from typing import Mapping
+from typing import Optional
 
 from amocrm_api_client import AmoCrmApiClient
 from fastapi import FastAPI
+from glassio.dispatcher import IDispatcher
+from glassio.initializable_components import AbstractInitializableComponent
+from glassio.logger import ILogger
 
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
 from amocrm_asterisk_ng.domain import IAddCallToUnsortedCommand
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
-
 from .call_records import call_records_startup
 from .calls_logging import AddCallToAnalyticsCommand
 from .calls_logging import AddCallToUnsortedCommand
 from .calls_logging import IMakeLinkFunction
 from .calls_logging import MakeLinkFunctionImpl
-
-from .call_records import CallRecordsConfig
 
 
 __all__ = [
@@ -24,7 +22,7 @@ __all__ = [
 ]
 
 
-class CallManagerComponent(InitializableComponent):
+class CallManagerComponent(AbstractInitializableComponent):
 
     __slots__ = (
         "__settings",
@@ -43,13 +41,14 @@ class CallManagerComponent(InitializableComponent):
         dispatcher: IDispatcher,
         logger: ILogger,
     ) -> None:
+        super().__init__()
         self.__app = app
         self.__settings = settings
         self.__amo_client = amo_client
         self.__dispatcher = dispatcher
         self.__logger = logger
 
-    async def initialize(self) -> None:
+    async def _initialize(self) -> None:
         call_records_startup(
             settings=self.__settings,
             app=self.__app,
@@ -82,7 +81,7 @@ class CallManagerComponent(InitializableComponent):
             )
         )
 
-    async def deinitialize(self) -> None:
+    async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
 
         self.__dispatcher.delete_function(
             IAddCallToAnalyticsCommand,

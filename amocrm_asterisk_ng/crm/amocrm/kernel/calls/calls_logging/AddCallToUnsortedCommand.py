@@ -3,9 +3,10 @@ from typing import MutableMapping
 from amocrm_api_client import AmoCrmApiClient
 from amocrm_api_client.models.unsorted import UnsortedCall
 from amocrm_api_client.models.unsorted import UnsortedCallMetadata
+from glassio.logger import ILogger
 
 from amocrm_asterisk_ng.domain import IAddCallToUnsortedCommand
-from amocrm_asterisk_ng.infrastructure import ILogger
+
 from .MakeLinkFunction import IMakeLinkFunction
 
 

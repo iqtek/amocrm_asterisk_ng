@@ -1,8 +1,10 @@
-from amocrm_asterisk_ng.domain import IGetRecordFileUniqueIdQuery
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
+from typing import Optional
 
+from glassio.dispatcher import IDispatcher
+from glassio.initializable_components import AbstractInitializableComponent
+from glassio.logger import ILogger
+
+from amocrm_asterisk_ng.domain import IGetRecordFileUniqueIdQuery
 from .CdrProviderConfig import CdrProviderConfig
 from .mysql import MySqlConnectionFactoryImpl
 from .query_handlers import GetRecordFileUniqueIdQuery
@@ -13,7 +15,7 @@ __all__ = [
 ]
 
 
-class CdrProviderComponent(InitializableComponent):
+class CdrProviderComponent(AbstractInitializableComponent):
 
     __slots__ = (
         "__config",
@@ -29,12 +31,13 @@ class CdrProviderComponent(InitializableComponent):
         dispatcher: IDispatcher,
         logger: ILogger,
     ) -> None:
+        super().__init__()
         self.__config = config
         self.__mysql_connection_factory = mysql_connection_factory
         self.__dispatcher = dispatcher
         self.__logger = logger
 
-    async def initialize(self) -> None:
+    async def _initialize(self) -> None:
         self.__dispatcher.add_function(
             function_type=IGetRecordFileUniqueIdQuery,
             function=GetRecordFileUniqueIdQuery(
@@ -44,7 +47,7 @@ class CdrProviderComponent(InitializableComponent):
             )
         )
 
-    async def deinitialize(self) -> None:
+    async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
         self.__dispatcher.delete_function(
             function_type=IGetRecordFileUniqueIdQuery,
         )

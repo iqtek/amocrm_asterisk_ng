@@ -4,7 +4,10 @@ from typing import Type
 from panoramisk import Manager
 from panoramisk.message import Message
 
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.context import set_context
+from glassio.logger import ILogger
+
+from amocrm_asterisk_ng.infrastructure import generate_trace_id
 
 from ...core import Action
 from ...core import IAmiEventHandler
@@ -35,11 +38,10 @@ class AmiManagerImpl(IAmiManager):
     ) -> None:
         self.__manager = manager
         self.__ami_message_convert_function = ami_message_convert_function
-        self.__handlers: MutableMapping = {}
+        self.__handlers: MutableMapping[Type[IAmiEventHandler], IAmiEventHandler] = {}
         self.__logger = logger
 
-    async def connect(self) -> None:
-        self.__manager.connect()
+    async def __ping(self) -> None:
         for _ in range(10):
             await sleep(1)
             try:
@@ -49,24 +51,30 @@ class AmiManagerImpl(IAmiManager):
                 pass
         raise ConnectionError("AmiManagerImpl: Unable to connect to server.")
 
+    async def connect(self) -> None:
+        self.__manager.connect()
+        await self.__ping()
+
     def disconnect(self) -> None:
         self.__manager.close()
 
     async def send_action(self, action: Action) -> Response:
         try:
             response = await self.__manager.send_action(dict(action))
-        except Exception as e:
-            self.__logger.warning(
-                f"AmiManager: error sending action: {action}. {e}"
+        except Exception as exc:
+            await self.__logger.error(
+                f"AmiManager: error sending action: `{action}`.",
+                exception=exc,
+
             )
-            raise e
+            raise exc
         parameters = dict(response[0])
         parameters.pop("content")
         status = parameters.pop("Response")
         id = parameters.pop("ActionID", None)
         response = Response(status, parameters, id)
-        self.__logger.debug(
-            f"AmiManager: send action: {action}; response: {response}."
+        await self.__logger.debug(
+            f"AmiManager: send action: `{action}`; response: `{response}`."
         )
         return response
 
@@ -82,22 +90,28 @@ class AmiManagerImpl(IAmiManager):
             nonlocal event_handler
             if type(event_handler) not in self.__handlers.keys():
                 return
+
+            trace_id = generate_trace_id()
+            set_context({"trace_id": trace_id})
+
             try:
                 event = self.__ami_message_convert_function(message)
-            except Exception as e:
-                self.__logger.error(
-                    f"AmiManager: error validation of message: {message}."
+            except Exception as exc:
+                await self.__logger.error(
+                    f"AmiManager: error validation of message: {message}.",
+                    exception=exc
                 )
-                self.__logger.exception(e)
                 return
-            self.__logger.debug(
-                f"AmiManager: catch event {event}."
+            await self.__logger.debug(
+                f"AmiManager: catch event: `{event!r}`."
             )
             try:
                 await event_handler(event)
-            except Exception as e:
-                self.__logger.warning(
+            except Exception as exc:
+                await self.__logger.warning(
                     "AmiManager: "
-                    f"error calling event handler: '{event_handler}'. {e!r}"
+                    f"error calling event handler: `{event_handler}`.",
+                    exception=exc,
+
                 )
         self.__manager.register_event(event_handler.event_pattern(), wrapper)

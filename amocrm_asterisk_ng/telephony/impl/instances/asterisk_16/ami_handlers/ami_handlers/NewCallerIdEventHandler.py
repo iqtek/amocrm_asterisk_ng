@@ -1,4 +1,4 @@
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 from ..ami_store import IAmiStore
 from ......core.ami_manager import Event
 from ......core.ami_manager import IAmiEventHandler
@@ -41,7 +41,7 @@ class NewCallerIdEventHandler(IAmiEventHandler):
                 phone=phone_number,
             )
         except Exception:
-            self.__logger.debug(
+            await self.__logger.debug(
                 "NewCallerIdEventHandler: "
                 f"Unable to set new phone '{phone_number}' number as "
                 "it has already been set."

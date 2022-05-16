@@ -1,4 +1,4 @@
-from amocrm_asterisk_ng.infrastructure import IFunction
+from glassio.dispatcher import IFunction
 
 
 __all__ = [
