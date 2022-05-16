@@ -7,6 +7,7 @@ aiomysql==0.0.22
 aioredis==2.0.0
 aiosignal==1.2.0
 amocrm-api-client @ git+https://github.com/iqtek/amocrm_api_client.git@450a2436fb5376b79836cb3734a249af59f37b6c
+glassio @ git+https://github.com/ergnoore/glassio@74e0b48f7be54bc053b714a12350857dde52d8cb
 anyio==3.5.0
 asgiref==3.5.0
 async-timeout==4.0.1

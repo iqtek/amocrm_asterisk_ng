@@ -1,9 +1,12 @@
 from datetime import datetime
 from time import time
 
+from glassio.context import get_context
 from amocrm_asterisk_ng.domain import CallCompletedEvent
 from amocrm_asterisk_ng.domain import CallStatus
-from amocrm_asterisk_ng.infrastructure import (IEventBus, ILogger)
+from glassio.logger import ILogger
+from glassio.event_bus import IEventBus
+
 from ..ami_store import IAmiStore
 from ......core.ami_manager import Event
 from ......core.ami_manager import IAmiEventHandler
@@ -82,7 +85,7 @@ class CdrEventHandler(IAmiEventHandler):
 
         # Reject symmetrical CDR.
         if destination_channel_linked_id != channel_unique_id:
-            self.__logger.debug(
+            await self.__logger.debug(
                 "CdrEventHandler: "
                 "Symmetric CDR detected. "
                 f"destination_channel_linked_id: "
@@ -126,5 +129,4 @@ class CdrEventHandler(IAmiEventHandler):
             end_timestamp=end_time.timestamp(),
             answer_timestamp=answer_timestamp,
         )
-
         await self.__event_bus.publish(cdr_event)

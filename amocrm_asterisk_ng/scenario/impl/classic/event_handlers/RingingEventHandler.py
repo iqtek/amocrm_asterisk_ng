@@ -1,7 +1,7 @@
 from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
 from amocrm_asterisk_ng.domain import RingingEvent
 from amocrm_asterisk_ng.domain import IRaiseCardCommand
-from amocrm_asterisk_ng.infrastructure import IEventHandler
+from glassio.event_bus import IEventHandler
 
 from ..functions import IsInternalNumberFunction
 

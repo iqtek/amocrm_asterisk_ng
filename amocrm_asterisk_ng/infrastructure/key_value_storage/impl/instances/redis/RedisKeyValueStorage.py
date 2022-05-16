@@ -2,8 +2,8 @@ from typing import Optional
 from typing import ClassVar
 
 from aioredis import Redis
-
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.initializable_components import AbstractInitializableComponent
+from glassio.logger import ILogger
 from ....core import InitializableKeyValueStorage
 
 
@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-class RedisKeyValueStorage(InitializableKeyValueStorage):
+class RedisKeyValueStorage(AbstractInitializableComponent, InitializableKeyValueStorage):
 
     __slots__ = (
         "__connection",
@@ -28,6 +28,7 @@ class RedisKeyValueStorage(InitializableKeyValueStorage):
         logger: ILogger,
         prefix: Optional[str] = None,
     ) -> None:
+        super().__init__()
         self.__connection = connection
         self.__logger = logger
         if not prefix:
@@ -37,10 +38,10 @@ class RedisKeyValueStorage(InitializableKeyValueStorage):
     def __get_full_key(self, key: str) -> str:
         return self.__prefix + key
 
-    async def initialize(self) -> None:
+    async def _initialize(self) -> None:
         await self.__connection.initialize()
 
-    async def deinitialize(self) -> None:
+    async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
         await self.__connection.close()
 
     async def set_expire(self, key: str, expire: float) -> None:
@@ -54,7 +55,7 @@ class RedisKeyValueStorage(InitializableKeyValueStorage):
             )
 
         await self.__connection.expire(full_key, round(expire))
-        self.__logger.debug(
+        await self.__logger.debug(
             "RedisKeyValueStorage: "
             "Key expiration updated. "
             f"The key={key} expire={expire}."
@@ -75,7 +76,7 @@ class RedisKeyValueStorage(InitializableKeyValueStorage):
                 "RedisKeyValueStorage: "
                 f"Could not set value={value} by key={key}."
             )
-        self.__logger.debug(
+        await self.__logger.debug(
             "RedisKeyValueStorage: "
             f"Set value={value} by key={key}."
         )
@@ -110,7 +111,7 @@ class RedisKeyValueStorage(InitializableKeyValueStorage):
                 "RedisKeyValueStorage: "
                 f"Could not update value={value} by key={key}."
             )
-        self.__logger.debug(
+        await self.__logger.debug(
             "RedisKeyValueStorage: "
             f"Update value={value} by key={key}."
         )
@@ -125,4 +126,4 @@ class RedisKeyValueStorage(InitializableKeyValueStorage):
                 "RedisKeyValueStorage: "
                 f"Cannot delete value by full_key={full_key} ."
             )
-        self.__logger.debug(f"RedisKeyValueStorage: Delete key={key} .")
+        await self.__logger.debug(f"RedisKeyValueStorage: Delete key={key} .")

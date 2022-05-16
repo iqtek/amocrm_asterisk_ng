@@ -35,3 +35,6 @@ class File:
     @property
     def content(self) -> bytes:
         return self.__content
+
+    def __repr__(self) -> str:
+        return f"<File({self.__name})>"

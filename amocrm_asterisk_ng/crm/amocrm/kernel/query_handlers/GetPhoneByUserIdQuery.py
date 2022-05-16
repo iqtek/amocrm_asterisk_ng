@@ -30,11 +30,8 @@ class GetPhoneByUserIdQuery(IGetPhoneByUserIdQuery):
 
     async def __initialize(self) -> None:
         self.__cache = {}
-
         users_with_email = await self.__get_users_email_addresses()
-
         users_page = await self.__amo_client.users.get_page()
-
         for phone, email in users_with_email.items():
             for user in users_page.embedded:
                 if user.email == email:
@@ -43,5 +40,4 @@ class GetPhoneByUserIdQuery(IGetPhoneByUserIdQuery):
     async def __call__(self, user_id: int) -> str:
         if self.__cache is None:
             await self.__initialize()
-
         return self.__cache[user_id]

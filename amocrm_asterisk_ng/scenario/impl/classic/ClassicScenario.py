@@ -1,3 +1,5 @@
+from typing import MutableSequence
+
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
 from amocrm_asterisk_ng.domain import IAddCallToUnsortedCommand
 from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
@@ -6,9 +8,10 @@ from amocrm_asterisk_ng.domain import IOriginationRequestCommand
 from amocrm_asterisk_ng.domain import IsUserPhoneNumerQuery
 from amocrm_asterisk_ng.domain import IRaiseCardCommand
 
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import IEventBus
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.dispatcher import IDispatcher
+from glassio.event_bus import IEventBus
+from glassio.event_bus import IEventHandler
+from glassio.logger import ILogger
 
 from .ClassicScenarioConfig import ClassicScenarioConfig
 from .event_handlers import CallCompletedEventHandler
@@ -35,6 +38,7 @@ class ClassicScenario(IScenario):
         "__event_bus",
         "__dispatcher",
         "__logger",
+        "__handlers",
     )
 
     def __init__(
@@ -48,6 +52,7 @@ class ClassicScenario(IScenario):
         self.__event_bus = event_bus
         self.__dispatcher = dispatcher
         self.__logger = logger
+        self.__handlers: MutableSequence[IEventHandler] = []
 
     async def upload(self) -> None:
 
@@ -73,27 +78,29 @@ class ClassicScenario(IScenario):
             )
         )
 
-        await self.__event_bus.attach_event_handler(
-            CallCompletedEventHandler(
-                config=self.__config.call_logging,
-                add_call_to_analytics_command=self.__dispatcher.get_function(IAddCallToAnalyticsCommand),
-                add_call_to_unsorted_command=self.__dispatcher.get_function(IAddCallToUnsortedCommand),
-                get_user_id_by_phone_query=self.__dispatcher.get_function(IGetUserIdByPhoneQuery),
-                get_call_direction_function=self.__dispatcher.get_function(IGetCallDirectionFunction),
-            )
+        call_completed_event_handler = CallCompletedEventHandler(
+            config=self.__config.call_logging,
+            add_call_to_analytics_command=self.__dispatcher.get_function(IAddCallToAnalyticsCommand),
+            add_call_to_unsorted_command=self.__dispatcher.get_function(IAddCallToUnsortedCommand),
+            get_user_id_by_phone_query=self.__dispatcher.get_function(IGetUserIdByPhoneQuery),
+            get_call_direction_function=self.__dispatcher.get_function(IGetCallDirectionFunction),
         )
 
-        await self.__event_bus.attach_event_handler(
-            RingingEventHandler(
-                get_user_id_by_phone_query=self.__dispatcher.get_function(IGetUserIdByPhoneQuery),
-                is_internal_number_function=self.__dispatcher.get_function(IsInternalNumberFunction),
-                raise_card_command=self.__dispatcher.get_function(IRaiseCardCommand),
-            )
+        await self.__event_bus.attach_event_handler(call_completed_event_handler)
+        self.__handlers.append(call_completed_event_handler)
+
+        ringing_event_handler = RingingEventHandler(
+            get_user_id_by_phone_query=self.__dispatcher.get_function(IGetUserIdByPhoneQuery),
+            is_internal_number_function=self.__dispatcher.get_function(IsInternalNumberFunction),
+            raise_card_command=self.__dispatcher.get_function(IRaiseCardCommand),
         )
+
+        await self.__event_bus.attach_event_handler(ringing_event_handler)
+        self.__handlers.append(ringing_event_handler)
 
     async def unload(self) -> None:
-        await self.__event_bus.detach_event_handler(RingingEventHandler)
-        await self.__event_bus.detach_event_handler(CallCompletedEventHandler)
+        for handler in self.__handlers:
+            await self.__event_bus.detach_event_handler(handler)
 
         self.__dispatcher.delete_function(IGetCallDirectionFunction)
         self.__dispatcher.delete_function(IsInternalNumberFunction)

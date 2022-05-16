@@ -30,26 +30,23 @@ class GetUserIdByPhoneQuery(IGetUserIdByPhoneQuery):
         self.__get_users_email_addresses = get_users_email_addresses
 
     async def __call__(self, phone_number: str) -> int:
-        try:
+        if phone_number in self.__cache.keys():
             return self.__cache[phone_number]
-        except KeyError:
-            pass
 
         emails = await self.__get_users_email_addresses()
-        if phone_number not in emails.keys():
-            raise KeyError(
-                f"User with phone: '{phone_number}' not found."
+        try:
+            email = emails[phone_number]
+        except KeyError:
+            raise Exception(
+                f"User with phone: `{phone_number}` not found."
             )
 
-        email = emails[phone_number]
-
         users = await self.__amo_client.users.get_page()
-
         for user in users.embedded:
             if user.email == email:
                 self.__cache[phone_number] = user.id
                 return user.id
 
-        raise KeyError(
-            f"User with phone: '{phone_number}' not found."
+        raise Exception(
+            f"User with phone: `{phone_number}` not found."
         )

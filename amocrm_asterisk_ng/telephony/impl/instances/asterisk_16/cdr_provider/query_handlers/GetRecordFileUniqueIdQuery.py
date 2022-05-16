@@ -5,7 +5,7 @@ import aiofiles
 from amocrm_asterisk_ng.domain import File
 from amocrm_asterisk_ng.domain import Filetype
 from amocrm_asterisk_ng.domain import IGetRecordFileUniqueIdQuery
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 
 from ..CdrProviderConfig import CdrProviderConfig
 from ..mysql import MySqlConnectionFactoryImpl
@@ -55,7 +55,7 @@ class GetRecordFileUniqueIdQuery(IGetRecordFileUniqueIdQuery):
                 settings=self.__config.mysql,
             )
         except Exception as e:
-            self.__logger.warning(
+            await self.__logger.warning(
                 "GetCdrByUniqueIdQuery: "
                 f"Unable to connect to database with CDR. {e}"
             )
@@ -84,7 +84,7 @@ class GetRecordFileUniqueIdQuery(IGetRecordFileUniqueIdQuery):
 
         parent_path = date.strftime(self.__config.media_root).rstrip('/')
         if not os.path.exists(parent_path):
-            self.__logger.warning(
+            await self.__logger.warning(
                 "GetCdrByUniqueIdQuery: "
                 f"There is no such media_root: '{parent_path}'. "
                 f"Check config."

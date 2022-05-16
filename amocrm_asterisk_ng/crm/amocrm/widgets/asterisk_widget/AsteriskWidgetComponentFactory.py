@@ -3,11 +3,11 @@ from typing import Mapping
 from typing import Optional
 
 from fastapi import FastAPI
+from glassio.dispatcher import IDispatcher
+from glassio.initializable_components import InitializableComponent
+from glassio.logger import ILogger
 
 from amocrm_asterisk_ng.domain import IOriginationRequestCommand
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
 from amocrm_asterisk_ng.infrastructure import ISelectableFactory
 
 from .AsteriskWidgetComponent import AsteriskWidgetComponent

@@ -23,7 +23,7 @@ class IntegrationLauncher:
     def __init__(
         self,
         integration_factory: IntegrationFactory,
-        settings: Mapping[str, Any]
+        settings: Mapping[str, Any],
     ) -> None:
         self.__integration_factory = integration_factory
         self.__settings = settings

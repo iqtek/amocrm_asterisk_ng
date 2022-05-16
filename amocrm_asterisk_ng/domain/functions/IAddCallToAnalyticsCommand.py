@@ -1,8 +1,6 @@
 from typing import Literal
 
-from amocrm_asterisk_ng.infrastructure import ICommand
-
-from ..models import CallStatus
+from glassio.dispatcher import ICommand
 
 
 __all__ = [

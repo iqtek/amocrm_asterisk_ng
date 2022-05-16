@@ -3,15 +3,15 @@ from typing import Mapping
 
 from fastapi import FastAPI
 
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
-from amocrm_asterisk_ng.infrastructure import InitializableEventBus
+from glassio.dispatcher import IDispatcher
+from glassio.event_bus import InitializableEventBus
+from glassio.initializable_components import InitializableComponent
+from glassio.logger import ILogger
+
 from amocrm_asterisk_ng.infrastructure import ioc
 from amocrm_asterisk_ng.infrastructure import ISelector
 from amocrm_asterisk_ng.infrastructure import SelectedComponentConfig
 from amocrm_asterisk_ng.infrastructure import SelectorImpl
-
 from .amocrm import AmocrmComponentFactory
 
 

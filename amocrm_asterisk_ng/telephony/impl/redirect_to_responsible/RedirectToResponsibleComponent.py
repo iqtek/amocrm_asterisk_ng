@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-
+from typing import Optional
 from amocrm_asterisk_ng.domain import IGetResponsibleUserByPhoneQuery
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
+from glassio.dispatcher import IDispatcher
+from glassio.initializable_components import AbstractInitializableComponent
 
 from .RedirectToResponsibleView import RedirectToResponsibleView
 
@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-class RedirectToResponsibleComponent(InitializableComponent):
+class RedirectToResponsibleComponent(AbstractInitializableComponent):
 
     __slots__ = (
         "__app",
@@ -24,10 +24,11 @@ class RedirectToResponsibleComponent(InitializableComponent):
         app: FastAPI,
         dispatcher: IDispatcher,
     ) -> None:
+        super().__init__()
         self.__app = app
         self.__dispatcher = dispatcher
 
-    async def initialize(self) -> None:
+    async def _initialize(self) -> None:
         view = RedirectToResponsibleView(
             get_responsible_user_by_phone_query=self.__dispatcher.get_function(IGetResponsibleUserByPhoneQuery)
         )
@@ -38,5 +39,5 @@ class RedirectToResponsibleComponent(InitializableComponent):
             methods=["GET"],
         )
 
-    async def deinitialize(self) -> None:
+    async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
         pass

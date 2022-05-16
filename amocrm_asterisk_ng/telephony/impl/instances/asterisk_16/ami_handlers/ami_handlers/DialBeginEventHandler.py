@@ -1,4 +1,4 @@
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 from ..ami_store import IAmiStore
 from ......core.ami_manager import Event
 from ......core.ami_manager import IAmiEventHandler

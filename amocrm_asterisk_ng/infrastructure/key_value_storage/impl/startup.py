@@ -4,7 +4,7 @@ from typing import Mapping
 from amocrm_asterisk_ng.infrastructure import ioc
 from amocrm_asterisk_ng.infrastructure import SelectorImpl
 from amocrm_asterisk_ng.infrastructure import ISelector
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.logger import ILogger
 from amocrm_asterisk_ng.infrastructure import SelectedComponentConfig
 
 from ..core import IKeyValueStorageFactory

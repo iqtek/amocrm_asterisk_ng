@@ -1,3 +1,2 @@
-from .core import *
-from .impl import get_logger
-from .impl import logger_startup
+from .glassio_logger_startup import glassio_logger_startup
+from .logger_startup import logger_startup

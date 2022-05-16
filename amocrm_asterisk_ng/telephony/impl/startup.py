@@ -3,7 +3,7 @@ from typing import Mapping
 
 from fastapi import FastAPI
 
-from amocrm_asterisk_ng.infrastructure import IDispatcher
+from glassio.dispatcher import IDispatcher
 from amocrm_asterisk_ng.infrastructure import ioc
 from amocrm_asterisk_ng.infrastructure import SelectedComponentConfig
 

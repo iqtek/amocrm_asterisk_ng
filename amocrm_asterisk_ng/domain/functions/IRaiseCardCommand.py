@@ -1,6 +1,6 @@
 from typing import Collection
 
-from amocrm_asterisk_ng.infrastructure.dispatcher import ICommand
+from glassio.dispatcher import ICommand
 
 
 __all__ = [

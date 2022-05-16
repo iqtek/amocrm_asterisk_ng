@@ -5,8 +5,8 @@ from typing import Optional
 
 from panoramisk import Manager
 
-from amocrm_asterisk_ng.infrastructure import IFactory
-from amocrm_asterisk_ng.infrastructure import ILogger
+from glassio.mixins import IFactory
+from glassio.logger import ILogger
 
 from .AmiManagerConfig import AmiManagerConfig
 from .AmiManagerImpl import AmiManagerImpl

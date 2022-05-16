@@ -1,15 +1,14 @@
 from typing import Any
 from typing import Mapping
 from typing import Optional
+
 from fastapi import FastAPI
+from glassio.dispatcher import IDispatcher
+from glassio.event_bus import IEventBus
+from glassio.initializable_components import InitializableComponent
+from glassio.logger import ILogger
 
-from amocrm_asterisk_ng.infrastructure import IDispatcher
-from amocrm_asterisk_ng.infrastructure import IEventBus
-from amocrm_asterisk_ng.infrastructure import IKeyValueStorageFactory
-from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
 from amocrm_asterisk_ng.infrastructure import ISelectableFactory
-
 from .AmocrmComponent import AmocrmComponent
 from .AmocrmComponentConfig import AmocrmComponentConfig
 from .kernel import AmocrmKernelComponentFactory
@@ -53,7 +52,6 @@ class AmocrmComponentFactory(ISelectableFactory):
 
         widget_component_factory = WidgetComponentFactory(
             app=self.__app,
-            event_bus=self.__event_bus,
             dispatcher=self.__dispatcher,
             logger=self.__logger,
         )
@@ -64,7 +62,6 @@ class AmocrmComponentFactory(ISelectableFactory):
 
         amocrm_kernel_factory = AmocrmKernelComponentFactory(
             app=self.__app,
-            event_bus=self.__event_bus,
             dispatcher=self.__dispatcher,
             logger=self.__logger,
         )

@@ -1,8 +1,9 @@
 from typing import Collection
 from typing import Sequence
 
-from amocrm_asterisk_ng.infrastructure import ILogger
-from amocrm_asterisk_ng.infrastructure import InitializableComponent
+from glassio.initializable_components import InitializableComponent
+from glassio.logger import InitializableLogger
+
 from amocrm_asterisk_ng.scenario import IScenario
 
 
@@ -27,7 +28,7 @@ class Integration:
         listening_components: Collection[InitializableComponent],
         control_components: Collection[InitializableComponent],
         infrastructure_components: Sequence[InitializableComponent],
-        logger: ILogger,
+        logger: InitializableLogger,
     ) -> None:
         self.__scenario = scenario
         self.__listening_components = listening_components
@@ -42,12 +43,13 @@ class Integration:
         component_name = component.__class__.__name__
         try:
             await component.initialize()
-        except Exception as e:
-            self.__logger.critical(
-                f"Error of initialization: {component_name}. {e}"
+        except Exception as exc:
+            await self.__logger.critical(
+                f"Error of initialization: `{component_name}`.",
+                exception=exc,
             )
-            raise Exception("Error of initialization.") from e
-        self.__logger.info(
+            raise Exception("Error of initialization.") from exc
+        await self.__logger.info(
             f"Component: `{component_name}` initialized."
         )
 
@@ -58,43 +60,37 @@ class Integration:
         component_name = component.__class__.__name__
         try:
             await component.deinitialize()
-        except Exception as e:
-            self.__logger.critical(
-                f"Error of deinitialization: {component_name}. {e}"
+        except Exception as exc:
+            await self.__logger.critical(
+                f"Error of deinitialization: `{component_name}`.",
+                exception=exc,
             )
-            raise Exception("Error of initialization.") from e
-
-        self.__logger.info(
+            raise Exception("Error of deinitialization.") from exc
+        await self.__logger.info(
             f"Component: `{component_name}` deinitialized."
         )
 
     async def handle_startup(self) -> None:
-        self.__logger.info("Integration initialization started.")
+        await self.__logger.initialize()
+        await self.__logger.info("Integration initialization started.")
 
-        for component in self.__infrastructure_components:
-            await self.__initialize_component(component)
-
-        for component in self.__control_components:
-            await self.__initialize_component(component)
-
-        for component in self.__listening_components:
+        components = self.__infrastructure_components + self.__control_components + \
+            self.__listening_components
+        for component in components:
             await self.__initialize_component(component)
 
         await self.__scenario.upload()
-        self.__logger.info("Integration initialization finished.")
+        await self.__logger.info("Integration initialization finished.")
 
     async def handle_shutdown(self) -> None:
-        self.__logger.info("Integration deinitialization started.")
+        await self.__logger.info("Integration deinitialization started.")
 
-        for component in self.__listening_components:
-            await self.__deinitialize_component(component)
-
-        for component in reversed(self.__infrastructure_components):
-            await self.__deinitialize_component(component)
-
-        for component in self.__control_components:
+        # The infrastructure is shut down in reverse order.
+        components = self.__listening_components + self.__infrastructure_components[::-1] + \
+            self.__control_components
+        for component in components:
             await self.__deinitialize_component(component)
 
         await self.__scenario.unload()
-
-        self.__logger.info("Integration deinitialization finished.")
+        await self.__logger.info("Integration deinitialization finished.")
+        await self.__logger.deinitialize()
