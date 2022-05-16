@@ -4,9 +4,9 @@ from typing import Optional
 
 from fastapi import Request
 from fastapi import Response
+from glassio.logger import ILogger
 
 from amocrm_asterisk_ng.domain import IOriginationRequestCommand
-from glassio.logger import ILogger
 
 from .AsteriskWidgetConfig import AsteriskWidgetConfig
 
@@ -38,8 +38,7 @@ class WidgetView:
         self,
         data: Optional[Mapping[str, Any]] = None
     ) -> Response:
-        if not data:
-            data = dict()
+        data = data or {}
         response = Response(
             content=f"asterisk_cb({str(data)});",
             media_type="text/javascript",
@@ -56,8 +55,8 @@ class WidgetView:
             return self.__make_response({"status": "invalid data."})
 
         if login != self.__config.login or password != self.__config.password:
-            await self.__logger.warning(
-                "OriginationHandler: "
+            await self.__logger.info(
+                "Widget: "
                 "Attempted request with invalid credentials."
             )
             return self.__make_status_response({"status": "not authorized."})
@@ -69,8 +68,11 @@ class WidgetView:
             return self.__make_response({"status": "no cdr."})
 
         if action == "call":
-            caller_phone_number = request_params["from"]
-            called_phone_number = request_params["to"]
+            try:
+                caller_phone_number = request_params["from"]
+                called_phone_number = request_params["to"]
+            except KeyError:
+                return self.__make_response({"status": "invalid data."})
 
             await self.__origination_request_command(
                 caller_phone_number=caller_phone_number,

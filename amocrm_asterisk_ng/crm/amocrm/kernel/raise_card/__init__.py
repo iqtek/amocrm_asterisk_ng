@@ -1,1 +1,1 @@
-from . RaiseCardComponent import RaiseCardComponent
+from .RaiseCardComponent import RaiseCardComponent

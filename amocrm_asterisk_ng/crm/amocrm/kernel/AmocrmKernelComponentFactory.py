@@ -10,8 +10,8 @@ from glassio.dispatcher import IDispatcher
 from glassio.event_bus import IEventBus
 from glassio.initializable_components import InitializableComponent
 from glassio.logger import ILogger
-
 from glassio.mixins import IFactory
+
 from .AmocrmKernelComponent import AmocrmKernelComponent
 from .AmocrmKernelComponentConfig import AmocrmKernelComponentConfig
 from .calls import CallManagerComponent
@@ -35,13 +35,11 @@ class AmocrmKernelComponentFactory(IFactory[InitializableComponent]):
     def __init__(
         self,
         app: FastAPI,
-        event_bus: IEventBus,
         dispatcher: IDispatcher,
         logger: ILogger,
     ) -> None:
         self.__app = app
         self.__dispatcher = dispatcher
-        self.__event_bus = event_bus
         self.__logger = logger
 
     def get_instance(

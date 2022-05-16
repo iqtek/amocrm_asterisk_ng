@@ -2,9 +2,10 @@ from typing import Literal
 
 from amocrm_api_client import AmoCrmApiClient
 from amocrm_api_client.models.call import AddCall
+from glassio.logger import ILogger
 
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
-from glassio.logger import ILogger
+
 from .MakeLinkFunction import IMakeLinkFunction
 
 

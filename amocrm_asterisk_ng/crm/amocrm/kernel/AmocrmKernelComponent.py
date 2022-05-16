@@ -1,17 +1,19 @@
 from typing import Optional
-from amocrm_api_client import AmoCrmApiClient
 
+from amocrm_api_client import AmoCrmApiClient
+from glassio.dispatcher import IDispatcher
 from glassio.initializable_components import AbstractInitializableComponent
 from glassio.initializable_components import InitializableComponent
-from glassio.dispatcher import IDispatcher
-from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
-from amocrm_asterisk_ng.domain import IGetResponsibleUserByPhoneQuery
 
-from .redirect_to_responsible import GetResponsibleUserByPhoneQuery
+from amocrm_asterisk_ng.domain import IGetResponsibleUserByPhoneQuery
+from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
+
 from ..core import IGetPhoneByUserIdQuery
 from ..core import IGetUsersEmailAddressesQuery
-from .query_handlers import GetUserIdByPhoneQuery
+
 from .query_handlers import GetPhoneByUserIdQuery
+from .query_handlers import GetUserIdByPhoneQuery
+from .redirect_to_responsible import GetResponsibleUserByPhoneQuery
 
 
 __all__ = [
@@ -74,14 +76,8 @@ class AmocrmKernelComponent(AbstractInitializableComponent):
         await self.__call_manager_component.deinitialize()
         await self.__raise_card_component.deinitialize()
 
-        self.__dispatcher.delete_function(
-            function_type=IGetResponsibleUserByPhoneQuery,
-        )
+        self.__dispatcher.delete_function(IGetResponsibleUserByPhoneQuery)
+        self.__dispatcher.delete_function(IGetUserIdByPhoneQuery)
+        self.__dispatcher.delete_function(IGetPhoneByUserIdQuery)
 
-        self.__dispatcher.delete_function(
-            IGetUserIdByPhoneQuery,
-        )
-        self.__dispatcher.delete_function(
-            IGetPhoneByUserIdQuery,
-        )
         await self.__amo_client.deinitialize()

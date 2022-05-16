@@ -1,16 +1,16 @@
+from typing import Any
 from typing import Mapping
 from typing import Optional
-from typing import Any
 
 from fastapi import FastAPI
 
-from amocrm_asterisk_ng.infrastructure import SelectorImpl
-from amocrm_asterisk_ng.infrastructure import SelectedComponentConfig
-from glassio.initializable_components import InitializableComponent
-from glassio.event_bus import IEventBus
-from glassio.mixins import IFactory
 from glassio.dispatcher import IDispatcher
+from glassio.initializable_components import InitializableComponent
 from glassio.logger import ILogger
+from glassio.mixins import IFactory
+
+from amocrm_asterisk_ng.infrastructure import SelectedComponentConfig
+from amocrm_asterisk_ng.infrastructure import SelectorImpl
 
 from .asterisk_widget import AsteriskWidgetComponentFactory
 
@@ -25,20 +25,17 @@ class WidgetComponentFactory(IFactory[InitializableComponent]):
     __slots__ = (
         "__app",
         "__dispatcher",
-        "__event_bus",
         "__logger",
     )
 
     def __init__(
         self,
         app: FastAPI,
-        event_bus: IEventBus,
         dispatcher: IDispatcher,
         logger: ILogger,
     ) -> None:
         self.__app = app
         self.__dispatcher = dispatcher
-        self.__event_bus = event_bus
         self.__logger = logger
 
     def get_instance(

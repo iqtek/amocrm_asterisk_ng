@@ -31,10 +31,7 @@ class PydubFileConverter(IFileConverter):
         self,
         path: str
     ) -> bytes:
-        async with aiofiles.open(
-            path,
-            mode='rb',
-        ) as f:
+        async with aiofiles.open(path, mode='rb') as f:
             content = await f.read()
         return content
 
@@ -45,22 +42,14 @@ class PydubFileConverter(IFileConverter):
 
         if not os.path.exists(self.__config.tmp_directory):
             try:
-                os.mkdir(self.__config.tmp_directory)
-            except Exception as exc:
+                os.makedirs(self.__config.tmp_directory)
+            except OSError as exc:
                 raise Exception(
-                    "PydubFileConverter: "
-                    f"directory: {self.__config.tmp_directory} "
-                    f"is missing."
+                    f"FileConverter: conversion directory error: `{exc!r}`."
                 )
 
-        filepath = os.path.join(
-            self.__config.tmp_directory,
-            file.name,
-        )
-        async with aiofiles.open(
-            filepath,
-            mode='wb',
-        ) as f:
+        filepath = os.path.join(self.__config.tmp_directory, file.name)
+        async with aiofiles.open(filepath, mode='wb') as f:
             await f.write(file.content)
 
         if file.type == Filetype.MP3:
@@ -70,24 +59,22 @@ class PydubFileConverter(IFileConverter):
         elif file.type == Filetype.WAVE:
             audio = AudioSegment.from_WAVE(filepath)
         else:
-            raise Exception(
-                f"Non-convertible type: {file.type}."
-            )
+            raise Exception(f"Non-convertible type: `{file.type}`.")
 
         new_filepath = os.path.join(
             self.__config.tmp_directory,
             "converted_" + file.name,
         )
 
-        if new_filepath == Filetype.MP3:
+        if new_filetype == Filetype.MP3:
             new_format = "mp3"
-        elif file.type == Filetype.WAV:
+        elif new_filetype == Filetype.WAV:
             new_format = "wav"
-        elif file.type == Filetype.WAVE:
+        elif new_filetype == Filetype.WAVE:
             new_format = "wave"
         else:
             raise Exception(
-                f"Non-convertible type: {new_filepath}."
+                f"Non-convertible type: `{new_filetype}`."
             )
         audio.export(
             new_filepath,
@@ -102,6 +89,6 @@ class PydubFileConverter(IFileConverter):
 
         return File(
             name=file.name,
-            type=Filetype.MP3,
+            type=new_filetype,
             content=content,
         )

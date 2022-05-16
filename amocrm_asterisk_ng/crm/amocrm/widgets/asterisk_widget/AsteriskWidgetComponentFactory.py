@@ -9,6 +9,7 @@ from glassio.logger import ILogger
 
 from amocrm_asterisk_ng.domain import IOriginationRequestCommand
 from amocrm_asterisk_ng.infrastructure import ISelectableFactory
+
 from .AsteriskWidgetComponent import AsteriskWidgetComponent
 from .AsteriskWidgetConfig import AsteriskWidgetConfig
 from .WidgetView import WidgetView

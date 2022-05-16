@@ -45,6 +45,4 @@ class RaiseCardComponent(AbstractInitializableComponent):
         )
 
     async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
-        self.__dispatcher.delete_function(
-            IRaiseCardCommand,
-        )
+        self.__dispatcher.delete_function(IRaiseCardCommand)

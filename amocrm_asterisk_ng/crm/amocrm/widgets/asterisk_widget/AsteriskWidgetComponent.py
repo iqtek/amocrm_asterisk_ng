@@ -5,11 +5,13 @@ from glassio.dispatcher import IDispatcher
 from glassio.initializable_components import AbstractInitializableComponent
 
 from amocrm_asterisk_ng.domain import IsUserPhoneNumerQuery
-from .AsteriskWidgetConfig import AsteriskWidgetConfig
-from .GetUsersEmailAddressesQuery import GetUsersEmailAddressesQuery
-from .IsUserPhoneNumerQueryImpl import IsUserPhoneNumerQueryImpl
-from .WidgetView import WidgetView
+
 from ...core import IGetUsersEmailAddressesQuery
+
+from .functions import GetUsersEmailAddressesQuery
+from .functions import IsUserPhoneNumerQueryImpl
+from .WidgetView import WidgetView
+from .AsteriskWidgetConfig import AsteriskWidgetConfig
 
 
 __all__ = [
@@ -61,9 +63,5 @@ class AsteriskWidgetComponent(AbstractInitializableComponent):
         )
 
     async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
-        self.__dispatcher.delete_function(
-            function_type=IsUserPhoneNumerQuery,
-        )
-        self.__dispatcher.delete_function(
-            function_type=IGetUsersEmailAddressesQuery,
-        )
+        self.__dispatcher.delete_function(IsUserPhoneNumerQuery)
+        self.__dispatcher.delete_function(IGetUsersEmailAddressesQuery)

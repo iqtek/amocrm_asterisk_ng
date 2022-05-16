@@ -2,9 +2,9 @@ from typing import Collection
 
 from amocrm_api_client import AmoCrmApiClient
 from amocrm_api_client.exceptions import AmocrmClientException
+from glassio.logger import ILogger
 
 from amocrm_asterisk_ng.domain import IRaiseCardCommand
-from glassio.logger import ILogger
 
 
 __all__ = [
@@ -32,7 +32,6 @@ class RaiseCardCommand(IRaiseCardCommand):
         phone_number: str,
         users: Collection[int],
     ) -> None:
-
         try:
             await self.__amo_client.events.add_card(
                 phone_number=phone_number,
@@ -41,13 +40,13 @@ class RaiseCardCommand(IRaiseCardCommand):
         except AmocrmClientException as e:
             await self.__logger.error(
                 "RaiseCardCommand: error raise card "
-                f"phone_number: '{phone_number}' "
-                f"for users: '{users}'."
+                f"phone_number: `{phone_number}` "
+                f"for users: {users}.",
+                exception=e,
             )
-            self.__logger.exception(e)
 
         await self.__logger.debug(
             "RaiseCardCommand: raise card "
-            f"phone_number: '{phone_number}' "
-            f"for users: '{users}'."
+            f"phone_number: `{phone_number}` "
+            f"for users: {users}."
         )
