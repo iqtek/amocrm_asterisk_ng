@@ -13,7 +13,7 @@
 
 #### Технические требования к платформе Asterisk: 
   * Поддержка AMI
-  * Работа вебсервера с поддержкой протокола https
+  * Работа вебсервера с поддержкой протокола httpsSmall Refactoring.
   * Сервер с Asterisk в одной сети с интеграцией
 #### Пакеты
 + FFmpeg
@@ -23,53 +23,93 @@
 Интеграция представляет собой веб-сервер [uvicorn]("https://www.uvicorn.org/"), который обрабатывает запросы, отправляемые виджетом "Asterisk" со стороны amoCRM. Также интеграция взаимодействует с телефонией через *AMI*.
 
 ## Установка
-Установите FFmpeg.
-```bash
-sudo apt install ffmpeg
-```
+**Руководствуясь документацией вашего дистрибутива.**
+Установите *FFmpeg*.
 Установите и запустите *Redis*.
-Установите и запустите *RabbitMQ*.
-Руководствуйтесь документацией по установке вашего дистрибутива.
-
 
 Склонируйте репозиторий на свой сервер.
 ```bash
-cd /opt
-git clone https://github.com/iqtek/amocrm_asterisk_ng.git
+git clone https://github.com/iqtek/amocrm_asterisk_ng.git /opt/amocrm_asterisk_ng
 cd /opt/amocrm_asterisk_ng
 ```
 
 Создайте и заполните config.yml.
 ```bash
-cp config_example.yml config.yml 
+cp ./configs/config_example.yml ./configs/config.yml
 ```
 
-Создайте виртуальную среду внутри каталога с интеграцией и активируйте ее.
+Создайте виртуальную среду внутри каталога с интеграцией.
 ```bash
-python3 -m venv venv 
-source ./venv/bin/activate
-```
-
-Установите необходимые зависимости.
-```bash
+python3.8 -m venv venv
 pip install -r requirements.txt
 ```
 
 ## Запуск
+
+### Первый способ.
+Используйте утилиту screen.
 ```bash
+source ./venv/bin/activate
 screen python startup.py 
 ```
+
+### Второй способ.
+Используйте systemd unit.
+Создайте файл */usr/lib/systemd/system/amocrm_asterisk_ng.service* и заполните его так как указано ниже.
+```
+Description=AmoCRM and Asterisk Integration
+After=syslog.target
+After=network.target
+After=mysql.service
+After=redis.service
+
+Requires=mysql.service
+Requires=redis.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/amocrm_asterisk_ng
+ExecStart=/bin/bash /opt/amocrm_asterisk_ng/startup.sh
+
+[Install]
+WantedBy=multi-user.target
+```
+```bash
+systemctl start amocrm_asterisk_ng
+```
+
+
+
+
 ## Логирование звонков
 После завершения звонка интеграция получает событие *CDR* со стороны AMI на основе уникального идентификатора (unique_id) этого *CDR* генерируется ссылка, по которому файл данной записи будет доступен. Для этого Вам потребуется указать **base_url** в config.yml. Если в amoCRM есть контакт с номером телефона, указанном в *CDR*, то звонок будет залогирован в [аналитике]("https://www.amocrm.ru/support/analytics/sales_analysis"), в противном случае он будет добавлен в *неразобранное* в указанной воронке [подробнее](#настройка-рабочего-процесса). 
 # Настройка интеграции
+
+## Настройка основной логики.
+По умолчанию *./configs/classic_scenario.yml*.
+
+1. Укажите **pipeline_name**. Если звонок невозможно залогировать в [аналитике]("https://www.amocrm.ru/support/analytics/sales_analysis"), по причине отсутствия в системе контакта с таким номером телефона, то звонок будет помещен в *неразобранное* в указанной воронке. Убедитесь, что *неразобранное* включено в этой воронке.
+2. Поле **postprocessing_delay** указывает через сколько секунд после фактического завершения звонка он будет залогирован. Это требуется для того, чтобы у оператора было время заполнить карточку клиента или создать соответствующий контакт.
+3. Укажите **internal_number_regex** . Интеграция не логирует звонки между внетренними номерами. Номер считается внутренним, если он указан в настройках виджета или соотвествует регулярному выражению.
+3. Укажите **source_name**, **source** и т.д. Эти поля используются во время логирования звонка. См [документация amoCRM](https://www.amocrm.ru/developers/content/crm_platform/calls-api)
+
+```yaml
+call_logging:
+  source_name: asterisk_telephony
+  source: asterisk_telephony
+  source_uid: asterisk_telephony
+  service_code: amo_asterisk
+  pipeline_name: Воронка
+  postprocessing_delay: 1
+
+internal_number_pattern: "6\\d\\d"
+```
 
 ## Настройки amoCRM
 
 ### Настройка рабочего процесса
 
-1. Укажите **pipeline_id**. Если звонок невозможно залогировать в [аналитике]("https://www.amocrm.ru/support/analytics/sales_analysis"), по причине отсутствия в системе контакта с таким номером телефона, то звонок будет помещен в *неразобранное* в указанной воронке. Идентификатор воронки вы можете получить из ссылки вида "account.amocrm.ru/leads/pipeline/\*\*\*\*\*\*", где на месте звездочек будет указан требуемый идентификатор. Убедитесь, что *неразобранное* включено в этой воронке.
-
-2. Укажите **base_url**, для генерации ссылок на записи разговоров.
+1. Укажите **base_url**, для генерации ссылок на записи разговоров.
 
 3. Поле **postprocessing_delay** указывает через сколько секунд после фактического завершения звонка он будет залогирован. Это требуется для того, чтобы у оператора было время заполнить карточку клиента или создать соответствующий контакт.
 
@@ -92,14 +132,9 @@ crm:
     storage_prefix: crm
     kernel:
       call_logging:
-       internal_number_regex: "regex"
-        tmp_directory: "./convert_dir"
-        base_url: https://webhook.mycompany.ru/
-        source: asterisk_telephony
-        source_uid: asterisk_telephony
-        service_code: amo_asterisk
-        pipeline_id: 4672053
-        postprocessing_delay: 10
+        enable_conversion: true
+        tmp_directory: "./files"
+        base_url: https://webhook.iqtek.ru/
 
       integration:
         integration_id: xxxxxxxx-xxxx-xxxx-xxx-xxxxxxxxxxxx
@@ -117,7 +152,6 @@ crm:
           111: my_email@email.ru
           222: someone_mail@email.ru
           333: other_mail@email.ru
-
 ```
 
 ## Настройка телефонии
@@ -159,7 +193,6 @@ integration:
   host: 0.0.0.0
   port: 8000
 ```
-
 
 ### Настройка хранилища
 Хранилище на базе Redis требуется для работы части интеграции, работающей с телефонией. В хранилище будет хратится служебная информация, а также  *access* и *refresh* токены.
