@@ -46,6 +46,14 @@ class GetRecordFileUniqueIdQuery(IGetRecordFileUniqueIdQuery):
             content = await f.read()
         return content
 
+    def __is_valid_unique_id(self, unique_id: str) -> bool:
+        separator_index = unique_id.find('.')
+        if separator_index == -1:
+            return False
+        unix_time_str = unique_id[0: separator_index]
+        call_number = unique_id[separator_index+1:]
+        return unix_time_str.isdigit() and call_number.isdigit()
+
     async def __call__(
         self,
         unique_id: str,
@@ -60,6 +68,9 @@ class GetRecordFileUniqueIdQuery(IGetRecordFileUniqueIdQuery):
                 f"Unable to connect to database with CDR. {e}"
             )
             raise FileNotFoundError()
+
+        if not self.__is_valid_unique_id(unique_id):
+            raise Exception(f"Invalid unique_id: `{unique_id}`.")
 
         cur = await conn.cursor()
         await cur.execute(

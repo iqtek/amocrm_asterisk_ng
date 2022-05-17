@@ -62,10 +62,13 @@ class CallCompletedEventHandler(IEventHandler):
 
         time_now = int(time())
 
-        direction = await self.__get_call_direction_function(
-            caller_phone_number=event.caller_phone_number,
-            called_phone_number=event.called_phone_number,
-        )
+        try:
+            direction = await self.__get_call_direction_function(
+                caller_phone_number=event.caller_phone_number,
+                called_phone_number=event.called_phone_number,
+            )
+        except Exception:
+            return
         if direction == "inbound":
             internal_phone_number = event.called_phone_number
             external_phone_number = event.caller_phone_number
