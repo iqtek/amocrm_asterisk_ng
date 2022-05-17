@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from amocrm_asterisk_ng.infrastructure import ioc
+
 from .TraceIdFilter import TraceIdFilter
 from .TracingMiddleware import TracingMiddleware
 

@@ -1,4 +1,4 @@
-aioamqp==0.14.0
+aioamqp==0.15.0
 aiofile==3.7.4
 aiofiles==0.8.0
 aiohttp==3.8.1
@@ -7,7 +7,6 @@ aiomysql==0.0.22
 aioredis==2.0.0
 aiosignal==1.2.0
 amocrm-api-client @ git+https://github.com/iqtek/amocrm_api_client.git@450a2436fb5376b79836cb3734a249af59f37b6c
-glassio @ git+https://github.com/ergnoore/glassio@74e0b48f7be54bc053b714a12350857dde52d8cb
 anyio==3.5.0
 asgiref==3.5.0
 async-timeout==4.0.1
@@ -20,6 +19,7 @@ email-validator==1.1.3
 fastapi==0.73.0
 flake8==4.0.1
 frozenlist==1.2.0
+glassio @ git+https://github.com/ergnoore/glassio.git@6e148c3ce557aac2abcefd72361511b3961689b7
 h11==0.13.0
 idna==3.3
 iniconfig==1.1.1
@@ -27,7 +27,7 @@ mccabe==0.6.1
 mirakuru==2.4.2
 multidict==5.2.0
 packaging==21.3
-pamqp==2.3.0
+pamqp==3.1.0
 panoramisk==1.4
 pluggy==1.0.0
 port-for==0.6.2
@@ -35,7 +35,7 @@ psutil==5.9.0
 py==1.11.0
 pyaml==21.10.1
 pycodestyle==2.8.0
-pydantic==1.8.2
+pydantic==1.9.0
 pydantic-collections==0.2.0
 pydub==0.25.1
 pyflakes==2.4.0
@@ -51,6 +51,6 @@ sniffio==1.2.0
 starlette==0.17.1
 toml==0.10.2
 typing-extensions==4.0.1
-ujson==4.3.0
+ujson==5.2.0
 uvicorn==0.17.0.post1
 yarl==1.7.2
