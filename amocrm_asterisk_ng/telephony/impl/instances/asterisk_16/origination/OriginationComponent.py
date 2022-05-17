@@ -1,7 +1,10 @@
-from amocrm_asterisk_ng.domain import IOriginationCallCommand
+from typing import Optional
+
 from glassio.dispatcher import IDispatcher
 from glassio.initializable_components import AbstractInitializableComponent
-from typing import Optional
+
+from amocrm_asterisk_ng.domain import IOriginationCallCommand
+
 from .OriginationCallCommand import OriginationCallCommand
 from .OriginationConfig import OriginationConfig
 from .....core import IAmiManager
@@ -43,7 +46,4 @@ class OriginationComponent(AbstractInitializableComponent):
         )
 
     async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
-
-        self.__dispatcher.delete_function(
-            function_type=IOriginationCallCommand,
-        )
+        self.__dispatcher.delete_function(IOriginationCallCommand)

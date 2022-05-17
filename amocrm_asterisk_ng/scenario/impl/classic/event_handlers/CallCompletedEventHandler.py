@@ -1,15 +1,16 @@
-from time import time
 import asyncio
+from time import time
+
+from glassio.event_bus import IEventHandler
 
 from amocrm_asterisk_ng.domain import CallCompletedEvent
 from amocrm_asterisk_ng.domain import CallStatus
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
 from amocrm_asterisk_ng.domain import IAddCallToUnsortedCommand
 from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
-from glassio.event_bus import IEventHandler
 
-from ..functions import IGetCallDirectionFunction
 from ..ClassicScenarioConfig import CallCompletedEventHandlerConfig
+from ..functions import IGetCallDirectionFunction
 
 
 __all__ = [

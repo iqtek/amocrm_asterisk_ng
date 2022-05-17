@@ -59,7 +59,7 @@ class GetRecordFileUniqueIdQuery(IGetRecordFileUniqueIdQuery):
                 "GetCdrByUniqueIdQuery: "
                 f"Unable to connect to database with CDR. {e}"
             )
-            raise e
+            raise FileNotFoundError()
 
         cur = await conn.cursor()
         await cur.execute(
