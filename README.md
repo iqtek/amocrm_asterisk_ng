@@ -43,6 +43,7 @@ cp ./configs/config_example.yml ./configs/config.yml
 python3.8 -m venv venv
 source ./venv/bin/activate
 pip install -r requirements.txt
+mkdir logs
 ```
 
 ## Запуск
