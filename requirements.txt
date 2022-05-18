@@ -42,9 +42,6 @@ pyflakes==2.4.0
 PyJWT==2.3.0
 PyMySQL==0.9.3
 pyparsing==3.0.7
-pytest==6.2.5
-pytest-asyncio==0.17.2
-pytest-rabbitmq==2.2.1
 PyYAML==6.0
 rabbitpy==2.0.1
 sniffio==1.2.0
