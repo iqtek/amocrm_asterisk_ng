@@ -51,6 +51,6 @@ sniffio==1.2.0
 starlette==0.17.1
 toml==0.10.2
 typing-extensions==4.0.1
-ujson==4.3.0
+ujson>=4.3.0
 uvicorn==0.17.0.post1
 yarl==1.7.2
