@@ -12,4 +12,4 @@ __all__ = [
 class CdrProviderConfig(BaseModel):
 
     mysql: Mapping[str, Any]
-    media_root: str
+    media_root: str = "/var/spool/asterisk/monitor/%Y/%m/%d/"

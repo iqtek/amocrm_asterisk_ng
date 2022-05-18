@@ -1,11 +1,12 @@
 from typing import Literal
 
 from amocrm_api_client import AmoCrmApiClient
+from amocrm_api_client.make_amocrm_request import IncorrectDataException
 from amocrm_api_client.models.call import AddCall
 from glassio.logger import ILogger
 
+from amocrm_asterisk_ng.domain import EntityWithThisNumberNotExistException
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
-
 from .MakeLinkFunction import IMakeLinkFunction
 
 
@@ -59,5 +60,7 @@ class AddCallToAnalyticsCommand(IAddCallToAnalyticsCommand):
             responsible_user_id=responsible_user_id,
             created_at=created_at,
         )
-
-        await self.__amo_client.calls.add(call)
+        try:
+            await self.__amo_client.calls.add(call)
+        except IncorrectDataException:
+            raise EntityWithThisNumberNotExistException()
