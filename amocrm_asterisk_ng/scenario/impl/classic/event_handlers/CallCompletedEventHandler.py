@@ -8,6 +8,7 @@ from amocrm_asterisk_ng.domain import CallStatus
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
 from amocrm_asterisk_ng.domain import IAddCallToUnsortedCommand
 from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
+from amocrm_asterisk_ng.domain import EntityWithThisNumberNotExistException
 
 from ..ClassicScenarioConfig import CallCompletedEventHandlerConfig
 from ..functions import IGetCallDirectionFunction
@@ -98,7 +99,7 @@ class CallCompletedEventHandler(IEventHandler):
                 call_result="",
             )
             return
-        except Exception as e:
+        except EntityWithThisNumberNotExistException:
             pass
 
         await self.__add_call_to_unsorted_command(

@@ -22,4 +22,5 @@ class IAddCallToUnsortedCommand(ICommand):
         pipeline_name: str,
         created_at: int,
     ) -> None:
+        """Add call to unsorted in pipeline."""
         raise NotImplementedError()
