@@ -1,15 +1,17 @@
-from time import time
 import asyncio
+from time import time
+
+from glassio.event_bus import IEventHandler
 
 from amocrm_asterisk_ng.domain import CallCompletedEvent
 from amocrm_asterisk_ng.domain import CallStatus
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
 from amocrm_asterisk_ng.domain import IAddCallToUnsortedCommand
 from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
-from glassio.event_bus import IEventHandler
+from amocrm_asterisk_ng.domain import EntityWithThisNumberNotExistException
 
-from ..functions import IGetCallDirectionFunction
 from ..ClassicScenarioConfig import CallCompletedEventHandlerConfig
+from ..functions import IGetCallDirectionFunction
 
 
 __all__ = [
@@ -61,10 +63,13 @@ class CallCompletedEventHandler(IEventHandler):
 
         time_now = int(time())
 
-        direction = await self.__get_call_direction_function(
-            caller_phone_number=event.caller_phone_number,
-            called_phone_number=event.called_phone_number,
-        )
+        try:
+            direction = await self.__get_call_direction_function(
+                caller_phone_number=event.caller_phone_number,
+                called_phone_number=event.called_phone_number,
+            )
+        except Exception:
+            return
         if direction == "inbound":
             internal_phone_number = event.called_phone_number
             external_phone_number = event.caller_phone_number
@@ -94,7 +99,7 @@ class CallCompletedEventHandler(IEventHandler):
                 call_result="",
             )
             return
-        except Exception as e:
+        except EntityWithThisNumberNotExistException:
             pass
 
         await self.__add_call_to_unsorted_command(

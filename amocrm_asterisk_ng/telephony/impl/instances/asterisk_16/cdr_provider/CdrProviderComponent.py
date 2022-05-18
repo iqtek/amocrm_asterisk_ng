@@ -5,6 +5,7 @@ from glassio.initializable_components import AbstractInitializableComponent
 from glassio.logger import ILogger
 
 from amocrm_asterisk_ng.domain import IGetRecordFileUniqueIdQuery
+
 from .CdrProviderConfig import CdrProviderConfig
 from .mysql import MySqlConnectionFactoryImpl
 from .query_handlers import GetRecordFileUniqueIdQuery
@@ -48,6 +49,4 @@ class CdrProviderComponent(AbstractInitializableComponent):
         )
 
     async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
-        self.__dispatcher.delete_function(
-            function_type=IGetRecordFileUniqueIdQuery,
-        )
+        self.__dispatcher.delete_function(IGetRecordFileUniqueIdQuery)

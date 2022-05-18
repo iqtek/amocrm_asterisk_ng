@@ -108,10 +108,8 @@ class AmiManagerImpl(IAmiManager):
             try:
                 await event_handler(event)
             except Exception as exc:
-                await self.__logger.warning(
+                await self.__logger.debug(
                     "AmiManager: "
-                    f"error calling event handler: `{event_handler}`.",
-                    exception=exc,
-
+                    f"error calling event handler: `{event_handler}` exc: `{exc!r}`.",
                 )
         self.__manager.register_event(event_handler.event_pattern(), wrapper)

@@ -4,8 +4,13 @@ from glassio.dispatcher import ICommand
 
 
 __all__ = [
+    "EntityWithThisNumberNotExistException",
     "IAddCallToAnalyticsCommand",
 ]
+
+
+class EntityWithThisNumberNotExistException(Exception):
+    pass
 
 
 class IAddCallToAnalyticsCommand(ICommand):
@@ -24,4 +29,12 @@ class IAddCallToAnalyticsCommand(ICommand):
         call_status: int,
         call_result: str,
     ) -> None:
+        """
+        Add cal to amoCRM Analytics.
+
+        If an entity with such a number is not in the database,
+        then the call will not be added.
+
+        :raise EntityWithThisNumberNotExistException: If pass
+        """
         raise NotImplementedError()

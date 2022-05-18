@@ -1,9 +1,10 @@
-from fastapi import FastAPI
 from typing import Optional
-from amocrm_asterisk_ng.domain import IGetResponsibleUserByPhoneQuery
+
+from fastapi import FastAPI
 from glassio.dispatcher import IDispatcher
 from glassio.initializable_components import AbstractInitializableComponent
 
+from amocrm_asterisk_ng.domain import IGetResponsibleUserByPhoneQuery
 from .RedirectToResponsibleView import RedirectToResponsibleView
 
 
