@@ -88,7 +88,7 @@ class CallCompletedEventHandler(IEventHandler):
         responsible_user_id = await self.__get_user_id_by_phone_query(phone_number=internal_phone_number)
 
         await asyncio.sleep(self.__config.postprocessing_delay)
-        external_phone_number = self.__normalize_phone_function(external_phone_number)
+        external_phone_number = await self.__normalize_phone_function(external_phone_number)
         try:
             await self.__add_call_to_analytics_command(
                 unique_id=event.unique_id,
