@@ -97,6 +97,7 @@ class ClassicScenario(IScenario):
             get_user_id_by_phone_query=self.__dispatcher.get_function(IGetUserIdByPhoneQuery),
             is_internal_number_function=self.__dispatcher.get_function(IsInternalNumberFunction),
             raise_card_command=self.__dispatcher.get_function(IRaiseCardCommand),
+            normalize_phone_function=self.__dispatcher.get_function(INormalizePhoneFunction),
         )
 
         await self.__event_bus.attach_event_handler(ringing_event_handler)
@@ -109,4 +110,4 @@ class ClassicScenario(IScenario):
         self.__dispatcher.delete_function(IGetCallDirectionFunction)
         self.__dispatcher.delete_function(IsInternalNumberFunction)
         self.__dispatcher.delete_function(IOriginationRequestCommand)
-        self.__dispatcher.delete(INormalizePhoneFunction)
+        self.__dispatcher.delete_function(INormalizePhoneFunction)
