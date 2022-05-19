@@ -15,4 +15,7 @@ class IOriginationCallCommand(ICommand):
         caller_phone_number: str,
         called_phone_number: str,
     ) -> None:
+        """
+        Originate a call between two numbers.
+        """
         raise NotImplementedError()

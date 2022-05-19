@@ -17,4 +17,7 @@ class IRaiseCardCommand(ICommand):
         phone_number: str,
         users: Collection[int],
     ) -> None:
+        """
+        Raise the incoming call card in the crm.
+        """
         raise NotImplementedError()

@@ -22,6 +22,8 @@ from .functions import IGetCallDirectionFunction
 from .functions import IsInternalNumberFunction
 from .functions import IsInternalNumberFunctionImpl
 from .functions import OriginationRequestCommandImpl
+from .functions import INormalizePhoneFunction
+from .functions import NormalizePhoneFunctionImpl
 
 from ...core import IScenario
 
@@ -56,6 +58,7 @@ class ClassicScenario(IScenario):
 
     async def upload(self) -> None:
 
+        self.__dispatcher.add_function(INormalizePhoneFunction, NormalizePhoneFunctionImpl())
         self.__dispatcher.add_function(
             IOriginationRequestCommand,
             OriginationRequestCommandImpl(
@@ -84,6 +87,7 @@ class ClassicScenario(IScenario):
             add_call_to_unsorted_command=self.__dispatcher.get_function(IAddCallToUnsortedCommand),
             get_user_id_by_phone_query=self.__dispatcher.get_function(IGetUserIdByPhoneQuery),
             get_call_direction_function=self.__dispatcher.get_function(IGetCallDirectionFunction),
+            normalize_phone_function=self.__dispatcher.get_function(INormalizePhoneFunction),
         )
 
         await self.__event_bus.attach_event_handler(call_completed_event_handler)
@@ -105,3 +109,4 @@ class ClassicScenario(IScenario):
         self.__dispatcher.delete_function(IGetCallDirectionFunction)
         self.__dispatcher.delete_function(IsInternalNumberFunction)
         self.__dispatcher.delete_function(IOriginationRequestCommand)
+        self.__dispatcher.delete(INormalizePhoneFunction)

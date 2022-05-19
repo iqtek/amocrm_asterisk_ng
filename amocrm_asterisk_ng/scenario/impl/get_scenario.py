@@ -29,6 +29,9 @@ def get_scenario(
     with open(f"{scenario_configs_dir}/{scenario_name}_scenario.yml") as scenario_config_file:
         settings = yaml.safe_load(scenario_config_file)
 
+    # find_spec()
+    # module = importlib.util.module_from_spec(".classic")
+    # module = import_module(".classic", package=__name__)
     factory = ClassicScenarioFactory(
         event_bus=event_bus,
         dispatcher=dispatcher,

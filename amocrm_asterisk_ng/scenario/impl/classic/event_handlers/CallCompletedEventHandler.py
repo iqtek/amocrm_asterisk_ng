@@ -12,7 +12,7 @@ from amocrm_asterisk_ng.domain import EntityWithThisNumberNotExistException
 
 from ..ClassicScenarioConfig import CallCompletedEventHandlerConfig
 from ..functions import IGetCallDirectionFunction
-
+from ..functions import INormalizePhoneFunction
 
 __all__ = [
     "CallCompletedEventHandler",
@@ -27,6 +27,7 @@ class CallCompletedEventHandler(IEventHandler):
         "__add_call_to_unsorted_command",
         "__get_user_id_by_phone_query",
         "__get_call_direction_function",
+        "__normalize_phone_function",
     )
 
     def __init__(
@@ -35,13 +36,15 @@ class CallCompletedEventHandler(IEventHandler):
         add_call_to_analytics_command: IAddCallToAnalyticsCommand,
         add_call_to_unsorted_command: IAddCallToUnsortedCommand,
         get_user_id_by_phone_query: IGetUserIdByPhoneQuery,
-        get_call_direction_function: IGetCallDirectionFunction
+        get_call_direction_function: IGetCallDirectionFunction,
+        normalize_phone_function: INormalizePhoneFunction,
     ) -> None:
         self.__config = config
         self.__add_call_to_analytics_command = add_call_to_analytics_command
         self.__add_call_to_unsorted_command = add_call_to_unsorted_command
         self.__get_user_id_by_phone_query = get_user_id_by_phone_query
         self.__get_call_direction_function = get_call_direction_function
+        self.__normalize_phone_function = normalize_phone_function
 
     def __get_call_status(self, call_status: CallStatus) -> int:
 
@@ -85,7 +88,7 @@ class CallCompletedEventHandler(IEventHandler):
         responsible_user_id = await self.__get_user_id_by_phone_query(phone_number=internal_phone_number)
 
         await asyncio.sleep(self.__config.postprocessing_delay)
-
+        external_phone_number = self.__normalize_phone_function(external_phone_number)
         try:
             await self.__add_call_to_analytics_command(
                 unique_id=event.unique_id,

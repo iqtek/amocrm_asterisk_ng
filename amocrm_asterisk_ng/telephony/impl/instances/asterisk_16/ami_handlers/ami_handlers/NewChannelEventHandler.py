@@ -49,13 +49,14 @@ class NewChannelEventHandler(IAmiEventHandler):
         phone_number = event.get("CallerIDNum")
 
         if phone_number:
-            if not self.__is_valid_phone(phone_number):
-                await self.__logger.warning(
-                    "NewChannelEventHandler: "
-                    "Phone invalid: "
-                    f"phone: '{phone_number}' ]."
-                )
-                return
+            print(phone_number)
+            # if not self.__is_valid_phone(phone_number):
+            #     await self.__logger.warning(
+            #         "NewChannelEventHandler: "
+            #         "Phone invalid: "
+            #         f"phone: '{phone_number}' ]."
+            #     )
+            #     return
             try:
                 await self.__ami_store.save_phone(
                     channel=channel,
