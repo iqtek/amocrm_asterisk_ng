@@ -2,6 +2,7 @@ import asyncio
 from time import time
 
 from glassio.event_bus import IEventHandler
+from glassio.logger import ILogger
 
 from amocrm_asterisk_ng.domain import CallCompletedEvent
 from amocrm_asterisk_ng.domain import CallStatus
@@ -28,6 +29,7 @@ class CallCompletedEventHandler(IEventHandler):
         "__get_user_id_by_phone_query",
         "__get_call_direction_function",
         "__normalize_phone_function",
+        "__logger",
     )
 
     def __init__(
@@ -38,6 +40,7 @@ class CallCompletedEventHandler(IEventHandler):
         get_user_id_by_phone_query: IGetUserIdByPhoneQuery,
         get_call_direction_function: IGetCallDirectionFunction,
         normalize_phone_function: INormalizePhoneFunction,
+        logger: ILogger,
     ) -> None:
         self.__config = config
         self.__add_call_to_analytics_command = add_call_to_analytics_command
@@ -45,6 +48,7 @@ class CallCompletedEventHandler(IEventHandler):
         self.__get_user_id_by_phone_query = get_user_id_by_phone_query
         self.__get_call_direction_function = get_call_direction_function
         self.__normalize_phone_function = normalize_phone_function
+        self.__logger = logger
 
     def __get_call_status(self, call_status: CallStatus) -> int:
 

@@ -88,6 +88,7 @@ class ClassicScenario(IScenario):
             get_user_id_by_phone_query=self.__dispatcher.get_function(IGetUserIdByPhoneQuery),
             get_call_direction_function=self.__dispatcher.get_function(IGetCallDirectionFunction),
             normalize_phone_function=self.__dispatcher.get_function(INormalizePhoneFunction),
+            logger=self.__logger,
         )
 
         await self.__event_bus.attach_event_handler(call_completed_event_handler)
