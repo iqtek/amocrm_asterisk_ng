@@ -39,6 +39,7 @@ def get_scenario(
         raise Exception(
             f"The scenario module: `{scenario_name}` is missing."
         )
+
     scenario_module = module_from_spec(module_spec)
     module_spec.loader.exec_module(scenario_module)
 
@@ -46,7 +47,7 @@ def get_scenario(
         scenario_factory = scenario_module.SCENARIO_FACTORY
     except AttributeError:
         raise Exception(
-            f"There is no variable SCENARIO_FACTORY in the scenario module."
+            f"There is no variable `SCENARIO_FACTORY` in the scenario module."
         )
 
     factory = scenario_factory(
