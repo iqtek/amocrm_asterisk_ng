@@ -1,6 +1,7 @@
 from glassio.dispatcher import IDispatcher
 from glassio.event_bus import InitializableEventBus
 from glassio.logger import ILogger
+
 from amocrm_asterisk_ng.infrastructure import ioc
 
 from .get_scenario import get_scenario
@@ -20,7 +21,7 @@ def scenario_startup(scenario_name: str, scenario_configs_dir: str) -> None:
 
     scenario = get_scenario(
         scenario_name=scenario_name,
-        scenario_configs_dir=scenario_configs_dir,
+        scenario_config_dir=scenario_configs_dir,
         event_bus=event_bus,
         dispatcher=dispatcher,
         logger=logger,

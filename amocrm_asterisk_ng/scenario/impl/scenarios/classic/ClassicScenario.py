@@ -1,17 +1,17 @@
 from typing import MutableSequence
 
+from glassio.dispatcher import IDispatcher
+from glassio.event_bus import IEventBus
+from glassio.event_bus import IEventHandler
+from glassio.logger import ILogger
+
 from amocrm_asterisk_ng.domain import IAddCallToAnalyticsCommand
 from amocrm_asterisk_ng.domain import IAddCallToUnsortedCommand
 from amocrm_asterisk_ng.domain import IGetUserIdByPhoneQuery
 from amocrm_asterisk_ng.domain import IOriginationCallCommand
 from amocrm_asterisk_ng.domain import IOriginationRequestCommand
-from amocrm_asterisk_ng.domain import IsUserPhoneNumerQuery
 from amocrm_asterisk_ng.domain import IRaiseCardCommand
-
-from glassio.dispatcher import IDispatcher
-from glassio.event_bus import IEventBus
-from glassio.event_bus import IEventHandler
-from glassio.logger import ILogger
+from amocrm_asterisk_ng.domain import IsUserPhoneNumerQuery
 
 from .ClassicScenarioConfig import ClassicScenarioConfig
 from .event_handlers import CallCompletedEventHandler
@@ -19,13 +19,13 @@ from .event_handlers import RingingEventHandler
 
 from .functions import GetCallDirectionFunctionImpl
 from .functions import IGetCallDirectionFunction
+from .functions import INormalizePhoneFunction
 from .functions import IsInternalNumberFunction
 from .functions import IsInternalNumberFunctionImpl
-from .functions import OriginationRequestCommandImpl
-from .functions import INormalizePhoneFunction
 from .functions import NormalizePhoneFunctionImpl
+from .functions import OriginationRequestCommandImpl
 
-from ...core import IScenario
+from ....core import IScenario
 
 
 __all__ = [
@@ -90,7 +90,6 @@ class ClassicScenario(IScenario):
             normalize_phone_function=self.__dispatcher.get_function(INormalizePhoneFunction),
             logger=self.__logger,
         )
-
         await self.__event_bus.attach_event_handler(call_completed_event_handler)
         self.__handlers.append(call_completed_event_handler)
 
@@ -100,14 +99,12 @@ class ClassicScenario(IScenario):
             raise_card_command=self.__dispatcher.get_function(IRaiseCardCommand),
             normalize_phone_function=self.__dispatcher.get_function(INormalizePhoneFunction),
         )
-
         await self.__event_bus.attach_event_handler(ringing_event_handler)
         self.__handlers.append(ringing_event_handler)
 
     async def unload(self) -> None:
         for handler in self.__handlers:
             await self.__event_bus.detach_event_handler(handler)
-
         self.__dispatcher.delete_function(IGetCallDirectionFunction)
         self.__dispatcher.delete_function(IsInternalNumberFunction)
         self.__dispatcher.delete_function(IOriginationRequestCommand)

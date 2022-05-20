@@ -4,12 +4,12 @@ from typing import Optional
 
 from glassio.dispatcher import IDispatcher
 from glassio.event_bus import IEventBus
-from glassio.mixins import IFactory
 from glassio.logger import ILogger
 
 from .ClassicScenario import ClassicScenario
 from .ClassicScenarioConfig import ClassicScenarioConfig
-from ...core import IScenario
+from ....core import IScenario
+from ....core import IScenarioFactory
 
 
 __all__ = [
@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 
-class ClassicScenarioFactory(IFactory[IScenario]):
+class ClassicScenarioFactory(IScenarioFactory):
 
     __slots__ = (
         "__event_bus",
@@ -25,7 +25,12 @@ class ClassicScenarioFactory(IFactory[IScenario]):
         "__logger",
     )
 
-    def __init__(
+    def __init__(self) -> None:
+        self.__event_bus = None
+        self.__dispatcher = None
+        self.__logger = None
+
+    def initialize(
         self,
         event_bus: IEventBus,
         dispatcher: IDispatcher,
@@ -35,9 +40,7 @@ class ClassicScenarioFactory(IFactory[IScenario]):
         self.__dispatcher = dispatcher
         self.__logger = logger
 
-    def get_instance(self, settings: Optional[Mapping[str, Any]] = None) -> IScenario:
-
-        settings = settings or {}
+    def get_instance(self, settings: Mapping[str, Any]) -> IScenario:
 
         config = ClassicScenarioConfig(**settings)
 
