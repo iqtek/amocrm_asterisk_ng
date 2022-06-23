@@ -1,3 +1,9 @@
+# Custom
+
+backup.txt
+config.yml
+classic_scenario.yml
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -7,10 +13,9 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-venv/
+
 *.log
-backup.txt
-config.yml
+
 .Python
 build/
 develop-eggs/
@@ -59,15 +64,7 @@ cover/
 *.mo
 *.pot
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
 
-# Flask stuff:
-instance/
-.webassets-cache
 
 # Scrapy stuff:
 .scrapy
@@ -118,8 +115,8 @@ celerybeat.pid
 # Environments
 .env
 .venv
-env/
 venv/
+env/
 ENV/
 env.bak/
 venv.bak/
