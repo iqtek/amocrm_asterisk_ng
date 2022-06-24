@@ -4,8 +4,8 @@ from amocrm_asterisk_ng.domain import IGetOperatorIdByPhoneQuery
 from amocrm_asterisk_ng.domain import IRaiseCardCommand
 from amocrm_asterisk_ng.domain import RingingEvent
 
-from ..functions import IsInternalNumberFunction
 from ..functions import INormalizePhoneFunction
+from ..functions import IsInternalNumberFunction
 
 
 __all__ = [

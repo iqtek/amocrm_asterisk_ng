@@ -1,0 +1,2 @@
+from .GetPhoneByOperatorIdQuery import GetPhoneByOperatorIdQuery
+from .GetOperatorIdByPhoneQuery import GetOperatorIdByPhoneQuery

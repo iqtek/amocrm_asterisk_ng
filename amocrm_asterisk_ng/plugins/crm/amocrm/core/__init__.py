@@ -1,0 +1,2 @@
+from .IGetPhoneByOperatorIdQuery import IGetPhoneByOperatorIdQuery
+from .IGetOperatorsEmailAddressesQuery import IGetOperatorsEmailAddressesQuery

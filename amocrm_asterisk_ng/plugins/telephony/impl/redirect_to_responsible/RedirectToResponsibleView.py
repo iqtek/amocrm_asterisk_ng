@@ -1,0 +1,41 @@
+from typing import Optional
+
+from fastapi.responses import PlainTextResponse
+
+from amocrm_asterisk_ng.domain import IGetResponsibleOperatorByPhoneQuery
+
+
+__all__ = [
+    "RedirectToResponsibleView"
+]
+
+
+class RedirectToResponsibleView:
+
+    __slots__ = (
+        "__get_responsible_user_by_phone_query",
+    )
+
+    def __init__(
+        self,
+        get_responsible_user_by_phone_query: IGetResponsibleOperatorByPhoneQuery,
+    ) -> None:
+        self.__get_responsible_user_by_phone_query = get_responsible_user_by_phone_query
+
+    def __make__response(self, content: Optional[str] = None) -> PlainTextResponse:
+        return PlainTextResponse(
+            content=content,
+            status_code=200,
+        )
+
+    async def handle(self, phone: Optional[str] = None) -> PlainTextResponse:
+        if phone is None:
+            return self.__make__response()
+        try:
+            responsible_user_phone_number = await self.__get_responsible_user_by_phone_query(
+                phone_number=phone,
+            )
+        except Exception:
+            return self.__make__response()
+
+        return self.__make__response(content=responsible_user_phone_number)

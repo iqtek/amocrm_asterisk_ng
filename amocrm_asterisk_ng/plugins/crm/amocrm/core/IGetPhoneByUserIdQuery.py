@@ -1,0 +1,15 @@
+from glassio.dispatcher import IQuery
+
+
+__all__ = [
+    "IGetPhoneByOperatorIdQuery",
+]
+
+
+class IGetPhoneByOperatorIdQuery(IQuery[str]):
+
+    __slots__ = ()
+
+    async def __call__(self, user_id: int) -> str:
+        """Get user phone number by his id."""
+        raise NotImplementedError()
