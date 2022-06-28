@@ -34,9 +34,6 @@ async def handle_startup() -> None:
         settings=settings,
     )
 
-    # log_config = config.LOGGING_CONFIG
-    # log_config.update(settings["infrastructure"]["logger"])
-
     await integration_launcher.handle_startup()
 
 

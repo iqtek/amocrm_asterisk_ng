@@ -1,5 +1,6 @@
-import aioredis
+from aioredis import from_url
 from aioredis import Redis
+
 from .RedisStorageConfigModel import RedisStorageConfigModel
 
 
@@ -19,7 +20,7 @@ class RedisConnectionFactoryImpl:
 
     def get_instance(self) -> Redis:
         try:
-            redis = aioredis.from_url(
+            redis = from_url(
                 f"redis://{self.__config.host}",
                 port=self.__config.port,
                 db=self.__config.database

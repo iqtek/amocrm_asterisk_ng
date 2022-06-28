@@ -95,9 +95,13 @@ class CdrEventHandler(IAmiEventHandler):
             )
             return
 
-        caller_phone_number = await self.__ami_store.get_phone_by_channel(
-            channel=channel,
-        )
+        at_index = channel.find('@')
+        caller_phone_number = channel[6:at_index]
+
+        # caller_phone_number = await self.__ami_store.get_phone_by_channel(
+        #     channel=channel,
+        # )
+
         called_phone_number = await self.__ami_store.get_phone_by_channel(
             channel=destination_channel,
         )
