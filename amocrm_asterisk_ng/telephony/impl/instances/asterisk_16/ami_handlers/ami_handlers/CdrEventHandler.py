@@ -95,12 +95,21 @@ class CdrEventHandler(IAmiEventHandler):
             )
             return
 
-        caller_phone_number = await self.__ami_store.get_phone_by_channel(
-            channel=channel,
-        )
-        called_phone_number = await self.__ami_store.get_phone_by_channel(
-            channel=destination_channel,
-        )
+        if "Local/" in channel:
+            at_index = channel.find('@')
+            caller_phone_number = channel[6:at_index]
+        else:
+            caller_phone_number = await self.__ami_store.get_phone_by_channel(
+                channel=channel,
+            )
+
+        if "Local/" in destination_channel:
+            at_index = destination_channel.find('@')
+            called_phone_number = destination_channel[6:at_index]
+        else:
+            called_phone_number = await self.__ami_store.get_phone_by_channel(
+                channel=destination_channel,
+            )
 
         start_time = self.__convert_datetime(str_start_time)
         end_time = self.__convert_datetime(str_end_time)

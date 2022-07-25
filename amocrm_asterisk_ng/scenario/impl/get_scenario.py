@@ -1,10 +1,9 @@
-import yaml
-
 from glassio.dispatcher import IDispatcher
 from glassio.event_bus import IEventBus
 from glassio.logger import ILogger
 
-from .classic import ClassicScenarioFactory
+from .get_scenario_factory import get_scenario_factory
+from .get_scenario_settings import get_scenario_settings
 from ..core import IScenario
 
 
@@ -15,26 +14,22 @@ __all__ = [
 
 def get_scenario(
     scenario_name: str,
-    scenario_configs_dir: str,
+    scenario_config_dir: str,
     event_bus: IEventBus,
     dispatcher: IDispatcher,
     logger: ILogger,
 ) -> IScenario:
 
-    scenario_configs_dir = scenario_configs_dir.rstrip('/')
+    settings = get_scenario_settings(scenario_name, scenario_config_dir)
 
-    if scenario_name != "classic":
-        raise Exception("Integration does not support scenario switching yet.")
+    scenario_factory_type = get_scenario_factory(scenario_name)
 
-    with open(f"{scenario_configs_dir}/{scenario_name}_scenario.yml") as scenario_config_file:
-        settings = yaml.safe_load(scenario_config_file)
-
-    factory = ClassicScenarioFactory(
+    factory = scenario_factory_type()
+    factory.initialize(
         event_bus=event_bus,
         dispatcher=dispatcher,
         logger=logger,
     )
 
     scenario = factory.get_instance(settings=settings)
-
     return scenario

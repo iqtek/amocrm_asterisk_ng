@@ -12,7 +12,7 @@ __all__ = [
 
 class RedisStorageConfigModel(BaseModel):
 
-    host: IPvAnyAddress = Field("127.0.0.1")
+    host: str = "127.0.0.1"
     port: int = Field(6379, gt=0, lt=65536)
     database: Optional[int] = 1
     password: Optional[str] = None

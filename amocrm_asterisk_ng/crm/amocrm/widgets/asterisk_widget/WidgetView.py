@@ -47,6 +47,7 @@ class WidgetView:
 
     async def handle(self, request: Request) -> Response:
         request_params = request.query_params
+        print(request.headers)
         try:
             login = request_params["_login"]
             password = request_params["_secret"]

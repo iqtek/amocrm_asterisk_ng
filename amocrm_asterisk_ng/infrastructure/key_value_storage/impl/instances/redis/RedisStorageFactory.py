@@ -32,7 +32,7 @@ class RedisKeyValueStorageFactory(IKeyValueStorageFactory, ISelectable):
         self.__settings = settings
         self.__logger = logger
 
-        config = RedisStorageConfigModel()
+        config = RedisStorageConfigModel(**settings)
         redis_conn_factory = RedisConnectionFactoryImpl(config)
 
         self.__connection = redis_conn_factory.get_instance()
