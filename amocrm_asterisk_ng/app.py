@@ -21,7 +21,7 @@ async def handle_startup() -> None:
 
     global integration_launcher
 
-    with open('./configs/config.yml') as config_file:
+    with open('./config.yml') as config_file:
         settings = yaml.safe_load(config_file)
 
     integration_factory = IntegrationFactory(

@@ -1,9 +1,11 @@
+from typing import Mapping
+from typing import Any
+
 from glassio.dispatcher import IDispatcher
 from glassio.event_bus import IEventBus
 from glassio.logger import ILogger
 
 from .get_scenario_factory import get_scenario_factory
-from .get_scenario_settings import get_scenario_settings
 from ..core import IScenario
 
 
@@ -14,13 +16,11 @@ __all__ = [
 
 def get_scenario(
     scenario_name: str,
-    scenario_config_dir: str,
+    settings: Mapping[str, Any],
     event_bus: IEventBus,
     dispatcher: IDispatcher,
     logger: ILogger,
 ) -> IScenario:
-
-    settings = get_scenario_settings(scenario_name, scenario_config_dir)
 
     scenario_factory_type = get_scenario_factory(scenario_name)
 

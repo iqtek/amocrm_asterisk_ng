@@ -35,8 +35,8 @@ def bootstrap() -> None:
     event_bus_startup()
 
     scenario_startup(
-        scenario_name=config.scenario,
-        scenario_configs_dir=config.scenario_configs_dir
+        scenario_name="classic",
+        settings=config.scenario
     )
 
     crm_startup(settings=config.crm)

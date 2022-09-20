@@ -1,3 +1,7 @@
+from typing import Mapping
+from typing import Any
+
+
 from glassio.dispatcher import IDispatcher
 from glassio.event_bus import InitializableEventBus
 from glassio.logger import ILogger
@@ -13,7 +17,7 @@ __all__ = [
 ]
 
 
-def scenario_startup(scenario_name: str, scenario_configs_dir: str) -> None:
+def scenario_startup(scenario_name: str, settings: Mapping[str, Any]) -> None:
 
     event_bus = ioc.get_instance(InitializableEventBus)
     dispatcher = ioc.get_instance(IDispatcher)
@@ -21,7 +25,7 @@ def scenario_startup(scenario_name: str, scenario_configs_dir: str) -> None:
 
     scenario = get_scenario(
         scenario_name=scenario_name,
-        scenario_config_dir=scenario_configs_dir,
+        settings=settings,
         event_bus=event_bus,
         dispatcher=dispatcher,
         logger=logger,

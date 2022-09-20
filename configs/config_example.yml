@@ -1,5 +1,15 @@
-scenario: classic
-scenario_configs_dir: ./configs
+scenario:
+  call_logging:
+    source_name: asterisk_telephony
+    source: asterisk_telephony
+    source_uid: asterisk_telephony
+    service_code: amo_asterisk
+    pipeline_name: Воронка
+    postprocessing_delay: 1
+
+  internal_number_pattern: "6\\d\\d"
+
+
 
 telephony:
   type: asterisk_16
