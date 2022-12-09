@@ -1,3 +1,0 @@
-from .IGetCallDirectionFunction import IGetCallDirectionFunction
-from .INormalizePhoneFunction import INormalizePhoneFunction
-from .IsInternalNumberFunction import IsInternalNumberFunction

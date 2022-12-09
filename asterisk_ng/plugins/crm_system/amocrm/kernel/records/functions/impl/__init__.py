@@ -1,0 +1,1 @@
+from .GenerateLinkFunctionImpl import GenerateLinkFunctionImpl

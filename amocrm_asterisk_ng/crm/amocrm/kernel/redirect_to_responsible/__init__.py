@@ -1,1 +1,0 @@
-from .GetResponsibleUserByPhoneQuery import GetResponsibleUserByPhoneQuery

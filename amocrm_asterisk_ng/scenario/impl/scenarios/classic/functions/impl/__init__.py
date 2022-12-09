@@ -1,4 +1,0 @@
-from .GetCallDirectionFunctionImpl import GetCallDirectionFunctionImpl
-from .IsInternalNumberFunctionImpl import IsInternalNumberFunctionImpl
-from .NormalizePhoneFunctionImpl import NormalizePhoneFunctionImpl
-from .OriginationRequestCommandImpl import OriginationRequestCommandImpl
