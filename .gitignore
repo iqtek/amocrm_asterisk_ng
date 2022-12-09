@@ -3,6 +3,8 @@
 credentials.txt
 config.yml
 saved_config.yml
+tmp/
+logs/
 
 __pycache__/
 *.py[cod]

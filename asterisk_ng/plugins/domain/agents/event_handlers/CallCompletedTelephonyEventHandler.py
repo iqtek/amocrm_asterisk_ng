@@ -1,7 +1,8 @@
 from typing import MutableMapping
 from typing import Mapping
 
-from asterisk_ng.interfaces import CallCompletedTelephonyEvent, CallDomainModel
+from asterisk_ng.interfaces import CallCompletedTelephonyEvent
+from asterisk_ng.interfaces import CallDomainModel
 from asterisk_ng.interfaces import CrmUserId
 
 from asterisk_ng.system.event_bus import IEventHandler
