@@ -64,19 +64,26 @@ class AsteriskNgWidgetPlugin(AbstractPlugin):
         logger = container.resolve(Key(ILogger))
         config = AsteriskNgConfig(**settings)
 
-        # get_agent_collection_query = dispatcher.get_function(IGetAgentCollectionQuery)
-        # agents = await get_agent_collection_query()
-        #
-        # for agent in agents:
-        #     contact = Contact(
-        #         uuid=agent.user_id
-        #         name: str
-        #         phone: str
-        #     )
+        get_agent_collection_query = dispatcher.get_function(IGetAgentCollectionQuery)
+
+        agents = await get_agent_collection_query()
+        contacts = [
+            Contact(
+                uuid=agent.user_id.id,
+                name=agent.name,
+                phone=agent.phone,
+            )
+            for agent in agents
+        ]
 
         controller = ControllerImpl(logger=logger)
 
-        controller.add_method("ping", PingMethod())
+        # Methods
+
+        controller.add_method(
+            "ping",
+            PingMethod()
+        )
 
         controller.add_method(
             "set_mute",
@@ -84,19 +91,48 @@ class AsteriskNgWidgetPlugin(AbstractPlugin):
                 dispatcher.get_function(ISetMuteDomainCommand)
             )
         )
-        controller.add_method("originate", OriginationMethod(dispatcher.get_function(IOriginationDomainCommand)))
-        controller.add_method("redirect", RedirectMethod(dispatcher.get_function(IRedirectDomainCommand)))
-        controller.add_method("hangup", HangupMethod(dispatcher.get_function(IHangupDomainCommand)))
-        controller.add_method("get_agent_status", GetAgentStatusMethod(
-            get_agent_status_query=dispatcher.get_function(IGetAgentCallQuery),
-            await_agent_status_change_query=dispatcher.get_function(IAwaitAgentCallChangeQuery),
-        ))
+        controller.add_method(
+            "originate",
+            OriginationMethod(
+                dispatcher.get_function(IOriginationDomainCommand)
+            )
+        )
 
-        controller.add_method("get_contacts", GetContactsMethod())
-        controller.add_method("get_last_contacts", GetLastContactsMethod())
+        controller.add_method(
+            "redirect",
+            RedirectMethod(
+                dispatcher.get_function(IRedirectDomainCommand)
+            )
+        )
+        controller.add_method(
+            "hangup",
+            HangupMethod(
+                dispatcher.get_function(IHangupDomainCommand)
+            )
+        )
+
+        controller.add_method(
+            "get_agent_status",
+            GetAgentStatusMethod(
+                get_agent_status_query=dispatcher.get_function(IGetAgentCallQuery),
+                await_agent_status_change_query=dispatcher.get_function(IAwaitAgentCallChangeQuery),
+            )
+        )
+
+        controller.add_method(
+            "get_contacts",
+            GetContactsMethod(
+                contacts=contacts,
+            )
+        )
+        controller.add_method(
+            "get_last_contacts",
+            GetLastContactsMethod(
+                contacts=contacts,
+            )
+        )
 
         app.middleware("http")(AuthMiddleware(secret_key=config.secret_key))
-
         app.add_api_route("/asterisk_ng", controller.handle, methods=["POST"], tags=["Widgets"])
 
         app.add_exception_handler(InvalidMethodParamsException, invalid_method_params_exception_handler)

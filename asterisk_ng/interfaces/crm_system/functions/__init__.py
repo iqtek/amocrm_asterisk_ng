@@ -1,5 +1,5 @@
 from .ISendCallNotificationCommand import ISendCallNotificationCommand
-from .IGetCrmUserIdsByEmailQuery import IGetCrmUserIdsByEmailQuery
+from .IGetCrmUsersByEmailsQuery import IGetCrmUsersByEmailsQuery
 from .ILogCallCrmCommand import ILogCallCrmCommand
 from .IGetContactByPhoneQuery import IGetContactByPhoneQuery
 from .IGetCrmUserQuery import IGetCrmUserQuery

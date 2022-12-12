@@ -2,7 +2,6 @@ from typing import Mapping
 from typing import MutableMapping
 
 from asterisk_ng.interfaces import Agent
-from asterisk_ng.interfaces import CrmUserId
 from asterisk_ng.interfaces import CallDomainModel
 from asterisk_ng.interfaces import MuteStatusUpdateTelephonyEvent
 

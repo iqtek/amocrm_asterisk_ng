@@ -1,10 +1,11 @@
-from typing import Optional
 from typing import Mapping
+from typing import Optional
 
-from asterisk_ng.interfaces import CrmUserId
+from asterisk_ng.interfaces import Agent
 from asterisk_ng.interfaces import CrmContact
-from asterisk_ng.interfaces import IGetResponsibleUserByPhoneQuery
+from asterisk_ng.interfaces import CrmUserId
 from asterisk_ng.interfaces import IGetContactByPhoneQuery
+from asterisk_ng.interfaces import IGetResponsibleUserByPhoneQuery
 
 
 __all__ = ["GetResponsibleUserByPhoneQueryImpl"]
@@ -22,11 +23,11 @@ class GetResponsibleUserByPhoneQueryImpl(IGetResponsibleUserByPhoneQuery):
         self,
         agent_id_to_phone_mapping: Mapping[CrmUserId, str],
         get_contact_by_phone_query: IGetContactByPhoneQuery,
-        default_responsible: Optional[CrmUserId] = None,
+        default_responsible: Optional[Agent] = None,
     ) -> None:
         self.__agent_id_to_phone_mapping = agent_id_to_phone_mapping
         self.__get_contact_by_phone_query = get_contact_by_phone_query
-        self.__default_responsible = default_responsible
+        self.__default_responsible_id = default_responsible.user_id
 
     async def __call__(self, client_phone: str) -> str:
         try:

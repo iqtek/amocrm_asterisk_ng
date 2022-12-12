@@ -2,8 +2,8 @@ from typing import Any
 from typing import Mapping
 from typing import MutableSequence
 from typing import Optional
-
-from asterisk_ng.interfaces import CrmUserId, ISendCallNotificationCommand
+from collections import UserDict
+from asterisk_ng.interfaces import CrmUserId, ISendCallNotificationCommand, Agent
 from asterisk_ng.interfaces import (
     IAwaitAgentCallChangeQuery,
     IGetAgentCallQuery,
@@ -21,13 +21,13 @@ from asterisk_ng.interfaces import (
     ISetMuteTelephonyCommand,
     IGetAgentCollectionQuery,
 )
-from asterisk_ng.interfaces import IGetCrmUserIdByPhoneQuery, IGetCrmUserIdsByEmailQuery
+from asterisk_ng.interfaces import IGetCrmUserIdByPhoneQuery, IGetCrmUsersByEmailsQuery
 from asterisk_ng.system.container import container, Key
 from asterisk_ng.system.dispatcher import IDispatcher
 from asterisk_ng.system.event_bus import IEventBus, IEventBusSubscription
 from asterisk_ng.system.logger import ILogger
 from asterisk_ng.system.plugin import AbstractPlugin, Interface, PluginInterface
-from .agents.event_handlers import (
+from .event_handlers import (
     CallCompletedTelephonyEventHandler,
     CallCreatedEventHandler,
     MuteStatusUpdateTelephonyEventHandler,
@@ -87,26 +87,31 @@ class StandardDomainPlugin(AbstractPlugin):
 
         self.__event_bus = container.resolve(Key(IEventBus))
         self.__dispatcher = container.resolve(Key(IDispatcher))
-        logger = container.resolve(Key(ILogger))
 
-        get_crm_user_ids_by_email_query = self.__dispatcher.get_function(IGetCrmUserIdsByEmailQuery)
-        user_ids = await get_crm_user_ids_by_email_query(config.agents.keys())
+        get_crm_users_by_emails_query = self.__dispatcher.get_function(IGetCrmUsersByEmailsQuery)
+        crm_users = await get_crm_users_by_emails_query(config.agents.keys())
 
-        # Bijective mapping
-
-        PHONE_TO_AGENT_ID_MAPPING: Mapping[str, CrmUserId] = {
-            config.agents[email]: user_ids[email] for email in list(config.agents.keys())
+        agents: Mapping[CrmUserId, Agent] = {
+            crm_user.id: Agent(
+                user_id=crm_user.id,
+                name=crm_user.name,
+                phone=config.agents[email],
+            )
+            for email, crm_user in crm_users.items()
         }
 
-        default_responsible = user_ids.get(config.responsible_agent, None)
+        # Bijective mapping
+        PHONE_TO_AGENT_MAPPING: Mapping[str, Agent] = {agent.phone: agent for agent in agents.values()}
+        AGENT_ID_TO_PHONE_MAPPING: Mapping[CrmUserId, str] = {v.user_id: k for k, v in PHONE_TO_AGENT_ID_MAPPING.items()}
 
-        AGENT_ID_TO_PHONE_MAPPING: Mapping[CrmUserId, str] = {v: k for k, v in PHONE_TO_AGENT_ID_MAPPING.items()}
+        if responsible_agent_id := crm_users.get(config.responsible_agent, None):
+            default_responsible_agent = agents[responsible_agent_id]
+        else:
+            default_responsible_agent = None
 
         await_agent_status_change_query = AwaitAgentCallChangeQueryImpl()
 
-        from collections import UserDict
-
-        class Dic(UserDict):
+        class ProxyActiveCallsDict(UserDict):
 
             def __setitem__(self, key, value):
                 self.data[key] = value
@@ -116,22 +121,24 @@ class StandardDomainPlugin(AbstractPlugin):
                 self.data.pop(key)
                 await_agent_status_change_query.pop_agents_status(key)
 
-        ACTIVE_CALLS = Dic()
-
         self.__dispatcher.add_function(
             IAwaitAgentCallChangeQuery,
             await_agent_status_change_query,
         )
+
+        ACTIVE_CALLS: [CrmUserId, CallDomainModel] = ProxyActiveCallsDict()
 
         self.__dispatcher.add_function(
             IGetAgentCallQuery,
             GetAgentCallQueryImpl(ACTIVE_CALLS),
         )
 
-        self.__event_bus.subscribe(MuteStatusUpdateTelephonyEventHandler(
-            active_calls=ACTIVE_CALLS,
-            phone_to_agent_id_mapping=PHONE_TO_AGENT_ID_MAPPING,
-        ))
+        self.__event_bus.subscribe(
+            MuteStatusUpdateTelephonyEventHandler(
+                active_calls=ACTIVE_CALLS,
+                phone_to_agent_mapping=PHONE_TO_AGENT_MAPPING,
+            )
+        )
 
         self.__dispatcher.add_function(
             IGetCrmUserIdByPhoneQuery,
@@ -182,7 +189,7 @@ class StandardDomainPlugin(AbstractPlugin):
             GetResponsibleUserByPhoneQueryImpl(
                 agent_id_to_phone_mapping=AGENT_ID_TO_PHONE_MAPPING,
                 get_contact_by_phone_query=self.__dispatcher.get_function(IGetContactByPhoneQuery),
-                default_responsible=default_responsible,
+                default_responsible=default_responsible_agent,
             )
         )
 

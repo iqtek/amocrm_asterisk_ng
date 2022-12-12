@@ -1,6 +1,8 @@
-from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
+
+from pydantic import BaseModel
+
 from .CallDirection import CallDirection
 from ...crm_system import CrmUserId
 
@@ -14,7 +16,5 @@ class CallDomainModel(BaseModel):
     client_phone_number: str
     client_name: Optional[str] = None
     direction: CallDirection
-
     agent_is_mute: bool = False
-
     created_at: datetime

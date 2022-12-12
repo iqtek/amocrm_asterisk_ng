@@ -4,7 +4,7 @@ from typing import Optional
 
 from amocrm_api_client import AmoCrmApiClient
 
-from asterisk_ng.interfaces import IGetCrmUserIdsByEmailQuery
+from asterisk_ng.interfaces import IGetCrmUsersByEmailsQuery
 from asterisk_ng.interfaces import IGetContactByPhoneQuery
 from asterisk_ng.interfaces import ILogCallCrmCommand
 from asterisk_ng.interfaces import ISendCallNotificationCommand
@@ -23,7 +23,7 @@ from asterisk_ng.system.plugin import PluginInterface
 
 from .AmocrmFunctionsPluginConfig import AmocrmFunctionsPluginConfig
 
-from .functions import GetCrmUserIdsByEmailQueryImpl
+from .functions import GetCrmUsersByEmailsQueryImpl
 from .functions import GetContactByPhoneQueryImpl
 from .functions import LogCallCrmCommandImpl
 from .functions import SendCallNotificationCommandImpl
@@ -98,8 +98,8 @@ class AmocrmFunctionsPlugin(AbstractPlugin):
         )
 
         self.__dispatcher.add_function(
-            IGetCrmUserIdsByEmailQuery,
-            GetCrmUserIdsByEmailQueryImpl(
+            IGetCrmUsersByEmailsQuery,
+            GetCrmUsersByEmailsQueryImpl(
                 amo_client=amo_client,
             )
         )
@@ -125,5 +125,5 @@ class AmocrmFunctionsPlugin(AbstractPlugin):
         self.__dispatcher.delete_function(IGetCrmUserQuery)
         await self.__get_crm_user_query_impl.deinitialize()
         self.__dispatcher.delete_function(ISendCallNotificationCommand)
-        self.__dispatcher.delete_function(IGetCrmUserIdsByEmailQuery)
+        self.__dispatcher.delete_function(IGetCrmUsersByEmailsQuery)
         self.__dispatcher.delete_function(ILogCallCrmCommand)

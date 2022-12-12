@@ -3,13 +3,15 @@ from typing import Mapping
 
 from amocrm_api_client import AmoCrmApiClient
 
-from asterisk_ng.interfaces import CrmUserId, IGetCrmUserIdsByEmailQuery
+from asterisk_ng.interfaces import CrmUser
+from asterisk_ng.interfaces import CrmUserId
+from asterisk_ng.interfaces import IGetCrmUsersByEmailsQuery
 
 
-__all__ = ["GetCrmUserIdsByEmailQueryImpl"]
+__all__ = ["GetCrmUsersByEmailsQueryImpl"]
 
 
-class GetCrmUserIdsByEmailQueryImpl(IGetCrmUserIdsByEmailQuery):
+class GetCrmUsersByEmailsQueryImpl(IGetCrmUsersByEmailsQuery):
 
     __slots__ = (
         "__amo_client",
@@ -18,7 +20,7 @@ class GetCrmUserIdsByEmailQueryImpl(IGetCrmUserIdsByEmailQuery):
     def __init__(self, amo_client: AmoCrmApiClient) -> None:
         self.__amo_client = amo_client
 
-    async def __call__(self, emails: Collection[str]) -> Mapping[str, CrmUserId]:
+    async def __call__(self, emails: Collection[str]) -> Mapping[str, CrmUser]:
         required_emails = set(emails)
 
         page_count = (await self.__amo_client.users.get_page()).page_count
@@ -31,9 +33,12 @@ class GetCrmUserIdsByEmailQueryImpl(IGetCrmUserIdsByEmailQuery):
 
             for user in page.embedded:
                 if user.email in required_emails:
-                    result[user.email] = CrmUserId(
-                        id=user.id,
-                        email=user.email,
+                    result[user.email] = CrmUser(
+                        id=CrmUserId(
+                            id=user.id,
+                            email=user.email,
+                        ),
+                        name=user.name,
                     )
                     required_emails.remove(user.email)
 
