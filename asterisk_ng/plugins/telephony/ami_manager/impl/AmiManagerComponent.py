@@ -1,5 +1,6 @@
 from asyncio import Lock
 from asyncio import sleep
+from asyncio import create_subprocess_exec
 
 from typing import Any
 from typing import Callable
@@ -95,4 +96,4 @@ class AmiManagerComponent(AbstractInitializableComponent, IAmiManagerComponent):
         self.__manager.register_event(event_pattern, wrapped_handler)
 
     async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
-        self.__manager.close()
+        await create_subprocess_exec(self.__manager.close())
