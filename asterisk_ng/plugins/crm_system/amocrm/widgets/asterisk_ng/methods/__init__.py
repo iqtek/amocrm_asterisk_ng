@@ -7,3 +7,4 @@ from .SetMuteMethod import SetMuteMethod
 from .GetAgentStatusMethod import GetAgentStatusMethod
 from .GetLastContactsMethod import GetLastContactsMethod
 from .GetContactsMethod import GetContactsMethod
+from .OriginationByContactMethod import OriginationByContactMethod

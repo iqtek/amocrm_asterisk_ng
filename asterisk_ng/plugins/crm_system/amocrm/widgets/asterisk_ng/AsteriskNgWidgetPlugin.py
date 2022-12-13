@@ -39,6 +39,7 @@ from .methods import SetMuteMethod
 from .methods import GetAgentStatusMethod
 from .methods import GetContactsMethod
 from .methods import GetLastContactsMethod
+from .methods import OriginationByContactMethod
 
 
 __all__ = ["AsteriskNgWidgetPlugin"]
@@ -67,14 +68,15 @@ class AsteriskNgWidgetPlugin(AbstractPlugin):
         get_agent_collection_query = dispatcher.get_function(IGetAgentCollectionQuery)
 
         agents = await get_agent_collection_query()
-        contacts = [
+        contacts = {
+            agent.user_id.id:
             Contact(
                 uuid=agent.user_id.id,
                 name=agent.name,
                 phone=agent.phone,
             )
             for agent in agents
-        ]
+        }
 
         controller = ControllerImpl(logger=logger)
 
@@ -119,16 +121,26 @@ class AsteriskNgWidgetPlugin(AbstractPlugin):
             )
         )
 
+        contacts_list = tuple(contacts.values())
+
         controller.add_method(
             "get_contacts",
             GetContactsMethod(
-                contacts=contacts,
+                contacts=contacts_list,
             )
         )
         controller.add_method(
             "get_last_contacts",
             GetLastContactsMethod(
+                contacts=contacts_list,
+            )
+        )
+
+        controller.add_method(
+            "originate_by_contact",
+            OriginationByContactMethod(
                 contacts=contacts,
+                origination_domain_command=dispatcher.get_function(IOriginationDomainCommand),
             )
         )
 

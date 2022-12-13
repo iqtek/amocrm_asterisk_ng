@@ -83,6 +83,8 @@ class LogCallCrmCommandImpl(ILogCallCrmCommand):
             await self.__amo_client.calls.add(call)
         except IncorrectDataException:
             pass
+        else:
+            return
 
         if direction != CrmCallDirection.INBOUND:
             return

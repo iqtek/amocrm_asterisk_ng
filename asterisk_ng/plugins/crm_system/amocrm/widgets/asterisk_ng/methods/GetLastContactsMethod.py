@@ -9,7 +9,7 @@ from .models import Contact
 from ..controller import IControllerMethod
 
 
-__all__ = ["GetContactsMethod"]
+__all__ = ["GetLastContactsMethod"]
 
 
 class GetLastContactsMethod(IControllerMethod):
