@@ -9,6 +9,8 @@ from asterisk_ng.interfaces import ILogCallCrmCommand
 
 from asterisk_ng.system.event_bus import IEventHandler
 
+from ...number_corrector import INumberCorrector
+
 
 __all__ = ["CallCompletedEventHandler"]
 
@@ -25,15 +27,18 @@ class CallCompletedEventHandler(IEventHandler[CallCompletedTelephonyEvent]):
     __slots__ = (
         "__phone_to_agent_mapping",
         "__log_call_crm_command",
+        "__number_corrector",
     )
 
     def __init__(
         self,
         phone_to_agent_mapping: Mapping[str, Agent],
         log_call_crm_command: ILogCallCrmCommand,
+        number_corrector: INumberCorrector,
     ) -> None:
         self.__phone_to_agent_mapping = phone_to_agent_mapping
         self.__log_call_crm_command = log_call_crm_command
+        self.__number_corrector = number_corrector
 
     async def __call__(self, event: CallCompletedTelephonyEvent) -> None:
 
@@ -65,7 +70,7 @@ class CallCompletedEventHandler(IEventHandler[CallCompletedTelephonyEvent]):
             unique_id=event.unique_id,
             responsible_user_id=agent.user_id,
             internal_phone_number=agent.phone,
-            external_phone_number=client_phone,
+            external_phone_number=self.__number_corrector.correct(client_phone),
             direction=crm_call_direction,
             call_result=self.__STATUES_MAPPING[event.disposition],
             duration=duration,

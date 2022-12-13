@@ -58,6 +58,7 @@ from .logging import (
 )
 
 from .StandardDomainConfig import StandardDomainConfig
+from .number_corrector import SequentialCorrectorImpl, RegExpNumberCorrector
 
 
 __all__ = ["StandardDomainPlugin"]
@@ -97,6 +98,18 @@ class StandardDomainPlugin(AbstractPlugin):
 
         self.__event_bus = container.resolve(Key(IEventBus))
         self.__dispatcher = container.resolve(Key(IDispatcher))
+
+        if config.client_corrector is not None:
+            correctors = [
+                RegExpNumberCorrector(pattern, replacement)
+                for pattern, replacement in config.client_corrector
+            ]
+
+            client_corrector = SequentialCorrectorImpl(correctors)
+        else:
+            client_corrector = SequentialCorrectorImpl([])
+
+        # Agents
 
         get_crm_users_by_emails_query = self.__dispatcher.get_function(IGetCrmUsersByEmailsQuery)
         crm_users = await get_crm_users_by_emails_query(config.agents.keys())
@@ -231,7 +244,8 @@ class StandardDomainPlugin(AbstractPlugin):
             self.__event_bus.subscribe(
                 CallCompletedEventHandler(
                     phone_to_agent_mapping=PHONE_TO_AGENT_MAPPING,
-                    log_call_crm_command=self.__dispatcher.get_function(ILogCallCrmCommand)
+                    log_call_crm_command=self.__dispatcher.get_function(ILogCallCrmCommand),
+                    number_corrector=client_corrector,
                 )
             )
         )
@@ -241,6 +255,7 @@ class StandardDomainPlugin(AbstractPlugin):
                 RingingTelephonyEventHandler(
                     send_call_notification_command=self.__dispatcher.get_function(ISendCallNotificationCommand),
                     phone_to_agent_mapping=PHONE_TO_AGENT_MAPPING,
+                    number_corrector=client_corrector,
                 )
             )
         )
