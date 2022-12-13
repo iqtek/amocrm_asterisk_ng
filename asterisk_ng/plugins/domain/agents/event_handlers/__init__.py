@@ -1,4 +1,3 @@
 from .CallCompletedTelephonyEventHandler import CallCompletedTelephonyEventHandler
 from .CallCreatedEventHandler import CallCreatedEventHandler
 from .MuteStatusUpdateTelephonyEventHandler import MuteStatusUpdateTelephonyEventHandler
-from .RingingTelephonyEventHandler import RingingTelephonyEventHandler

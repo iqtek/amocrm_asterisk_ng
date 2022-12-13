@@ -30,12 +30,12 @@ class AwaitAgentCallChangeQueryImpl(IAwaitAgentCallChangeQuery):
             self.__futures[user_id].set_exception(KeyError())
 
     def set_agents_status(self, user_id: CrmUserId, call: CallDomainModel) -> None:
-
         if user_id not in self.__futures.keys():
             return
 
         if self.__futures[user_id].done():
-            del self.__futures[user_id]
+            self.__futures.pop(user_id, None)
+            return
 
         if user_id in self.__futures.keys():
             self.__futures[user_id].set_result(call)

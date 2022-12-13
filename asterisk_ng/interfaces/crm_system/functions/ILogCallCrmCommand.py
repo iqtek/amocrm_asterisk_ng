@@ -17,11 +17,11 @@ class ILogCallCrmCommand(ICommand):
     async def __call__(
         self,
         unique_id: str,
-        phone_number: str,
-        phone_number2: str,
+        internal_phone_number: str,
+        external_phone_number: str,
         direction: CrmCallDirection,
-        duration: int,
         call_result: CrmCallResult,
         responsible_user_id: CrmUserId,
+        duration: int,
     ) -> None:
         raise NotImplementedError()

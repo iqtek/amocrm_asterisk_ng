@@ -38,7 +38,6 @@ from .agents.event_handlers import (
     CallCompletedTelephonyEventHandler,
     CallCreatedEventHandler,
     MuteStatusUpdateTelephonyEventHandler,
-    RingingTelephonyEventHandler,
 )
 
 from .functions import (
@@ -53,7 +52,11 @@ from .functions import (
     GetCrmUserIdByPhoneQueryImpl,
 )
 
-from .logging import CallCompletedEventHandler
+from .logging import (
+    RingingTelephonyEventHandler,
+    CallCompletedEventHandler,
+)
+
 from .StandardDomainConfig import StandardDomainConfig
 
 

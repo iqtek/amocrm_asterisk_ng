@@ -96,4 +96,7 @@ class AmiManagerComponent(AbstractInitializableComponent, IAmiManagerComponent):
         self.__manager.register_event(event_pattern, wrapped_handler)
 
     async def _deinitialize(self, exception: Optional[Exception] = None) -> None:
-        await create_subprocess_exec(self.__manager.close())
+        try:
+            self.__manager.close()
+        except RuntimeError:
+            pass  # Fail to send {'Action': 'Ping'}

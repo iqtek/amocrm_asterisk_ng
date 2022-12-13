@@ -46,23 +46,26 @@ class CallCompletedEventHandler(IEventHandler[CallCompletedTelephonyEvent]):
         if caller_agent is None and called_agent is None:
             return  # A call without an agent.
 
-        crm_call_direction = CrmCallDirection.OUTBOUND if caller_agent is not None else CrmCallDirection.INBOUND
+        if caller_agent is not None:
+            crm_call_direction = CrmCallDirection.OUTBOUND
+            agent = caller_agent
+            client_phone = event.called_phone_number
+
+        if called_agent is not None:
+            crm_call_direction = CrmCallDirection.INBOUND
+            agent = called_agent
+            client_phone = event.caller_phone_number
 
         if event.disposition != CallStatus.ANSWERED and crm_call_direction == CrmCallDirection.OUTBOUND:
             return  # Outbound and not answered calls not logging.
-
-        agent_id = caller_agent_id or called_agent_id
-
-        phone_number = event.caller_phone_number if crm_call_direction == CrmCallDirection.INBOUND else event.called_phone_number
-        phone_number2 = event.called_phone_number if crm_call_direction == CrmCallDirection.INBOUND else event.caller_phone_number
 
         duration = (event.call_end_at - event.answer_at).seconds
 
         await self.__log_call_crm_command(
             unique_id=event.unique_id,
-            responsible_user_id=agent_id,
-            phone_number=phone_number,
-            phone_number2=phone_number2,
+            responsible_user_id=agent.user_id,
+            internal_phone_number=agent.phone,
+            external_phone_number=client_phone,
             direction=crm_call_direction,
             call_result=self.__STATUES_MAPPING[event.disposition],
             duration=duration,

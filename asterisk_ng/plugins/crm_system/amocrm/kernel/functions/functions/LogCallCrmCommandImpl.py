@@ -4,13 +4,16 @@ from typing import Tuple
 from amocrm_api_client import AmoCrmApiClient
 from amocrm_api_client.make_amocrm_request import IncorrectDataException
 from amocrm_api_client.models.call import AddCall
-from amocrm_api_client.models.unsorted import UnsortedCallMetadata, UnsortedCall
+from amocrm_api_client.models.unsorted import UnsortedCall
+from amocrm_api_client.models.unsorted import UnsortedCallMetadata
 
-from asterisk_ng.plugins.crm_system.amocrm.kernel.records import IGenerateLinkFunction
 from asterisk_ng.interfaces import CrmCallDirection
 from asterisk_ng.interfaces import CrmCallResult
 from asterisk_ng.interfaces import CrmUserId
 from asterisk_ng.interfaces import ILogCallCrmCommand
+
+from asterisk_ng.plugins.crm_system.amocrm.kernel.records import IGenerateLinkFunction
+
 from ..AmocrmFunctionsPluginConfig import AmocrmFunctionsPluginConfig
 
 
@@ -50,11 +53,11 @@ class LogCallCrmCommandImpl(ILogCallCrmCommand):
     async def __call__(
         self,
         unique_id: str,
-        responsible_user_id: CrmUserId,
-        phone_number: str,
-        phone_number2: str,
+        internal_phone_number: str,
+        external_phone_number: str,
         direction: CrmCallDirection,
         call_result: CrmCallResult,
+        responsible_user_id: CrmUserId,
         duration: int,
     ) -> None:
         link = await self.__generate_link_function(unique_id)
@@ -69,7 +72,7 @@ class LogCallCrmCommandImpl(ILogCallCrmCommand):
             duration=duration,
             source=self.__config.source,
             link=link,
-            phone=phone_number,
+            phone=external_phone_number,
             call_result=amocrm_call_result[1],
             call_status=amocrm_call_result[0],
             responsible_user_id=responsible_user_id.id,
@@ -86,8 +89,8 @@ class LogCallCrmCommandImpl(ILogCallCrmCommand):
 
         metadata = UnsortedCallMetadata(
             uniq=unique_id,
-            from_=phone_number,
-            phone=phone_number2,
+            from_=external_phone_number,
+            phone=internal_phone_number,
             called_at=timestamp,
             duration=duration,
             link=link,
