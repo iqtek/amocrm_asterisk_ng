@@ -3,43 +3,47 @@ from typing import Mapping
 
 from fastapi import FastAPI
 
-from asterisk_ng.system.dispatcher import IDispatcher
+from asterisk_ng.interfaces import (
+    IAwaitAgentCallChangeQuery,
+    IGetAgentCallQuery,
+    IGetAgentCollectionQuery,
+    IHangupDomainCommand,
+    IOriginationDomainCommand,
+    IRedirectDomainCommand,
+    ISetMuteDomainCommand,
+)
+
 from asterisk_ng.system.container import container
 from asterisk_ng.system.container import Key
+from asterisk_ng.system.dispatcher import IDispatcher
 from asterisk_ng.system.logger import ILogger
 from asterisk_ng.system.plugin import AbstractPlugin
 from asterisk_ng.system.plugin import Interface
 from asterisk_ng.system.plugin import PluginInterface
 from .AsteriskNgConfig import AsteriskNgConfig
-from .controller import ControllerImpl
-from .controller import InvalidMethodParamsException
-from .controller import UnknownMethodException
+
+from .controller import (
+    ControllerImpl,
+    InvalidMethodParamsException,
+    UnknownMethodException,
+)
+
 from .fastapi import AuthMiddleware
 from .fastapi import bad_request_exception_handler
 from .fastapi import BadRequest
 from .fastapi import invalid_method_params_exception_handler
 from .fastapi import unknown_method_exception_handler
-from .methods.models import Contact
-from asterisk_ng.interfaces import (
-    IOriginationDomainCommand,
-    ISetMuteDomainCommand,
-    IRedirectDomainCommand,
-    IHangupDomainCommand,
-    IAwaitAgentCallChangeQuery,
-    IGetAgentCallQuery,
-    IGetAgentCollectionQuery,
-)
 
-from .methods import HangupMethod
-from .methods import OriginationMethod
-from .methods import PingMethod
-from .methods import RedirectMethod
-from .methods import SetHoldMethod
-from .methods import SetMuteMethod
 from .methods import GetAgentStatusMethod
 from .methods import GetContactsMethod
 from .methods import GetLastContactsMethod
+from .methods import HangupMethod
 from .methods import OriginationByContactMethod
+from .methods import OriginationMethod
+from .methods import PingMethod
+from .methods import RedirectMethod
+from .methods import SetMuteMethod
+from .methods.models import Contact
 
 
 __all__ = ["AsteriskNgWidgetPlugin"]

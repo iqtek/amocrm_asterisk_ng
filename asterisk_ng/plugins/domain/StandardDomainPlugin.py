@@ -109,7 +109,6 @@ class StandardDomainPlugin(AbstractPlugin):
             )
             for email, crm_user in crm_users.items()
         }
-        print("Agents", AGENTS)
 
         # Bijective mapping
         PHONE_TO_AGENT_MAPPING: Mapping[str, Agent] = {agent.phone: agent for agent in AGENTS.values()}
