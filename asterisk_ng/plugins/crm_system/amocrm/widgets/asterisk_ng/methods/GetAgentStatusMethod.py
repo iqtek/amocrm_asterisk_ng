@@ -34,12 +34,19 @@ class GetAgentStatusMethod(IControllerMethod):
         self.__await_agent_status_change_query = await_agent_status_change_query
 
     def __make_conversation_status(self, call: CallDomainModel) -> Mapping[str, Any]:
+
+        if call.contact is not None:
+            contact_id = call.contact.id
+        else:
+            contact_id = None
+
         return AgentStatus(
             status=CallStatus.CONVERSATION,
             call_info=CallInfo(
                 unique_id=call.id,
                 contact_phone=call.client_phone_number,
                 contact_name=call.client_name,
+                contact_id=contact_id,
                 is_hold=False,
                 is_mute=call.agent_is_mute,
                 timestamp=int(call.created_at.timestamp()),

@@ -11,6 +11,7 @@ from asterisk_ng.interfaces import CallCreatedTelephonyEvent
 from asterisk_ng.interfaces import CallDirection
 from asterisk_ng.interfaces import CallDomainModel
 from asterisk_ng.interfaces import CrmUserId
+from asterisk_ng.interfaces import CrmContact
 from asterisk_ng.interfaces import IGetContactByPhoneQuery
 from asterisk_ng.interfaces import IGetCrmUserQuery
 
@@ -46,13 +47,15 @@ class CallCreatedEventHandler(IEventHandler):
         agent_id: CrmUserId,
         client_phone: str,
         direction: CallDirection,
-        client_name: Optional[str] = None
+        client_name: Optional[str] = None,
+        contact: Optional[CrmContact] = None
     ) -> None:
 
         call = CallDomainModel(
             id=str(uuid4()),
             agent_id=agent_id,
             client_phone_number=client_phone,
+            contact=contact,
             direction=direction,
             created_at=datetime.now(),
             client_name=client_name,
@@ -60,12 +63,11 @@ class CallCreatedEventHandler(IEventHandler):
 
         self.__active_calls[agent_id] = call
 
-    async def __get_client_name(self, phone: str) -> Optional[str]:
+    async def __get_contact(self, phone: str) -> Optional[CrmContact]:
         try:
-            contact = await self.__get_contact_by_phone_query(phone)
+            return await self.__get_contact_by_phone_query(phone)
         except KeyError:
             return None
-        return contact.name
 
     async def __call__(self, event: CallCreatedTelephonyEvent) -> None:
 
@@ -81,11 +83,20 @@ class CallCreatedEventHandler(IEventHandler):
             return
 
         if caller_agent is not None:
-            client_name = await self.__get_client_name(event.called_phone_number)
-            self.__set_call_for_agent(caller_agent.user_id, event.called_phone_number, CallDirection.OUTBOUND, client_name=client_name)
+            contact = await self.__get_contact(event.called_phone_number)
+            client_name = getattr(contact, "name", None)
+
+            self.__set_call_for_agent(
+                caller_agent.user_id,
+                event.called_phone_number,
+                CallDirection.OUTBOUND,
+                client_name=client_name,
+                contact=contact,
+            )
             return
 
         if called_agent is not None:
-            client_name = await self.__get_client_name(event.caller_phone_number)
+            contact = await self.__get_contact(event.caller_phone_number)
+            client_name = getattr(contact, "name", None)
             self.__set_call_for_agent(called_agent.user_id, event.caller_phone_number, CallDirection.INBOUND, client_name=client_name)
             return
