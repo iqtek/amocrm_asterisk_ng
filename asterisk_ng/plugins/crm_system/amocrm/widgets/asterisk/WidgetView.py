@@ -71,6 +71,9 @@ class WidgetView:
             except KeyError:
                 return self.__make_response({"status": "invalid data."})
 
+            if len(caller_phone_number) < 3 or len(caller_phone_number) < 3:
+                return self.__make_response({"status": "invalid phones."})
+
             try:
                 user_id = await self.__get_crm_user_id_by_phone_query(caller_phone_number)
             except KeyError:
