@@ -15,7 +15,7 @@ __all__ = ["GetContactByPhoneQueryImpl"]
 
 class GetContactByPhoneQueryImpl(IGetContactByPhoneQuery):
 
-    __POSSIBLE_PREFIXES = ["+7", "8"]
+    __POSSIBLE_PREFIXES = ("+7", "7", "8")
 
     __slots__ = (
         "__amo_client",
