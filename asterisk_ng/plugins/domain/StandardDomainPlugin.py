@@ -127,8 +127,8 @@ class StandardDomainPlugin(AbstractPlugin):
         PHONE_TO_AGENT_MAPPING: Mapping[str, Agent] = {agent.phone: agent for agent in AGENTS.values()}
         AGENT_ID_TO_PHONE_MAPPING: Mapping[CrmUserId, str] = {v.user_id: k for k, v in PHONE_TO_AGENT_MAPPING.items()}
 
-        if responsible_agent_id := crm_users.get(config.responsible_agent, None):
-            default_responsible_agent = AGENTS[responsible_agent_id]
+        if responsible_agent_user := crm_users.get(config.responsible_agent, None):
+            default_responsible_agent = AGENTS[responsible_agent_user.id]
         else:
             default_responsible_agent = None
 
