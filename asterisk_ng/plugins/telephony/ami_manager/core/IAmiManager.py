@@ -11,7 +11,7 @@ class IAmiManager:
 
     __slots__ = ()
 
-    async def send_action(self, action: Action) -> Response:
+    async def send_action(self, action: Action) -> None:
         raise NotImplementedError()
 
     def attach_event_handler(self, event_pattern: str, event_handler: IAmiEventHandler) -> None:

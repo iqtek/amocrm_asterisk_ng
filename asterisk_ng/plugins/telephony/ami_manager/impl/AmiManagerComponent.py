@@ -54,7 +54,7 @@ class AmiManagerComponent(AbstractInitializableComponent, IAmiManagerComponent):
         await self.__check_connection()
 
     @required_state(InitializedState)
-    async def send_action(self, action: Action) -> Response:
+    async def send_action(self, action: Action) -> None:
         try:
             response = await self.__manager.send_action(dict(action))
         except Exception as exc:
@@ -64,17 +64,9 @@ class AmiManagerComponent(AbstractInitializableComponent, IAmiManagerComponent):
             )
             raise exc
 
-        parameters = dict(response)
-        parameters.pop("content")
-        status = parameters.pop("Response")
-        id = parameters.pop("ActionID", None)
-
-        response = Response(status, parameters, id)
-
         await self.__logger.debug(
-            f"Send action: `{action}`; response: `{response}`."
+            f"Action sent: `{action}`; response: `{response}`."
         )
-        return response
 
     def __wrap_handler(self, event_handler: IAmiEventHandler) -> Callable[[Manager, Message], Coroutine[Any, Any, None]]:
         async def wrapper(manager: Manager, message: Message) -> None:
