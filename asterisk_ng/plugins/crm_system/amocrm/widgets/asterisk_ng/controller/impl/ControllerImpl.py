@@ -86,7 +86,7 @@ class ControllerImpl:
             return response
         else:
             response = self.__make_response_with_result(result, command_id=command.id)
-            await self.__logger.debug(f"Controller method result: `{result}` command: `{command}`.")
+            # await self.__logger.debug(f"Controller method result: `{result}` command: `{command}`.")
             return response
 
     def __make_response_with_result(self, result: Optional[Mapping[str, Any]], command_id: int) -> JSONResponse:

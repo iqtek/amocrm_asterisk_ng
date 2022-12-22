@@ -14,6 +14,8 @@ from asterisk_ng.system.components import AbstractInitializableComponent
 from asterisk_ng.system.components import InitializedState
 from asterisk_ng.system.components import required_state
 
+from asterisk_ng.system.tracing import set_trace_id
+
 from asterisk_ng.system.logger import ILogger
 from .message_convert_function import message_convert_function
 
@@ -58,21 +60,22 @@ class AmiManagerComponent(AbstractInitializableComponent, IAmiManagerComponent):
         try:
             response = await self.__manager.send_action(dict(action))
         except Exception as exc:
-            await self.__logger.error(
-                f"Error sending action: `{action}`.",
-                exception=exc,
-            )
+            await self.__logger.error(f"Error sending action: `{action}`.", exception=exc)
             raise exc
 
-        await self.__logger.debug(
-            f"Action sent: `{action}`; response: `{response}`."
-        )
+        await self.__logger.debug(f"Action sent: `{action}`; response: `{response}`.")
 
     def __wrap_handler(self, event_handler: IAmiEventHandler) -> Callable[[Manager, Message], Coroutine[Any, Any, None]]:
         async def wrapper(manager: Manager, message: Message) -> None:
             nonlocal event_handler
             event = message_convert_function(message)
             async with self.__lock:
+
+                trace_id = event.get("Linkedid", None)
+
+                if trace_id is not None:
+                    set_trace_id(trace_id)
+
                 await self.__logger.debug(f"Catch event: `{event}`.")
                 try:
                     await event_handler(event)

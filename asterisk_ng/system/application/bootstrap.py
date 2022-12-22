@@ -26,6 +26,7 @@ from asterisk_ng.system.dispatcher import IDispatcher, LocalDispatcher
 from asterisk_ng.system.event_bus import EventBusImpl, IEventBus
 from asterisk_ng.system.logger import ILogger, StandardLogger
 from asterisk_ng.system.plugin_store import PluginStore
+from asterisk_ng.system.tracing import TracingLoggerAdapter
 
 
 __all__ = ["bootstrap"]
@@ -40,7 +41,8 @@ def bootstrap(configuration: StaticConfiguration) -> None:
     if len(logger_settings.keys()) != 0:
         config.dictConfig(dict(logger_settings))
 
-    logger = StandardLogger(getLogger("root"))
+    root_logger = TracingLoggerAdapter(getLogger("root"), {})
+    logger = StandardLogger(root_logger)
     container.set_resolver(Key(ILogger), SingletonResolver(logger))
 
     # Dispatcher.
