@@ -15,7 +15,8 @@ __all__ = ["ReflectorImpl"]
 class ReflectorImpl(IReflector):
 
     __CHANNEL_TTL: int = 60 * 60 * 8
-
+    __HANGUP_DELAY: int = 60 * 60
+    
     def __init__(
         self,
         storage: IKeyValueStorage,
@@ -64,17 +65,17 @@ class ReflectorImpl(IReflector):
     async def delete_channel(self, channel_name: str) -> None:
         channel = await self.get_channel_by_name(channel_name)
 
-        await self.__storage.set_expire(f"channel-unique_id-{channel.unique_id}", expire=10)
-        await self.__storage.set_expire(f"unique_id-channel-{channel.name}", expire=10)
-        await self.__storage.set_expire(f"linked_id-channel-{channel.name}", expire=10)
+        await self.__storage.set_expire(f"channel-unique_id-{channel.unique_id}", expire=self.__HANGUP_DELAY)
+        await self.__storage.set_expire(f"unique_id-channel-{channel.name}", expire=self.__HANGUP_DELAY)
+        await self.__storage.set_expire(f"linked_id-channel-{channel.name}", expire=self.__HANGUP_DELAY)
 
         try:
             phone = await self.get_phone(channel_name)
         except KeyError:
             pass
         else:
-            await self.__storage.set_expire(f"phone-channel-{channel_name}", expire=10)
-            await self.__storage.set_expire(f"channel-phone-{phone}", expire=10)
+            await self.__storage.set_expire(f"phone-channel-{channel_name}", expire=self.__HANGUP_DELAY)
+            await self.__storage.set_expire(f"channel-phone-{phone}", expire=self.__HANGUP_DELAY)
 
         await self.__logger.debug(f"Channel deleted: {channel}.")
 
