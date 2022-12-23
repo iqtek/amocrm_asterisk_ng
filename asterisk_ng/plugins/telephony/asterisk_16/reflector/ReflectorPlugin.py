@@ -29,6 +29,8 @@ from .impl.handlers import BridgeDestroyEventHandler
 from .impl.handlers import BridgeLeaveEventHandler
 from .impl.handlers import BridgeEnterEventHandler
 
+from .ReflectorPluginConfig import ReflectorPluginConfig
+
 
 __all__ = ["ReflectorPlugin"]
 
@@ -58,6 +60,8 @@ class ReflectorPlugin(AbstractPlugin):
 
     async def upload(self, settings: Mapping[str, Any]) -> None:
 
+        config = ReflectorPluginConfig(**settings)
+
         logger = container.resolve(Key(ILogger))
         storage = container.resolve(Key(IKeyValueStorage))
         event_bus = container.resolve(Key(IEventBus))
@@ -75,7 +79,7 @@ class ReflectorPlugin(AbstractPlugin):
 
         ami_manager.attach_event_handler("Newchannel", NewChannelEventHandler(reflector, logger))
         ami_manager.attach_event_handler("Newstate", NewStateEventHandler(reflector, event_bus, logger))
-        ami_manager.attach_event_handler("NewCallerid", NewCallerIdEventHandler(reflector, logger))
+        ami_manager.attach_event_handler("NewCallerid", NewCallerIdEventHandler(config.internal_number_pattern, reflector, logger))
         ami_manager.attach_event_handler("DialState", DialStateEventHandler(reflector, event_bus, logger))
         ami_manager.attach_event_handler("Hangup", HangupEventHandler(reflector, logger))
         ami_manager.attach_event_handler("Cdr", CdrEventHandler(reflector, event_bus, logger))
