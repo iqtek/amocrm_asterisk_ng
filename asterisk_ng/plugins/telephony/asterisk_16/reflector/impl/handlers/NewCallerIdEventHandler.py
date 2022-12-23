@@ -37,9 +37,9 @@ class NewCallerIdEventHandler(IAmiEventHandler):
         channel_name = event["Channel"]
 
         if phone_number := event.get("CallerIDNum"):
-            pattern=f"^{self.__internal_number_pattern}$"
-            result = re.search(pattern, phone_number)
+            # pattern=f"^{self.__internal_number_pattern}$"
+            # result = re.search(pattern, phone_number)
 
-            if result is not None:
-                await self.__reflector.attach_phone(channel_name, phone=phone_number)
-                return
+            # if result is not None:
+            await self.__reflector.attach_phone(channel_name, phone=phone_number)
+                # return
