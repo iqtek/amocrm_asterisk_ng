@@ -111,42 +111,22 @@ class ReflectorImpl(IReflector):
         channel_name = await self.__storage.get(f"channel-phone-{phone}")
         return await self.get_channel_by_name(channel_name)
 
-    async def add_bridge(self, unique_id: str) -> None:
-        channels_str = json.dumps([])
-        await self.__storage.set(f"bridge-{unique_id}", channels_str)
-
-    async def get_channels_in_bridge(self, unique_id: str) -> Collection[str]:
-        str_channels = await self.__storage.get(f"bridge-{unique_id}")
-        channels = json.loads(str_channels)
-        return channels
-
-    async def delete_bridge(self, unique_id: str) -> None:
-        await self.__storage.delete(f"bridge-{unique_id}")
-
-    async def bridge_enter_channel(
+    async def add_to_call(
         self,
-        bridge_unique_id: str,
-        channel_name,
+        linked_id: str,
+        phone: str
     ) -> None:
-        str_channels = await self.__storage.get(f"bridge-{bridge_unique_id}")
-        channels = json.loads(str_channels)
-        channels.append(channel_name)
-        channels_str = json.dumps(channels)
-        await self.__storage.set(
-            f"bridge-{bridge_unique_id}",
-            channels_str,
-        )
+        try:
+            phones = set(json.loads(await self.__storage.get(f"call-{linked_id}")))
+        except KeyError:
+            phones = set()
+        phones.add(phone)
+        phones_str = json.dumps(list(phones))
+        await self.__storage.set(f"call-{linked_id}", phones_str)
 
-    async def bridge_leave_channel(
-        self,
-        bridge_unique_id: str,
-        channel_name,
-    ) -> None:
-        str_channels = await self.__storage.get(f"bridge-{bridge_unique_id}")
-        channels = json.loads(str_channels)
-        channels.remove(channel_name)
-        channels_str = json.dumps(channels)
-        await self.__storage.set(
-            f"bridge-{bridge_unique_id}",
-            channels_str,
-        )
+    async def delete_call(self, linked_id: str) -> None:
+        await self.__storage.delete(f"call-{linked_id}")
+
+    async def get_call_phones(self, linked_id: str) -> Collection[str]:
+        phones_str = await self.__storage.get(f"call-{linked_id}")
+        return json.loads(phones_str)

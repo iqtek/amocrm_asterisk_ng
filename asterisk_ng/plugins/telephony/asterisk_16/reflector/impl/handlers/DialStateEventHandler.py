@@ -44,8 +44,12 @@ class DialStateEventHandler(IAmiEventHandler):
 
         async def task() -> None:
             await sleep(2.0)
-            caller_phone_number = await self.__reflector.get_phone(channel)
-            called_phone_number = await self.__reflector.get_phone(dest_channel)
+
+            try:
+                caller_phone_number = await self.__reflector.get_phone(channel)
+                called_phone_number = await self.__reflector.get_phone(dest_channel)
+            except KeyError:
+                return
 
             ringing_event = RingingTelephonyEvent(
                 caller_phone_number=caller_phone_number,

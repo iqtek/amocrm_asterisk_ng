@@ -1,6 +1,6 @@
 from .models import Channel
 from typing import Collection
-
+from typing import Tuple
 
 __all__ = [
     "IReflector",
@@ -35,25 +35,16 @@ class IReflector:
     async def get_channel_by_phone(self, phone: str) -> Channel:
         raise NotImplementedError()
 
-    async def add_bridge(self, unique_id: str) -> None:
-        raise NotImplementedError()
-
-    async def delete_bridge(self, unique_id: str) -> None:
-        raise NotImplementedError()
-
-    async def get_channels_in_bridge(self, unique_id: str) -> Collection[str]:
-        raise NotImplementedError()
-
-    async def bridge_enter_channel(
+    async def add_to_call(
         self,
-        bridge_unique_id: str,
-        channel_name,
+        linked_id: str,
+        phone: str
     ) -> None:
         raise NotImplementedError()
 
-    async def bridge_leave_channel(
-        self,
-        bridge_unique_id: str,
-        channel_name,
-    ) -> None:
+    async def delete_call(self, linked_id: str) -> None:
+        raise NotImplementedError()
+
+
+    async def get_call_phones(self, linked_id: str) -> Collection[str]:
         raise NotImplementedError()
