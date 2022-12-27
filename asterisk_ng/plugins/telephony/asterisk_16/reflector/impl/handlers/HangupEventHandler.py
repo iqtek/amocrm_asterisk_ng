@@ -37,7 +37,11 @@ class HangupEventHandler(IAmiEventHandler):
         channel_name = event["Channel"]
         linked_id = event["Linkedid"]
 
-        phones = await self.__reflector.get_call_phones(linked_id)
+        try:
+            phones = await self.__reflector.get_call_phones(linked_id)
+        except KeyError:
+            return
+
         channel = await self.__reflector.get_channel_by_phone(phones[0])
 
         await self.__reflector.delete_channel(channel_name)

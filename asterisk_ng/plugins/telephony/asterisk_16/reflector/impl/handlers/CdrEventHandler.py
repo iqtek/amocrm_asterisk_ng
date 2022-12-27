@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from asterisk_ng.interfaces import CallCompletedTelephonyEvent
+from asterisk_ng.interfaces import CallReportReadyTelephonyEvent
 from asterisk_ng.interfaces import CallStatus
 
 from asterisk_ng.plugins.telephony.ami_manager import Event
@@ -67,8 +67,11 @@ class CdrEventHandler(IAmiEventHandler):
         str_start_time = event["StartTime"]
         str_end_time = event["EndTime"]
 
-        caller_phone_number = await self.__reflector.get_phone(channel)
-        called_phone_number = await self.__reflector.get_phone(destination_channel)
+        try:
+            caller_phone_number = await self.__reflector.get_phone(channel)
+            called_phone_number = await self.__reflector.get_phone(destination_channel)
+        except KeyError:
+            return
 
         if ';2' in channel:
             return  # Reject symmetrical CDR.
@@ -83,7 +86,7 @@ class CdrEventHandler(IAmiEventHandler):
 
         disposition = self.__get_disposition(str_disposition)
 
-        call_completed_event = CallCompletedTelephonyEvent(
+        call_report_ready_telephony_event = CallReportReadyTelephonyEvent(
             unique_id=unique_id,
             created_at=datetime.now(),
             caller_phone_number=caller_phone_number,
@@ -95,4 +98,4 @@ class CdrEventHandler(IAmiEventHandler):
             answer_at=answer_datetime,
         )
 
-        await self.__event_bus.publish(call_completed_event)
+        await self.__event_bus.publish(call_report_ready_telephony_event)

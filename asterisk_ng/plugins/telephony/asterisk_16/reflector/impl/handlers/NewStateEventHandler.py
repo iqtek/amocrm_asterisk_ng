@@ -42,7 +42,10 @@ class NewStateEventHandler(IAmiEventHandler):
         if new_state != "Up":
             return
 
-        phone = await self.__reflector.get_phone(channel_name)
+        try:
+            phone = await self.__reflector.get_phone(channel_name)
+        except KeyError:
+            return
 
         await self.__reflector.add_to_call(
             linked_id=linked_id,
@@ -50,7 +53,6 @@ class NewStateEventHandler(IAmiEventHandler):
         )
 
         phones = await self.__reflector.get_call_phones(linked_id)
-
         channel = await self.__reflector.get_channel_by_phone(phones[0])
 
         if channel.linked_id == channel.unique_id:

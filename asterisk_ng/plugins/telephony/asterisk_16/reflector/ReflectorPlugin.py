@@ -78,7 +78,7 @@ class ReflectorPlugin(AbstractPlugin):
         ami_manager.attach_event_handler("NewCallerid", NewCallerIdEventHandler(reflector, logger))
         ami_manager.attach_event_handler("DialState", DialStateEventHandler(reflector, event_bus, logger))
         ami_manager.attach_event_handler("Hangup", HangupEventHandler(reflector, event_bus, logger))
-        # ami_manager.attach_event_handler("Cdr", CdrEventHandler(reflector, event_bus, logger))
+        ami_manager.attach_event_handler("Cdr", CdrEventHandler(reflector, event_bus, logger))
 
         container.set_resolver(Key(IReflector), SingletonResolver(reflector))
 
