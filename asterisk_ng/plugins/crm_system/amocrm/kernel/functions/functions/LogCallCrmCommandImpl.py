@@ -73,9 +73,10 @@ class LogCallCrmCommandImpl(ILogCallCrmCommand):
             source=self.__config.source,
             link=link,
             phone=external_phone_number,
-            call_result=amocrm_call_result[1],
+            # call_result=amocrm_call_result[1],
             call_status=amocrm_call_result[0],
             responsible_user_id=responsible_user_id.id,
+            created_by=responsible_user_id.id,
             created_at=timestamp,
         )
 

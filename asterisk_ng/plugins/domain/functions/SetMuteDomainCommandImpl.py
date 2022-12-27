@@ -23,11 +23,7 @@ class SetMuteDomainCommandImpl(ISetMuteDomainCommand):
         self.__agent_id_to_phone_mapping = agent_id_to_phone_mapping
         self.__set_mute_telephony_command = set_mute_telephony_command
 
-    async def __call__(
-        self,
-        user_id: CrmUserId,
-        is_mute: bool,
-    ) -> None:
+    async def __call__(self, user_id: CrmUserId, is_mute: bool) -> None:
         agent_phone = self.__agent_id_to_phone_mapping[user_id]
 
         await self.__set_mute_telephony_command(

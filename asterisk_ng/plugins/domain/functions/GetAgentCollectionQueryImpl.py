@@ -13,10 +13,7 @@ class GetAgentCollectionQueryImpl(IGetAgentCollectionQuery):
         "__agents",
     )
 
-    def __init__(
-        self,
-        agents: Collection[Agent],
-    ) -> None:
+    def __init__(self, agents: Collection[Agent]) -> None:
         self.__agents = tuple(agents)
 
     async def __call__(self) -> Collection[Agent]:

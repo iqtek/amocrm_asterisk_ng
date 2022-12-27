@@ -14,10 +14,7 @@ class GetCrmUserIdByPhoneQueryImpl(IGetCrmUserIdByPhoneQuery):
         "__phone_to_agent_mapping",
     )
 
-    def __init__(
-        self,
-        phone_to_agent_mapping: Mapping[str, Agent]
-    ) -> None:
+    def __init__(self, phone_to_agent_mapping: Mapping[str, Agent]) -> None:
         self.__phone_to_agent_mapping = phone_to_agent_mapping
 
     async def __call__(self, phone: str) -> CrmUserId:

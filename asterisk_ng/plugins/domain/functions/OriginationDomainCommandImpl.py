@@ -23,11 +23,7 @@ class OriginationDomainCommandImpl(IOriginationDomainCommand):
         self.__agent_id_to_phone_mapping = agent_id_to_phone_mapping
         self.__origination_telephony_command = origination_telephony_command
 
-    async def __call__(
-        self,
-        user_id: CrmUserId,
-        phone_number: str,
-    ) -> None:
+    async def __call__(self, user_id: CrmUserId, phone_number: str) -> None:
         agent_phone = self.__agent_id_to_phone_mapping[user_id]
 
         await self.__origination_telephony_command(

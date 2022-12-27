@@ -1,10 +1,10 @@
 from typing import Mapping
 
+from asterisk_ng.interfaces import Agent
 from asterisk_ng.interfaces import CallReportReadyTelephonyEvent
 from asterisk_ng.interfaces import CallStatus
 from asterisk_ng.interfaces import CrmCallDirection
 from asterisk_ng.interfaces import CrmCallResult
-from asterisk_ng.interfaces import Agent
 from asterisk_ng.interfaces import ILogCallCrmCommand
 
 from asterisk_ng.system.event_bus import IEventHandler
@@ -55,8 +55,7 @@ class CallCompletedEventHandler(IEventHandler[CallReportReadyTelephonyEvent]):
             crm_call_direction = CrmCallDirection.OUTBOUND
             agent = caller_agent
             client_phone = event.called_phone_number
-
-        if called_agent is not None:
+        else: #  called_agent is not None
             crm_call_direction = CrmCallDirection.INBOUND
             agent = called_agent
             client_phone = event.caller_phone_number
