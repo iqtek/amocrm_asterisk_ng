@@ -14,5 +14,5 @@ class IEventHandler(Generic[E]):
 
     __slots__ = ()
 
-    async def __call__(self, event: BaseEvent) -> None:
+    async def __call__(self, event: E) -> None:
         raise NotImplementedError()

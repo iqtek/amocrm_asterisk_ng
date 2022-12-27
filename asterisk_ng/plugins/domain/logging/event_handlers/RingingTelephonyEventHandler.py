@@ -8,10 +8,11 @@ from asterisk_ng.system.event_bus import IEventHandler
 
 from ...number_corrector import INumberCorrector
 
+
 __all__ = ["RingingTelephonyEventHandler"]
 
 
-class RingingTelephonyEventHandler(IEventHandler):
+class RingingTelephonyEventHandler(IEventHandler[RingingTelephonyEvent]):
 
     __slots__ = (
         "__phone_to_agent_mapping",

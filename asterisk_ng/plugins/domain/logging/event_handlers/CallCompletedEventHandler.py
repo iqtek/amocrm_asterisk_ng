@@ -1,10 +1,10 @@
 from typing import Mapping
 
-from asterisk_ng.interfaces import CallCompletedTelephonyEvent
+from asterisk_ng.interfaces import Agent
+from asterisk_ng.interfaces import CallReportReadyTelephonyEvent
 from asterisk_ng.interfaces import CallStatus
 from asterisk_ng.interfaces import CrmCallDirection
 from asterisk_ng.interfaces import CrmCallResult
-from asterisk_ng.interfaces import Agent
 from asterisk_ng.interfaces import ILogCallCrmCommand
 
 from asterisk_ng.system.event_bus import IEventHandler
@@ -15,7 +15,7 @@ from ...number_corrector import INumberCorrector
 __all__ = ["CallCompletedEventHandler"]
 
 
-class CallCompletedEventHandler(IEventHandler[CallCompletedTelephonyEvent]):
+class CallCompletedEventHandler(IEventHandler[CallReportReadyTelephonyEvent]):
 
     __STATUES_MAPPING = {
         CallStatus.ANSWERED: CrmCallResult.ANSWERED,
@@ -40,7 +40,7 @@ class CallCompletedEventHandler(IEventHandler[CallCompletedTelephonyEvent]):
         self.__log_call_crm_command = log_call_crm_command
         self.__number_corrector = number_corrector
 
-    async def __call__(self, event: CallCompletedTelephonyEvent) -> None:
+    async def __call__(self, event: CallReportReadyTelephonyEvent) -> None:
 
         caller_agent = self.__phone_to_agent_mapping.get(event.caller_phone_number, None)
         called_agent = self.__phone_to_agent_mapping.get(event.called_phone_number, None)
@@ -55,8 +55,7 @@ class CallCompletedEventHandler(IEventHandler[CallCompletedTelephonyEvent]):
             crm_call_direction = CrmCallDirection.OUTBOUND
             agent = caller_agent
             client_phone = event.called_phone_number
-
-        if called_agent is not None:
+        else: #  called_agent is not None
             crm_call_direction = CrmCallDirection.INBOUND
             agent = called_agent
             client_phone = event.caller_phone_number

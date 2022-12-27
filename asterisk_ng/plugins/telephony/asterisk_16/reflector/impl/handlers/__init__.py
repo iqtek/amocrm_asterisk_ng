@@ -4,7 +4,4 @@ from .NewStateEventHandler import NewStateEventHandler
 from .NewCallerIdEventHandler import NewCallerIdEventHandler
 from .DialStateEventHandler import DialStateEventHandler
 from .CdrEventHandler import CdrEventHandler
-from .BridgeCreateEventHandler import BridgeCreateEventHandler
-from .BridgeDestoryEventHandler import BridgeDestroyEventHandler
-from .BridgeEnterEventHandler import BridgeEnterEventHandler
-from .BridgeLeaveEventHandler import BridgeLeaveEventHandler
+

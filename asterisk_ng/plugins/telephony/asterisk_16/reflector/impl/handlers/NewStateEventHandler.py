@@ -1,7 +1,7 @@
 from asterisk_ng.plugins.telephony.ami_manager import Event
 from asterisk_ng.plugins.telephony.ami_manager import IAmiEventHandler
-
-from asterisk_ng.interfaces import RingingTelephonyEvent
+from datetime import datetime
+from asterisk_ng.interfaces import CallCreatedTelephonyEvent
 
 from asterisk_ng.system.event_bus import IEventBus
 from asterisk_ng.system.logger import ILogger
@@ -37,8 +37,34 @@ class NewStateEventHandler(IAmiEventHandler):
 
         channel_name = event["Channel"]
         new_state = event["ChannelStateDesc"]
+        linked_id = event["Linkedid"]
 
-        await self.__reflector.update_channel_state(
-            name=channel_name,
-            state=new_state,
+        if new_state != "Up":
+            return
+
+        try:
+            phone = await self.__reflector.get_phone(channel_name)
+        except KeyError:
+            return
+
+        await self.__reflector.add_to_call(
+            linked_id=linked_id,
+            phone=phone,
         )
+
+        phones = await self.__reflector.get_call_phones(linked_id)
+        channel = await self.__reflector.get_channel_by_phone(phones[0])
+
+        if channel.linked_id == channel.unique_id:
+            caller_phone_number, called_phone_number = phones
+        else:
+            called_phone_number, caller_phone_number = phones
+
+        call_created_telephony_event = CallCreatedTelephonyEvent(
+            unique_id=linked_id,
+            caller_phone_number=caller_phone_number,
+            called_phone_number=called_phone_number,
+            created_at=datetime.now()
+        )
+
+        await self.__event_bus.publish(call_created_telephony_event)
