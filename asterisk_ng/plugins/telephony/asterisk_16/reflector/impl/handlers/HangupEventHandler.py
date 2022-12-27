@@ -42,6 +42,9 @@ class HangupEventHandler(IAmiEventHandler):
         except KeyError:
             return
 
+        if len(phones) != 2:
+            return
+
         channel = await self.__reflector.get_channel_by_phone(phones[0])
 
         await self.__reflector.delete_channel(channel_name)
