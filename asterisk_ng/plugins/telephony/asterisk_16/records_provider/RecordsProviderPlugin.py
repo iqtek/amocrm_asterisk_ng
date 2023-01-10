@@ -54,7 +54,7 @@ class RecordsProviderPlugin(AbstractPlugin):
     async def __get_cursor(self) -> Cursor:
         try:
             return await self.__connection.cursor()
-        except (RuntimeError, InterfaceError):
+        except (RuntimeError, InterfaceError, AttributeError):
             self.__connection = await connect(
                 user=self.__config.mysql.user,
                 password=self.__config.mysql.password,
