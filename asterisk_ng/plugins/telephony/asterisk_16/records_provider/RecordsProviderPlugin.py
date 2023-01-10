@@ -30,6 +30,7 @@ class RecordsProviderPlugin(AbstractPlugin):
     __slots__ = (
         "__dispatcher",
         "__connection",
+        "__config",
     )
 
     def __init__(self) -> None:
