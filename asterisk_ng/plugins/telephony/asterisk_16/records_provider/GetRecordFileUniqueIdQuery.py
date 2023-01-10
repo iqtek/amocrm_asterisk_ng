@@ -1,12 +1,13 @@
 import os
-
+from typing import Any
+from typing import Coroutine
+from typing import Callable
 import aiofiles
-from aiomysql.connection import Connection
+from aiomysql.connection import Cursor
 
 from asterisk_ng.interfaces import File
 from asterisk_ng.interfaces import Filetype
 from asterisk_ng.interfaces import IGetRecordFileByUniqueIdQuery
-
 from asterisk_ng.system.logger import ILogger
 
 from .configs import RecordsProviderPluginConfig
@@ -27,18 +28,18 @@ class GetRecordFileByUniqueIdQuery(IGetRecordFileByUniqueIdQuery):
 
     __slots__ = (
         "__config",
-        "__connection",
+        "__get_cursor",
         "__logger",
     )
 
     def __init__(
         self,
         config: RecordsProviderPluginConfig,
-        connection: Connection,
+        get_cursor: Callable[[], Coroutine[Any, Any, Cursor]],
         logger: ILogger,
     ) -> None:
         self.__config = config
-        self.__connection = connection
+        self.__get_cursor = get_cursor
         self.__logger = logger
 
     @classmethod
@@ -52,7 +53,7 @@ class GetRecordFileByUniqueIdQuery(IGetRecordFileByUniqueIdQuery):
         if not is_valid_unique_id(unique_id):
             raise ValueError(f"Invalid unique_id: `{unique_id}`.")
 
-        cur = await self.__connection.cursor()
+        cur = await self.__get_cursor()
         await cur.execute(
             f"SELECT {self.__config.calldate_column}, "
             f"{self.__config.recordingfile_column} "

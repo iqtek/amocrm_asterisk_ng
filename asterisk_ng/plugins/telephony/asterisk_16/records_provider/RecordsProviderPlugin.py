@@ -4,6 +4,8 @@ from typing import Optional
 
 from aiomysql import Connection
 from aiomysql import connect
+from aiomysql import Cursor
+from aiomysql import InterfaceError
 
 from asterisk_ng.system.dispatcher import IDispatcher
 from asterisk_ng.system.logger import ILogger
@@ -33,6 +35,7 @@ class RecordsProviderPlugin(AbstractPlugin):
     def __init__(self) -> None:
         self.__dispatcher: Optional[IDispatcher] = None
         self.__connection: Optional[Connection] = None
+        self.__config: Optional[RecordsProviderPluginConfig] = None
 
     @property
     def interface(self) -> PluginInterface:
@@ -47,26 +50,32 @@ class RecordsProviderPlugin(AbstractPlugin):
             )
         )
 
+    async def __get_cursor(self) -> Cursor:
+        try:
+            return await self.__connection.cursor()
+        except (RuntimeError, InterfaceError):
+            self.__connection = await connect(
+                user=self.__config.mysql.user,
+                password=self.__config.mysql.password,
+                host=self.__config.mysql.host,
+                port=self.__config.mysql.port,
+                db=self.__config.mysql.database,
+            )
+
+        return await self.__connection.cursor()
+
     async def upload(self, settings: Mapping[str, Any]) -> None:
 
         self.__dispatcher = container.resolve(Key(IDispatcher))
         logger = container.resolve(Key(ILogger))
 
-        config = RecordsProviderPluginConfig(**settings)
-
-        self.__connection = await connect(
-            user=config.mysql.user,
-            password=config.mysql.password,
-            host=config.mysql.host,
-            port=config.mysql.port,
-            db=config.mysql.database,
-        )
+        self.__config = RecordsProviderPluginConfig(**settings)
 
         self.__dispatcher.add_function(
             IGetRecordFileByUniqueIdQuery,
             GetRecordFileByUniqueIdQuery(
-                config=config,
-                connection=self.__connection,
+                config=self.__config,
+                get_cursor=self.__get_cursor,
                 logger=logger
             )
         )
