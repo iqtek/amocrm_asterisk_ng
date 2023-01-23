@@ -49,19 +49,24 @@ dynamic:
       - "amocrm.functions"
       - "amocrm.records.provider"
       - "amocrm.widget.asterisk"
-      - "amocrm.widget.asterisk_ng"
       - "telephony.ami_manager"
       - "telephony.asterisk16.reflector"
       - "telephony.asterisk16.functions"
       - "standard.domain"
       - "telephony.redirecting"
       - "telephony.records_provider"
+      - "amocrm.widget.asterisk_ng"
 
     plugins_settings:
       "standard.domain":
         agents:
-          "alexander.filippov@iqtek.ru": 613
-          "kirill.martynenko@iqtek.ru": 610
+          "user1@email.com": 613
+          "user2@email.com": 610
+
+        responsible_agent: "user1@email.com"
+
+        client_corrector:
+          - [ "^\\+?7(\\d{10})$", "8\\g<1>" ]
 
       "amocrm.amoclient":
         backup_file_path: "./credentials.txt"
@@ -101,6 +106,9 @@ dynamic:
         origination_timeout: 30000
         redirect_contex: from-internal
 
+      "telephony.asterisk16.reflector":
+        internal_number_pattern: "(?:SIP|PJSIP)/(\\d\\d\\d)\\D"
+
       "telephony.records_provider":
         mysql:
           host: 127.0.0.1
@@ -118,6 +126,7 @@ dynamic:
       "system.fastapi":
         host: 0.0.0.0
         port: 8000
+        workers: 1
 
       "system.converter":
         tmp_dir: ./tmp
