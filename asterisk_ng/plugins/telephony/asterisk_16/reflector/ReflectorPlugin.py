@@ -1,6 +1,6 @@
 from typing import Any
 from typing import Mapping
-
+from re import compile
 from asterisk_ng.system.container import container
 from asterisk_ng.system.container import Key
 from asterisk_ng.system.container import SingletonResolver
@@ -68,12 +68,14 @@ class ReflectorPlugin(AbstractPlugin):
             logger=logger,
         )
 
-        # ami_manager.attach_event_handler("BridgeCreate", BridgeCreateEventHandler(reflector, event_bus, logger))
-        # ami_manager.attach_event_handler("BridgeDestroy", BridgeDestroyEventHandler(reflector, event_bus, logger))
-        # ami_manager.attach_event_handler("BridgeEnter", BridgeEnterEventHandler(reflector, event_bus, logger))
-        # ami_manager.attach_event_handler("BridgeLeave", BridgeLeaveEventHandler(reflector, event_bus, logger))
-
-        ami_manager.attach_event_handler("Newchannel", NewChannelEventHandler(config.internal_number_pattern, reflector, logger))
+        ami_manager.attach_event_handler(
+            "Newchannel",
+            NewChannelEventHandler(
+                compile(config.internal_number_pattern),
+                reflector,
+                logger
+            )
+        )
         ami_manager.attach_event_handler("Newstate", NewStateEventHandler(reflector, event_bus, logger))
         ami_manager.attach_event_handler("NewCallerid", NewCallerIdEventHandler(reflector, logger))
         ami_manager.attach_event_handler("DialState", DialStateEventHandler(reflector, event_bus, logger))
