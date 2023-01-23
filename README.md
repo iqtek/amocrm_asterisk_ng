@@ -35,7 +35,7 @@ cd /opt/amocrm_asterisk_ng
 
 Создайте и заполните config.yml.
 ```bash
-cp ./configs/config_example.yml ./configs/config.yml
+cp config.example.yml config.yml
 ```
 
 Создайте виртуальную среду внутри каталога с интеграцией.
@@ -70,8 +70,15 @@ Requires=redis.service
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/amocrm_asterisk_ng
-ExecStart=/bin/bash /opt/amocrm_asterisk_ng/startup.sh
+WorkingDirectory=/srv/amocrm_asterisk_ng
+ExecStart=/bin/bash -c  'source ./venv/bin/activate && python -m asterisk_ng --config ./config.yml'
+ExecReload=/bin/kill -s HUP $MAINPID
+
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+RestartSec=1
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
