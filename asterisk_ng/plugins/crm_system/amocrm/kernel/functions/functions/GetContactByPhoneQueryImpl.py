@@ -50,4 +50,4 @@ class GetContactByPhoneQueryImpl(IGetContactByPhoneQuery):
                     last_name=contact.last_name,
                 )
 
-        raise KeyError(f"Contact by phone: `{phone_number}`not found.")
+        raise KeyError(f"Contact by phone: `{phone_number}` not found.")
