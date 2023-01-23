@@ -55,6 +55,9 @@ class NewStateEventHandler(IAmiEventHandler):
         phones = await self.__reflector.get_call_phones(linked_id)
         channel = await self.__reflector.get_channel_by_phone(phones[0])
 
+        if len(phones) != 2:
+            return
+
         if channel.linked_id == channel.unique_id:
             caller_phone_number, called_phone_number = phones
         else:
