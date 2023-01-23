@@ -7,7 +7,7 @@ __all__ = [
 ]
 
 __name__ = "AsteriskNG"
-__version__ = "3.0.0"
+__version__ = "3.0.1"
 __description__ = "Amocrm & Asterisk integration."
 __author__ = "Iqtek, LLC"
 __license__ = "MIT"
