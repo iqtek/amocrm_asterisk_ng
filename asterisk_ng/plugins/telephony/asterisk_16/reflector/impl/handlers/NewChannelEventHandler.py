@@ -54,6 +54,7 @@ class NewChannelEventHandler(IAmiEventHandler):
             try:
                 internal_number = result.group(1)
             except IndexError:
-                await self.__reflector.attach_phone(channel_name, internal_number)
-                raise Exception("Invalid internal channel pattern.")
-        await self.__reflector.attach_phone(channel_name, internal_number)
+                pass
+
+        if internal_number is not None:
+            await self.__reflector.attach_phone(channel_name, internal_number)
