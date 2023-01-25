@@ -71,7 +71,7 @@ class Asterisk16FunctionPlugin(AbstractPlugin):
             IOriginationTelephonyCommand,
             OriginationTelephonyCommandImpl(
                 ami_manager=ami_manager,
-                context=config.origination_contex,
+                context=config.origination_context,
                 timeout=config.origination_timeout,
             )
         )
@@ -90,7 +90,7 @@ class Asterisk16FunctionPlugin(AbstractPlugin):
                 ami_manager=ami_manager,
                 reflector=reflector,
                 event_bus=event_bus,
-                context=config.redirect_contex,
+                context=config.redirect_context,
             )
         )
 

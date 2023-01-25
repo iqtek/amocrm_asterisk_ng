@@ -71,11 +71,11 @@ dynamic:
       "amocrm.amoclient":
         backup_file_path: "./credentials.txt"
         encryption_key: "asterisk_ng"
-        integration_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        secret_key: "secret_key",
-        auth_code: "auth_code",
-        base_url: "https://mycompany.amocrm.ru/",
-        redirect_uri: "https://mycompany.ru/",
+        integration_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        secret_key: "secret_key"
+        auth_code: "auth_code"
+        base_url: "https://mycompany.amocrm.ru/"
+        redirect_uri: "https://mycompany.ru/"
 
       "amocrm.functions":
         pipeline: "Воронка"
@@ -102,9 +102,9 @@ dynamic:
         secret: secret
 
       "telephony.asterisk16.functions":
-        origination_contex: from-internal
+        origination_context: from-internal
         origination_timeout: 30000
-        redirect_contex: from-internal
+        redirect_context: from-internal
 
       "telephony.asterisk16.reflector":
         internal_number_pattern: "(?:SIP|PJSIP)/(\\d\\d\\d)\\D"

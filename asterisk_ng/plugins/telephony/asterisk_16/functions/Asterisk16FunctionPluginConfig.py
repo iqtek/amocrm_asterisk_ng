@@ -5,6 +5,6 @@ __all__ = ["Asterisk16FunctionPluginConfig"]
 
 
 class Asterisk16FunctionPluginConfig(BaseModel):
-    origination_contex: str = "from-internal"
+    origination_context: str = "from-internal"
     origination_timeout: int = 30_000
-    redirect_contex: str = "from-internal"
+    redirect_context: str = "from-internal"
