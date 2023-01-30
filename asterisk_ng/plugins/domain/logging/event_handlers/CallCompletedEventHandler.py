@@ -63,7 +63,8 @@ class CallCompletedEventHandler(IEventHandler[CallReportReadyTelephonyEvent]):
         if event.disposition != CallStatus.ANSWERED and crm_call_direction == CrmCallDirection.OUTBOUND:
             return  # Outbound and not answered calls not logging.
 
-        duration = (event.call_end_at - event.answer_at).seconds
+        call_end = event.answer_at or event.call_end_at
+        duration = (event.call_end_at - call_end).seconds
 
         await self.__log_call_crm_command(
             unique_id=event.unique_id,
