@@ -15,6 +15,8 @@ __all__ = ["WidgetView"]
 
 class WidgetView:
 
+    __PHONE_MIN_LENGTH = 3
+
     __slots__ = (
         "__config",
         "__origination_command",
@@ -64,7 +66,7 @@ class WidgetView:
             if caller is None or called is None:
                 return self.__make_response({"status": "invalid data."})
 
-            if len(caller) < 3 or len(called) < 3:
+            if len(caller) < self.__PHONE_MIN_LENGTH or len(called) < self.__PHONE_MIN_LENGTH:
                 return self.__make_response({"status": "invalid phones."})
 
             try:
