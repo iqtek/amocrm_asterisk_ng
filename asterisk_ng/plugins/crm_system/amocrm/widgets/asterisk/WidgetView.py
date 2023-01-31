@@ -1,14 +1,12 @@
 from typing import Any
 from typing import Mapping
 from typing import Optional
-from pydantic import Field
-from fastapi import Request
+
+from fastapi import Query
 from fastapi import Response
 
-from asterisk_ng.interfaces import CrmUserId
-from asterisk_ng.interfaces import IOriginationDomainCommand
 from asterisk_ng.interfaces import IGetCrmUserIdByPhoneQuery
-
+from asterisk_ng.interfaces import IOriginationDomainCommand
 from .AsteriskPluginConfig import AsteriskPluginConfig
 
 
@@ -44,16 +42,14 @@ class WidgetView:
         )
         return response
 
-    async def handle(self, request: Request) -> Response:
-
-        request_params = request.query_params
-
-        try:
-            login = request_params["_login"]
-            password = request_params["_secret"]
-            action = request_params["_action"]
-        except KeyError:
-            return self.__make_response({"status": "invalid data."})
+    async def handle(
+        self,
+        login: str = Query(alias="_login"),
+        password: str = Query(alias="_secret"),
+        action: str = Query(alias="_action"),
+        caller: Optional[str] = Query(None, alias="from"),
+        called: Optional[str] = Query(None, alias="to"),
+    ) -> Response:
 
         if login != self.__config.login or password != self.__config.password:
             return self.__make_response({"status": "not authorized."})
@@ -65,23 +61,20 @@ class WidgetView:
             return self.__make_response({"status": "no cdr."})
 
         if action == "call":
-            try:
-                caller_phone_number = request_params["from"]
-                called_phone_number = request_params["to"]
-            except KeyError:
+            if caller is None or called is None:
                 return self.__make_response({"status": "invalid data."})
 
-            if len(caller_phone_number) < 3 or len(caller_phone_number) < 3:
+            if len(caller) < 3 or len(called) < 3:
                 return self.__make_response({"status": "invalid phones."})
 
             try:
-                user_id = await self.__get_crm_user_id_by_phone_query(caller_phone_number)
+                user_id = await self.__get_crm_user_id_by_phone_query(caller)
             except KeyError:
                 return self.__make_response({"status": "unknown agent number."})
 
             await self.__origination_command(
                 user_id=user_id,
-                phone_number=called_phone_number,
+                phone_number=called,
             )
 
             return self.__make_response({"status": "ok"})
