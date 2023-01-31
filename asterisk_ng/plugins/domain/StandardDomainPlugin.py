@@ -198,6 +198,7 @@ class StandardDomainPlugin(AbstractPlugin):
             IHangupDomainCommand,
             HangupDomainCommandImpl(
                 agent_id_to_phone_mapping=AGENT_ID_TO_PHONE_MAPPING,
+                active_calls=ACTIVE_CALLS,
                 hangup_telephony_command=self.__dispatcher.get_function(IHangupTelephonyCommand),
             )
         )

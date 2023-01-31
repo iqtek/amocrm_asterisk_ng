@@ -13,6 +13,7 @@ __all__ = ["HangupDomainCommandImpl"]
 class HangupDomainCommandImpl(IHangupDomainCommand):
 
     __slots__ = (
+        "__active_calls",
         "__agent_id_to_phone_mapping",
         "__hangup_telephony_command"
     )
