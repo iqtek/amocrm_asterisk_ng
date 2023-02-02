@@ -83,4 +83,5 @@ class RecordsProviderPlugin(AbstractPlugin):
 
     async def unload(self) -> None:
         self.__dispatcher.delete_function(IGetRecordFileByUniqueIdQuery)
-        self.__connection.close()
+        if self.__connection is not None:
+            self.__connection.close()

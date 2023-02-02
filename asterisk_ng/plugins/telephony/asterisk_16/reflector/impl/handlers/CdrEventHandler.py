@@ -1,5 +1,9 @@
 from datetime import datetime
+from typing import MutableMapping
+from typing import MutableSequence
+from asyncio import sleep, create_task
 
+from collections import defaultdict
 from asterisk_ng.interfaces import CallReportReadyTelephonyEvent
 from asterisk_ng.interfaces import CallStatus
 
@@ -29,6 +33,7 @@ class CdrEventHandler(IAmiEventHandler):
         "__reflector",
         "__event_bus",
         "__logger",
+        "__event_buffer",
     )
 
     def __init__(
@@ -54,12 +59,24 @@ class CdrEventHandler(IAmiEventHandler):
             raise ValueError(f"Unknown disposition {str_disposition}.")
 
     async def __call__(self, event: Event) -> None:
-        channel = event["Channel"]
+        create_task(self.call2(event))
+
+    async def call2(self, event: Event) -> None:
+
+        await sleep(3.0)
+
+        cdr_linkedid = event["linkedid"]
+
+        if await self.__reflector.get_ignore_cdr_flag(cdr_linkedid):
+            return
 
         try:
-            destination_channel = event["DestinationChannel"]
+            call_completed_event = await self.__reflector.get_call_completed_event(cdr_linkedid)
         except KeyError:
-            return
+            await self.__logger.info("Saved CallCompletedEvent not found.")
+        else:
+            caller_phone_number = call_completed_event.caller_phone_number
+            called_phone_number = call_completed_event.called_phone_number
 
         unique_id = event["Uniqueid"]
         duration = int(event["Duration"])
@@ -67,17 +84,8 @@ class CdrEventHandler(IAmiEventHandler):
         str_start_time = event["StartTime"]
         str_end_time = event["EndTime"]
 
-        try:
-            caller_phone_number = await self.__reflector.get_phone(channel)
-            called_phone_number = await self.__reflector.get_phone(destination_channel)
-        except KeyError:
-            return
-
-        if ';2' in channel:
-            return  # Reject symmetrical CDR.
-
         start_datetime = self.__convert_datetime(str_start_time)
-        end__datetime = self.__convert_datetime(str_end_time)
+        end_datetime = self.__convert_datetime(str_end_time)
 
         if str_answer_time := event.get("AnswerTime", None):
             answer_datetime = self.__convert_datetime(str_answer_time)
@@ -85,6 +93,12 @@ class CdrEventHandler(IAmiEventHandler):
             answer_datetime = None
 
         disposition = self.__get_disposition(str_disposition)
+
+        if call_completed_event.disposition == CallStatus.ANSWERED and disposition != CallStatus.ANSWERED:
+            return
+
+        if call_completed_event.disposition != CallStatus.ANSWERED and disposition == CallStatus.ANSWERED:
+            return
 
         call_report_ready_telephony_event = CallReportReadyTelephonyEvent(
             unique_id=unique_id,
@@ -94,8 +108,12 @@ class CdrEventHandler(IAmiEventHandler):
             duration=duration,
             disposition=disposition,
             call_start_at=start_datetime,
-            call_end_at=end__datetime,
+            call_end_at=end_datetime,
             answer_at=answer_datetime,
         )
 
         await self.__event_bus.publish(call_report_ready_telephony_event)
+        await self.__reflector.set_ignore_cdr_flag(cdr_linkedid)
+
+        if called_phone_number is not None:
+            await self.__reflector.delete_call_completed_event(cdr_linkedid)

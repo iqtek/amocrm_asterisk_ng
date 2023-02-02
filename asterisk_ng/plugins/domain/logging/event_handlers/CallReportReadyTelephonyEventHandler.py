@@ -1,4 +1,6 @@
 from typing import Mapping
+from typing import Optional
+from typing import Sequence
 
 from asterisk_ng.interfaces import Agent
 from asterisk_ng.interfaces import CallReportReadyTelephonyEvent
@@ -7,15 +9,16 @@ from asterisk_ng.interfaces import CrmCallDirection
 from asterisk_ng.interfaces import CrmCallResult
 from asterisk_ng.interfaces import ILogCallCrmCommand
 
-from asterisk_ng.system.event_bus import IEventHandler
+from ...functions import IGetResponsibleAgentByPhoneQuery
 
+from asterisk_ng.system.event_bus import IEventHandler
 from ...number_corrector import INumberCorrector
 
 
-__all__ = ["CallCompletedEventHandler"]
+__all__ = ["CallReportReadyTelephonyEventHandler"]
 
 
-class CallCompletedEventHandler(IEventHandler[CallReportReadyTelephonyEvent]):
+class CallReportReadyTelephonyEventHandler(IEventHandler[CallReportReadyTelephonyEvent]):
 
     __STATUES_MAPPING = {
         CallStatus.ANSWERED: CrmCallResult.ANSWERED,
@@ -27,23 +30,59 @@ class CallCompletedEventHandler(IEventHandler[CallReportReadyTelephonyEvent]):
     __slots__ = (
         "__phone_to_agent_mapping",
         "__log_call_crm_command",
+        "__get_responsible_agent_by_phone_query",
+        "__call_responsible_strategy",
+        "__default_responsible_agent",
         "__number_corrector",
+        "__last_active_agent",
     )
 
     def __init__(
         self,
         phone_to_agent_mapping: Mapping[str, Agent],
         log_call_crm_command: ILogCallCrmCommand,
+        get_responsible_agent_by_phone_query: IGetResponsibleAgentByPhoneQuery,
+        call_responsible_strategy: Sequence[str],
+        default_responsible_agent: Agent,
         number_corrector: INumberCorrector,
     ) -> None:
         self.__phone_to_agent_mapping = phone_to_agent_mapping
         self.__log_call_crm_command = log_call_crm_command
+        self.__get_responsible_agent_by_phone_query = get_responsible_agent_by_phone_query
+        self.__call_responsible_strategy = call_responsible_strategy
+        self.__default_responsible_agent = default_responsible_agent
         self.__number_corrector = number_corrector
+        self.__last_active_agent: Optional[Agent] = None
+
+    async def __get_called_agent(self, client_phone: str) -> Agent:
+        agent = None
+
+        for method in self.__call_responsible_strategy:
+            if agent is not None:
+                return agent
+
+            if method == "default":
+                agent = self.__default_responsible_agent
+                continue
+
+            if method == "by_entity":
+                agent = await self.__get_responsible_agent_by_phone_query(client_phone)
+                continue
+
+            if method == "last_active":
+                agent = self.__last_active_agent
+                continue
+
+        return self.__default_responsible_agent
 
     async def __call__(self, event: CallReportReadyTelephonyEvent) -> None:
 
         caller_agent = self.__phone_to_agent_mapping.get(event.caller_phone_number, None)
         called_agent = self.__phone_to_agent_mapping.get(event.called_phone_number, None)
+
+        if caller_agent is None and event.called_phone_number is None:  # Incoming unanswered call.
+            client_phone = self.__number_corrector.correct(event.caller_phone_number)
+            called_agent = await self.__get_called_agent(client_phone)
 
         if caller_agent is not None and called_agent is not None:
             return  # Internal call.
@@ -55,10 +94,12 @@ class CallCompletedEventHandler(IEventHandler[CallReportReadyTelephonyEvent]):
             crm_call_direction = CrmCallDirection.OUTBOUND
             agent = caller_agent
             client_phone = event.called_phone_number
-        else: #  called_agent is not None
+        else:  # called_agent is not None
             crm_call_direction = CrmCallDirection.INBOUND
             agent = called_agent
             client_phone = event.caller_phone_number
+
+        self.__last_active_agent = agent
 
         if event.disposition != CallStatus.ANSWERED and crm_call_direction == CrmCallDirection.OUTBOUND:
             return  # Outbound and not answered calls not logging.
