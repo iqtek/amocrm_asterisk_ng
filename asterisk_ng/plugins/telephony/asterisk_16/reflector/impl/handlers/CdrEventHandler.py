@@ -74,6 +74,7 @@ class CdrEventHandler(IAmiEventHandler):
             call_completed_event = await self.__reflector.get_call_completed_event(cdr_linkedid)
         except KeyError:
             await self.__logger.info("Saved CallCompletedEvent not found.")
+            return
         else:
             caller_phone_number = call_completed_event.caller_phone_number
             called_phone_number = call_completed_event.called_phone_number
