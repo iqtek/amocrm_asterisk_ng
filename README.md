@@ -137,15 +137,23 @@ uploaded:
 
 ###### standard.domain
 Данный плагин реализует бизнес-логику приложения.
+Стратегии будут применяться по порядку, до тех пор пока ответственный не будет определен.
+Стратегии определения ответственного за пропущенный звонок:
++ by_entity - ответственный за сущность.
++ last_active - агент совершивший последний звонок
++ default - агент по умолчанию
 ```yaml
 "standard.domain":
   # Соответствие агентов и их внутренних номеров.
   agents: 
     "username@email.ru": 613
     "username_1@email.ru": 610
-  # Ответственный по умолчанию
-  responsible_agent: "director@email.ru" 
-
+  # Агент для переадресации по умолчанию
+  redirect_responsible_agent: "director@email.ru"
+  # Ответственный за пропущенные звноки по умолчанию
+  default_responsible_agent: "worker@email.ru" 
+  # Стратегия определения ответственного за пропущенный звонок
+  call_responsible_strategy: ["by_entity", "last_active", "default"]
   # Преобразователь номеров телефонов клиентов.
   client_corrector:
     - ["^\\+?7(\\d{10})$", "8\\g<1>"] # [Pattern, Substitution]

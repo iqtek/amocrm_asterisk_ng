@@ -63,8 +63,9 @@ dynamic:
           "user1@email.com": 613
           "user2@email.com": 610
 
-        responsible_agent: "user1@email.com"
-
+        redirect_responsible_agent: "user1@email.com"
+        default_responsible_agent: "user2@email.com"
+        call_responsible_strategy: ["by_entity", "last_active", "default"]
         client_corrector:
           - [ "^\\+?7(\\d{10})$", "8\\g<1>" ]
 

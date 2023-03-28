@@ -78,8 +78,8 @@ class CallCreatedEventHandler(IEventHandler):
             caller_user = await self.__get_crm_user_query(caller_agent.user_id)
             called_user = await self.__get_crm_user_query(called_agent.user_id)
 
-            self.__set_call_for_agent(caller_agent_id, event.called_phone_number, CallDirection.INTERNAL, client_name=called_user.name)
-            self.__set_call_for_agent(called_agent_id, event.caller_phone_number, CallDirection.INTERNAL, client_name=caller_user.name)
+            self.__set_call_for_agent(caller_agent.user_id, event.called_phone_number, CallDirection.INTERNAL, client_name=called_user.name)
+            self.__set_call_for_agent(called_agent.user_id, event.caller_phone_number, CallDirection.INTERNAL, client_name=caller_user.name)
             return
 
         if caller_agent is not None:
