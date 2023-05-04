@@ -41,6 +41,7 @@ from .agents.event_handlers import (
 )
 
 from .functions import (
+    IGetResponsibleAgentByPhoneQuery,
     AwaitAgentCallChangeQueryImpl,
     GetAgentCallQueryImpl,
     GetResponsibleUserByPhoneQueryImpl,
@@ -50,11 +51,12 @@ from .functions import (
     SetMuteDomainCommandImpl,
     GetAgentCollectionQueryImpl,
     GetCrmUserIdByPhoneQueryImpl,
+    GetResponsibleAgentByPhoneQueryImpl,
 )
 
 from .logging import (
     RingingTelephonyEventHandler,
-    CallCompletedEventHandler,
+    CallReportReadyTelephonyEventHandler,
 )
 
 from .StandardDomainConfig import StandardDomainConfig
@@ -93,6 +95,9 @@ class StandardDomainPlugin(AbstractPlugin):
             )
         )
 
+    def __get_agent_by_email(self, email: str) -> Agent:
+        pass
+
     async def upload(self, settings: Mapping[str, Any]) -> None:
         config = StandardDomainConfig(**settings)
 
@@ -114,7 +119,7 @@ class StandardDomainPlugin(AbstractPlugin):
         get_crm_users_by_emails_query = self.__dispatcher.get_function(IGetCrmUsersByEmailsQuery)
         crm_users = await get_crm_users_by_emails_query(config.agents.keys())
 
-        AGENTS: Mapping[CrmUserId, Agent] = {
+        AGENTS: Mapping[CrmUserId, Agent] = { # noqa
             crm_user.id: Agent(
                 user_id=crm_user.id,
                 name=crm_user.name,
@@ -124,13 +129,8 @@ class StandardDomainPlugin(AbstractPlugin):
         }
 
         # Bijective mapping
-        PHONE_TO_AGENT_MAPPING: Mapping[str, Agent] = {agent.phone: agent for agent in AGENTS.values()}
-        AGENT_ID_TO_PHONE_MAPPING: Mapping[CrmUserId, str] = {v.user_id: k for k, v in PHONE_TO_AGENT_MAPPING.items()}
-
-        if responsible_agent_user := crm_users.get(config.responsible_agent, None):
-            default_responsible_agent = AGENTS[responsible_agent_user.id]
-        else:
-            default_responsible_agent = None
+        PHONE_TO_AGENT_MAPPING: Mapping[str, Agent] = {agent.phone: agent for agent in AGENTS.values()}  # noqa
+        AGENT_ID_TO_PHONE_MAPPING: Mapping[CrmUserId, str] = {v.user_id: k for k, v in PHONE_TO_AGENT_MAPPING.items()} # noqa
 
         await_agent_status_change_query = AwaitAgentCallChangeQueryImpl()
 
@@ -149,7 +149,19 @@ class StandardDomainPlugin(AbstractPlugin):
             await_agent_status_change_query,
         )
 
-        ACTIVE_CALLS: [CrmUserId, CallDomainModel] = ProxyActiveCallsDict()
+        ACTIVE_CALLS: [CrmUserId, CallDomainModel] = ProxyActiveCallsDict() # noqa
+
+        if config.redirect_responsible_agent is not None:
+            try:
+                responsible_agent_user = crm_users[config.redirect_responsible_agent]
+            except KeyError:
+                raise Exception(f"The user: `{config.redirect_responsible_agent}` is not in the agent list.")
+            redirect_responsible_agent = AGENTS[responsible_agent_user.id]
+        else:
+            redirect_responsible_agent = None
+
+        responsible_agent_user = crm_users[config.default_responsible_agent]
+        default_responsible_agent = AGENTS[responsible_agent_user.id]
 
         self.__dispatcher.add_function(
             IGetAgentCallQuery,
@@ -198,6 +210,7 @@ class StandardDomainPlugin(AbstractPlugin):
             IHangupDomainCommand,
             HangupDomainCommandImpl(
                 agent_id_to_phone_mapping=AGENT_ID_TO_PHONE_MAPPING,
+                active_calls=ACTIVE_CALLS,
                 hangup_telephony_command=self.__dispatcher.get_function(IHangupTelephonyCommand),
             )
         )
@@ -214,7 +227,7 @@ class StandardDomainPlugin(AbstractPlugin):
             GetResponsibleUserByPhoneQueryImpl(
                 agent_id_to_phone_mapping=AGENT_ID_TO_PHONE_MAPPING,
                 get_contact_by_phone_query=self.__dispatcher.get_function(IGetContactByPhoneQuery),
-                default_responsible=default_responsible_agent,
+                default_responsible=redirect_responsible_agent,
             )
         )
 
@@ -239,12 +252,18 @@ class StandardDomainPlugin(AbstractPlugin):
         )
 
         # Calls logging and notification.
-
+        print(config.call_responsible_strategy)
         self.__subscriptions.append(
             self.__event_bus.subscribe(
-                CallCompletedEventHandler(
+                CallReportReadyTelephonyEventHandler(
                     phone_to_agent_mapping=PHONE_TO_AGENT_MAPPING,
                     log_call_crm_command=self.__dispatcher.get_function(ILogCallCrmCommand),
+                    get_responsible_agent_by_phone_query=GetResponsibleAgentByPhoneQueryImpl(
+                        get_contact_by_phone_query=self.__dispatcher.get_function(IGetContactByPhoneQuery),
+                        user_id_to_agent_mapping=AGENTS,
+                    ),
+                    call_responsible_strategy=config.call_responsible_strategy,
+                    default_responsible_agent=default_responsible_agent,
                     number_corrector=client_corrector,
                 )
             )

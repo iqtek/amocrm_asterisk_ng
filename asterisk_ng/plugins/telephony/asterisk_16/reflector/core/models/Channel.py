@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -11,3 +13,4 @@ class Channel(BaseModel):
     unique_id: str
     linked_id: str
     state: str
+    phone: Optional[str] = None

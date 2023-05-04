@@ -1,2 +1,2 @@
-from .CallCompletedEventHandler import CallCompletedEventHandler
+from .CallReportReadyTelephonyEventHandler import CallReportReadyTelephonyEventHandler
 from .RingingTelephonyEventHandler import RingingTelephonyEventHandler
