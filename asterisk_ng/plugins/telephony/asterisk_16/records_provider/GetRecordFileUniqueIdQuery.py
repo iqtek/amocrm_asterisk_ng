@@ -54,20 +54,20 @@ class GetRecordFileByUniqueIdQuery(IGetRecordFileByUniqueIdQuery):
         return content
 
     async def __get_fileinfo(self, unique_id: str) -> Tuple[str, str]:
-        cur = self.__connection.cursor()
-        await cur.execute(
-            f"SELECT {self.__config.calldate_column}, "
-            f"{self.__config.recordingfile_column} "
-            f"FROM {self.__config.cdr_table} WHERE uniqueid={unique_id}"
-        )
+        async with self.__connection.cursor() as cur:
+            await cur.execute(
+                f"SELECT {self.__config.calldate_column}, "
+                f"{self.__config.recordingfile_column} "
+                f"FROM {self.__config.cdr_table} WHERE uniqueid={unique_id}"
+            )
 
-        try:
-            date, filename = await cur.fetchone()
-            return date, filename
-        except TypeError:
-            raise FileNotFoundError(f"File with unique_id: `{unique_id}` not found.")
-        finally:
-            await cur.close()
+            try:
+                date, filename = await cur.fetchone()
+                return date, filename
+            except TypeError:
+                raise FileNotFoundError(f"File with unique_id: `{unique_id}` not found.")
+            finally:
+                await cur.close()
 
     async def __call__(self, unique_id: str) -> File:
         if not is_valid_unique_id(unique_id):
