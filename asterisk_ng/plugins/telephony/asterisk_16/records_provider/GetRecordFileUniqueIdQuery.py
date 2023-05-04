@@ -46,6 +46,7 @@ class GetRecordFileByUniqueIdQuery(IGetRecordFileByUniqueIdQuery):
         self.__get_connection = get_connection
         self.__logger = logger
         self.__connection: Optional[Connection] = None
+
     @classmethod
     async def __get_content_from_file(cls, path: str) -> bytes:
         async with aiofiles.open(path, mode='rb') as f:
