@@ -79,7 +79,7 @@ Requires=redis.service
 
 [Service]
 Type=simple
-WorkingDirectory=/srv/amocrm_asterisk_ng
+WorkingDirectory=/opt/amocrm_asterisk_ng
 ExecStart=/bin/bash -c  'source ./venv/bin/activate && python -m asterisk_ng --config ./config.yml'
 ExecReload=/bin/kill -s HUP $MAINPID
 
