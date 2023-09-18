@@ -24,7 +24,6 @@ async def main(application: Application) -> None:
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description='AsteriskNG')
     parser.add_argument("--config", type=str, default="config.yml", help='Config file.')
     args = parser.parse_args()

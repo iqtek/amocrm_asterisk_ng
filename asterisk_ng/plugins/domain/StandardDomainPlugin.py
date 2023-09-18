@@ -252,7 +252,6 @@ class StandardDomainPlugin(AbstractPlugin):
         )
 
         # Calls logging and notification.
-        print(config.call_responsible_strategy)
         self.__subscriptions.append(
             self.__event_bus.subscribe(
                 CallReportReadyTelephonyEventHandler(

@@ -1,13 +1,9 @@
-from typing import Any
-from typing import Mapping
-from typing import MutableMapping
-from typing import Optional
+import typing as t
 
 from asterisk_ng.system.components import AbstractInitializableComponent
-
 from asterisk_ng.system.logger import ILogger
-from asterisk_ng.system.plugin import IPlugin
-from asterisk_ng.system.plugin import IPluginFactory
+
+from ..core import Plugin, PluginFactory
 
 from .PluginStoreConfig import PluginStoreConfig
 
@@ -26,15 +22,15 @@ class PluginStore(AbstractInitializableComponent):
 
     def __init__(
         self,
-        plugins_factories: MutableMapping[str, IPluginFactory],
+        plugins_factories: t.MutableMapping[str, PluginFactory],
         logger: ILogger,
     ) -> None:
         super().__init__("PluginStore")
         self.__plugins_factories = plugins_factories
         self.__logger = logger
 
-        self.__uploaded_plugins: MutableMapping[str, Optional[IPlugin]] = {}
-        self.__old_config: Optional[PluginStoreConfig] = None
+        self.__uploaded_plugins: t.MutableMapping[str, t.Optional[Plugin]] = {}
+        self.__old_config: t.Optional[PluginStoreConfig] = None
 
     async def _initialize(self) -> None:
         pass

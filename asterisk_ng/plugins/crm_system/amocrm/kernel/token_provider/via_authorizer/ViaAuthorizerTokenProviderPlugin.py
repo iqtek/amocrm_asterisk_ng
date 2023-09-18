@@ -20,11 +20,12 @@ from asterisk_ng.system.plugin import Plugin
 from asterisk_ng.system.plugin import Interface
 from asterisk_ng.system.plugin import PluginInterface
 
+from ..helper import generate_auth_url_for_authorizer
 
-__all__ = ["AmoClientPlugin"]
+__all__ = ["ViaAuthorizerTokenProviderPlugin.py"]
 
 
-class AmoClientPlugin(Plugin):
+class ViaAuthorizerTokenProviderPlugin(Plugin):
 
     __slots__ = (
         "__amo_client"
@@ -34,15 +35,26 @@ class AmoClientPlugin(Plugin):
         super().__init__()
         self.__amo_client: Optional[AmoCrmApiClient] = None
 
-    @property
-    def interface(self) -> PluginInterface:
-        return PluginInterface(
-            exported=Interface(
-                container=[Key(AmoCrmApiClient)],
-            )
-        )
-
     def __client_factory(self, settings: Mapping[str, Any]) -> AmoCrmApiClient:
+
+        async def get_tokens():
+            auth_url = generate_auth_url_for_authorizer()
+
+        async def refresh_tokens(refresh_token: str):
+            pass
+
+        class Tokens(BaseModel):
+            client_id: UUID
+            access_token: str
+            refresh_token: str
+
+        async def handle_tokens(request: Tokens) -> None:
+            pass
+
+        token_provider_factory = StandardTokenProviderFactory()
+
+        token_provider = token_provider_factory.get_instance(settings=settings)
+
         return create_amocrm_api_client(
             config=AmoCrmApiClientConfig(base_url=settings["base_url"]),
             token_provider=token_provider,

@@ -7,7 +7,7 @@ from asterisk_ng.system.container import container
 from .impl import FileConverterImpl
 from .core import IFileConverter
 
-from asterisk_ng.system.plugin import IPlugin
+from asterisk_ng.system.plugin import Plugin
 from asterisk_ng.system.plugin import Interface
 from asterisk_ng.system.plugin import PluginInterface
 
@@ -17,7 +17,7 @@ from .FileConverterPluginConfig import FileConverterPluginConfig
 __all__ = ["FileConverterPlugin"]
 
 
-class FileConverterPlugin(IPlugin[PluginInterface]):
+class FileConverterPlugin(Plugin[PluginInterface]):
 
     __slots__ = ()
 

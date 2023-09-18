@@ -9,7 +9,7 @@ from asterisk_ng.system.container import Key
 from asterisk_ng.system.container import SingletonResolver
 from asterisk_ng.system.container import container
 
-from asterisk_ng.system.plugin import IPlugin
+from asterisk_ng.system.plugin import Plugin
 from asterisk_ng.system.plugin import Interface
 from asterisk_ng.system.plugin import PluginInterface
 
@@ -21,7 +21,7 @@ from .impl import AmiManagerComponentFactory
 __all__ = ["AmiManagerPlugin"]
 
 
-class AmiManagerPlugin(IPlugin[PluginInterface]):
+class AmiManagerPlugin(Plugin[PluginInterface]):
 
     __slots__ = (
         "__ami_manager_component",

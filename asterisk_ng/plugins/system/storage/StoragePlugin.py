@@ -7,7 +7,7 @@ from asterisk_ng.system.logger import ILogger
 
 from asterisk_ng.system.container import Key
 from asterisk_ng.system.container import container
-from asterisk_ng.system.plugin import IPlugin
+from asterisk_ng.system.plugin import Plugin
 from asterisk_ng.system.plugin import Interface
 from asterisk_ng.system.plugin import PluginInterface
 
@@ -20,7 +20,7 @@ from .StorageResolver import StorageResolver
 __all__ = ["StoragePlugin"]
 
 
-class StoragePlugin(IPlugin[PluginInterface]):
+class StoragePlugin(Plugin[PluginInterface]):
 
     __slots__ = (
         "__logger",
