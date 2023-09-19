@@ -2,9 +2,12 @@ import os
 from typing import Any
 from typing import Coroutine
 from typing import Callable
-import aiofiles
-from aiomysql.connection import Cursor
+from typing import Optional
+from typing import Tuple
 
+import aiofiles
+from aiomysql.connection import Connection
+from pymysql.err import MySQLError
 from asterisk_ng.interfaces import File
 from asterisk_ng.interfaces import Filetype
 from asterisk_ng.interfaces import IGetRecordFileByUniqueIdQuery
@@ -28,19 +31,21 @@ class GetRecordFileByUniqueIdQuery(IGetRecordFileByUniqueIdQuery):
 
     __slots__ = (
         "__config",
-        "__get_cursor",
+        "__get_connection",
+        "__connection",
         "__logger",
     )
 
     def __init__(
         self,
         config: RecordsProviderPluginConfig,
-        get_cursor: Callable[[], Coroutine[Any, Any, Cursor]],
+        get_connection: Callable[[], Coroutine[Any, Any, Connection]],
         logger: ILogger,
     ) -> None:
         self.__config = config
-        self.__get_cursor = get_cursor
+        self.__get_connection = get_connection
         self.__logger = logger
+        self.__connection: Optional[Connection] = None
 
     @classmethod
     async def __get_content_from_file(cls, path: str) -> bytes:
@@ -48,27 +53,34 @@ class GetRecordFileByUniqueIdQuery(IGetRecordFileByUniqueIdQuery):
             content = await f.read()
         return content
 
-    async def __call__(self, unique_id: str) -> File:
+    async def __get_fileinfo(self, unique_id: str) -> Tuple[str, str]:
+        async with self.__connection.cursor() as cur:
+            await cur.execute(
+                f"SELECT {self.__config.calldate_column}, "
+                f"{self.__config.recordingfile_column} "
+                f"FROM {self.__config.cdr_table} WHERE uniqueid={unique_id}"
+            )
 
+            try:
+                date, filename = await cur.fetchone()
+                return date, filename
+            except TypeError:
+                raise FileNotFoundError(f"File with unique_id: `{unique_id}` not found.")
+            finally:
+                await cur.close()
+
+    async def __call__(self, unique_id: str) -> File:
         if not is_valid_unique_id(unique_id):
             raise ValueError(f"Invalid unique_id: `{unique_id}`.")
 
-        cur = await self.__get_cursor()
-        await cur.execute(
-            f"SELECT {self.__config.calldate_column}, "
-            f"{self.__config.recordingfile_column} "
-            f"FROM {self.__config.cdr_table} WHERE uniqueid={unique_id}"
-        )
+        if self.__connection is None:
+            self.__connection = await self.__get_connection()
 
         try:
-            date, filename = await cur.fetchone()
-        except TypeError:
-            raise FileNotFoundError(f"File with unique_id: `{unique_id}` not found.")
-        finally:
-            await cur.close()
-
-        if not date or not filename:
-            raise FileNotFoundError(f"File with unique_id: `{unique_id}` not found.")
+            date, filename = await self.__get_fileinfo(unique_id=unique_id)
+        except (RuntimeError, MySQLError):
+            self.__connection = await self.__get_connection()
+            date, filename = await self.__get_fileinfo(unique_id=unique_id)
 
         directory_path = date.strftime(self.__config.media_root).rstrip('/')
         file_path = os.path.join(directory_path, filename)

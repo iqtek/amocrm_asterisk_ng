@@ -4,7 +4,6 @@ from typing import Optional
 
 from aiomysql import Connection
 from aiomysql import connect
-from aiomysql import Cursor
 from aiomysql import InterfaceError
 
 from asterisk_ng.system.dispatcher import IDispatcher
@@ -29,13 +28,11 @@ class RecordsProviderPlugin(AbstractPlugin):
 
     __slots__ = (
         "__dispatcher",
-        "__connection",
         "__config",
     )
 
     def __init__(self) -> None:
         self.__dispatcher: Optional[IDispatcher] = None
-        self.__connection: Optional[Connection] = None
         self.__config: Optional[RecordsProviderPluginConfig] = None
 
     @property
@@ -51,19 +48,14 @@ class RecordsProviderPlugin(AbstractPlugin):
             )
         )
 
-    async def __get_cursor(self) -> Cursor:
-        try:
-            return await self.__connection.cursor()
-        except (RuntimeError, InterfaceError, AttributeError):
-            self.__connection = await connect(
-                user=self.__config.mysql.user,
-                password=self.__config.mysql.password,
-                host=self.__config.mysql.host,
-                port=self.__config.mysql.port,
-                db=self.__config.mysql.database,
-            )
-
-        return await self.__connection.cursor()
+    async def __get_connection(self) -> Connection:
+        return await connect(
+            user=self.__config.mysql.user,
+            password=self.__config.mysql.password,
+            host=self.__config.mysql.host,
+            port=self.__config.mysql.port,
+            db=self.__config.mysql.database,
+        )
 
     async def upload(self, settings: Mapping[str, Any]) -> None:
 
@@ -76,12 +68,10 @@ class RecordsProviderPlugin(AbstractPlugin):
             IGetRecordFileByUniqueIdQuery,
             GetRecordFileByUniqueIdQuery(
                 config=self.__config,
-                get_cursor=self.__get_cursor,
+                get_connection=self.__get_connection,
                 logger=logger
             )
         )
 
     async def unload(self) -> None:
         self.__dispatcher.delete_function(IGetRecordFileByUniqueIdQuery)
-        if self.__connection is not None:
-            self.__connection.close()
