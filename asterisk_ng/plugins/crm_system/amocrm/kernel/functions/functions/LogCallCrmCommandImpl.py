@@ -60,7 +60,7 @@ class LogCallCrmCommandImpl(ILogCallCrmCommand):
         responsible_user_id: CrmUserId,
         duration: int,
     ) -> None:
-        link = await self.__generate_link_function(unique_id)
+        link = await self.__generate_link_function(unique_id) if call_result == call_result.ANSWERED else None
         timestamp = int(time())
 
         amocrm_str_direction = "inbound" if direction == CrmCallDirection.INBOUND else "outbound"
