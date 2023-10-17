@@ -59,7 +59,7 @@ class GetRecordFileByUniqueIdQuery(IGetRecordFileByUniqueIdQuery):
                 f"SELECT {self.__config.calldate_column}, "
                 f"{self.__config.recordingfile_column} "
                 f"FROM {self.__config.cdr_table} "
-                f"WHERE linkedid=(SELECT linkedid FROM {self.__config.cdr_table} WHERE uniqueid = '1696918215.1723' LIMIT 1) "
+                f"WHERE linkedid=(SELECT linkedid FROM {self.__config.cdr_table} WHERE uniqueid = '{unique_id}' LIMIT 1) "
                 f"AND recordingfile <> '' "
                 f"ORDER BY FIELD(disposition, 'ANSWERED', 'NO ANSWER') "
                 "LIMIT 1"
